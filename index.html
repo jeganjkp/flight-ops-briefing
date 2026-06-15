@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flight Ops Briefing</title>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f7f8fa;
+  color: #1a1a2e;
+  padding: 16px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #2a3f5f;
+}
+.header h1 { margin: 0; font-size: 20px; color: #2a3f5f; }
+.header .meta { font-size: 13px; color: #6b7280; line-height: 1.5; }
+.updated { font-size: 12px; color: #9ca3af; text-align: right; }
+
+.section {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+.section h2 {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #2a3f5f;
+}
+.section h2 .live-badge {
+  font-size: 10px;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 600;
+  color: #059669;
+  background: #d1fae5;
+  border-radius: 10px;
+  padding: 1px 8px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+.highlight-card {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #f0f4ff;
+}
+.highlight-card.today { background: #eefcf3; border-color: #b7e8c8; }
+.highlight-card.muted { background: #f9fafb; }
+.highlight-card .label { font-size: 11px; text-transform: uppercase; color: #6b7280; letter-spacing: 0.04em; }
+.highlight-card .route { font-size: 18px; font-weight: 700; margin: 4px 0; color: #1a1a2e; }
+.highlight-card .detail { font-size: 13px; color: #4b5563; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eee; }
+th { background: #f3f4f6; color: #374151; font-weight: 600; }
+tr:hover td { background: #fafafa; }
+.dest-cell { font-weight: 600; }
+
+.taf-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.taf-card .icao { font-weight: 700; font-size: 14px; color: #2a3f5f; }
+.taf-card .name { font-size: 12px; color: #6b7280; margin-left: 6px; }
+.taf-card .raw {
+  font-family: "SF Mono", Consolas, monospace;
+  font-size: 12px;
+  background: #f3f4f6;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin: 6px 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 10px;
+  margin-right: 4px;
+}
+.tag.ok { background: #d1fae5; color: #065f46; }
+.tag.watch { background: #fef3c7; color: #92400e; }
+.tag.alert { background: #fee2e2; color: #991b1b; }
+
+.sigmet-item {
+  border-left: 3px solid #f59e0b;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background: #fffbeb;
+  border-radius: 0 6px 6px 0;
+  font-size: 12px;
+}
+.sigmet-item.none { border-left-color: #10b981; background: #ecfdf5; font-size: 13px; padding: 10px 12px; }
+.sigmet-item .raw { font-family: "SF Mono", Consolas, monospace; white-space: pre-wrap; margin-top: 4px; color: #4b5563; }
+
+.notam-note {
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.6;
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.notam-note a { color: #2563eb; text-decoration: none; }
+.notam-note a:hover { text-decoration: underline; }
+
+.loading { font-size: 13px; color: #9ca3af; font-style: italic; }
+.error-note {
+  font-size: 13px; color: #991b1b; background: #fee2e2;
+  border-radius: 6px; padding: 8px 10px;
+}
+
+details.roster-details { font-size: 13px; }
+details.roster-details summary {
+  cursor: pointer; font-size: 13px; font-weight: 600; color: #2a3f5f;
+  padding: 4px 0;
+}
+details.roster-details table { margin-top: 8px; }
+
+.footer-note {
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: center;
+  margin-top: 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Flight Ops Briefing</h1>
+    <div class="meta">Jegan Kumar Pillay Gopal · FO · A330 Fleet · Base KUL · Staff #2112499</div>
+  </div>
+  <div class="updated" id="reloadedAt">Loading…</div>
+</div>
+
+<div class="section">
+  <h2>Today &amp; Tomorrow</h2>
+  <div class="highlight-grid" id="todayTomorrow">
+    <div class="highlight-card today"><div class="loading">Computing from roster…</div></div>
+    <div class="highlight-card"><div class="loading">Computing from roster…</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Current Rotation <span id="rotationLabel"></span></h2>
+  <div id="rotationInfo"><div class="loading">Determining current rotation from roster…</div></div>
+</div>
+
+<div class="section">
+  <h2>Duty &amp; Flight Time (Reference)</h2>
+  <div class="highlight-grid" style="margin-bottom:12px;" id="dutySummary">
+    <div class="highlight-card muted"><div class="loading">Calculating…</div></div>
+  </div>
+  <table id="dutyTable">
+    <thead>
+      <tr><th>Date</th><th>Flight</th><th>Route</th><th>Report</th><th>Release</th><th>Block</th><th>Duty (FDP)</th><th>Rest After</th></tr>
+    </thead>
+    <tbody><tr><td colspan="8" class="loading">Calculating…</td></tr></tbody>
+  </table>
+  <div class="footer-note" style="text-align:left; margin-top:8px;">
+    Reference figures only — assumes 75min pre-flight report / 45min post-flight release, single-sector duty days, computed from local station times (UTC offsets: KUL/CAN/PER +8, KIX +9, SYD/MEL +10 for June/AEST). Not an FTL/legality check — verify actuals against MAB's CAAM-approved duty-time system.
+  </div>
+</div>
+
+<div class="section">
+  <h2>Weather — Current Rotation Airports <span class="live-badge" id="weatherBadge">auto-updates</span></h2>
+  <div id="metarCards"><div class="loading">Loading current conditions (METAR)…</div></div>
+  <div id="tafCards"><div class="loading">Loading forecasts (TAF)…</div></div>
+  <div class="footer-note" id="weatherFreshness">Source: aviationweather.gov, via data.json updated by a scheduled GitHub Action.</div>
+</div>
+
+<div class="section">
+  <h2>SIGMET / En-Route Hazards <span class="live-badge">auto-updates</span></h2>
+  <div id="sigmetSection"><div class="loading">Loading international SIGMETs…</div></div>
+  <div class="footer-note">Source: aviationweather.gov international SIGMET feed, filtered to FIRs relevant to the current rotation.</div>
+</div>
+
+<div class="section">
+  <h2>Live Weather &amp; Satellite Tools</h2>
+  <div class="notam-note">
+    For real-time wind, satellite and significant-weather charts beyond what's above, open these (live, updates continuously):
+    <br><br>
+    <a href="https://www.windy.com" target="_blank" rel="noopener">Windy.com</a> — live wind/temperature/jet stream and cloud maps at any flight level, route overlay
+    <br>
+    <a href="https://zoom.earth" target="_blank" rel="noopener">Zoom Earth</a> — global live satellite imagery (visible + infrared), storm tracking
+    <br>
+    <a href="https://www.jma.go.jp/bosai/himawari/" target="_blank" rel="noopener">JMA Himawari</a> — real-time satellite for APAC/Australia, useful for MEL/PER/KIX/CAN routes
+    <br>
+    <a href="https://aviationweather.gov/data/products/fcst/" target="_blank" rel="noopener">AWC Significant Weather &amp; Wind/Temp Charts</a> — high-level prog charts (jet streams, CAT, CB)
+  </div>
+</div>
+
+<div class="section">
+  <h2>NOTAMs</h2>
+  <div class="notam-note">
+    Live NOTAM aggregation for international airports isn't available through an open API without an aviation-data subscription or company briefing login.
+    <br><br>
+    For NOTAMs, use your company flight-planning/briefing system (e.g. Lido, SkyBrief, or the MAB ops portal) before each sector.
+    <br><br>
+    Public lookup (US/ICAO, limited coverage): <a href="https://notams.aim.faa.gov/notamSearch/" target="_blank" rel="noopener">FAA NOTAM Search</a>
+  </div>
+</div>
+
+<div class="section">
+  <details class="roster-details">
+    <summary>Full Roster — Jun-2026 (reference, all legs)</summary>
+    <table>
+      <thead>
+        <tr><th>Date</th><th>Flight</th><th>Route</th><th>Dep (local)</th><th>Arr (local)</th><th>A/C</th></tr>
+      </thead>
+      <tbody id="fullRosterBody"></tbody>
+    </table>
+  </details>
+</div>
+
+<div class="footer-note">
+  Today/Tomorrow, current rotation and duty/flight time recompute every time this page loads. Weather/SIGMET come from data.json, refreshed every ~30min by a GitHub Action — edit the ROSTER object in this file whenever a new month's roster is published.
+</div>
+
+<script>
+const ROSTER = {
+  "pilot": {"name": "JEGAN KUMAR PILLAY GOPAL", "staff_number": "2112499", "rank": "FO", "base": "KUL", "fleet": "330"},
+  "month": "Jun-2026",
+  "legs": [
+    {"flight": "MH251", "dep_date": "2026-06-01", "dep_airport": "KUL", "dep_time": "20:00", "arr_airport": "SYD", "arr_date": "2026-06-02", "arr_time": "06:53", "ac_type": "339"},
+    {"flight": "MH122", "dep_date": "2026-06-03", "dep_airport": "SYD", "dep_time": "12:59", "arr_airport": "KUL", "arr_date": "2026-06-03", "arr_time": "20:52", "ac_type": "339"},
+    {"flight": "MH52", "dep_date": "2026-06-06", "dep_airport": "KUL", "dep_time": "22:26", "arr_airport": "KIX", "arr_date": "2026-06-07", "arr_time": "06:51", "ac_type": "333"},
+    {"flight": "MH53", "dep_date": "2026-06-08", "dep_airport": "KIX", "dep_time": "09:41", "arr_airport": "KUL", "arr_date": "2026-06-08", "arr_time": "16:14", "ac_type": "333"},
+    {"flight": "MH6178", "dep_date": "2026-06-09", "dep_airport": "KUL", "dep_time": "22:07", "arr_airport": "CAN", "arr_date": "2026-06-10", "arr_time": "03:19", "ac_type": "33X"},
+    {"flight": "MH377", "dep_date": "2026-06-11", "dep_airport": "CAN", "dep_time": "14:25", "arr_airport": "KUL", "arr_date": "2026-06-11", "arr_time": "19:15", "ac_type": "333"},
+    {"flight": "MH129", "dep_date": "2026-06-14", "dep_airport": "KUL", "dep_time": "09:20", "arr_airport": "MEL", "arr_date": "2026-06-14", "arr_time": "20:00", "ac_type": "339"},
+    {"flight": "MH128", "dep_date": "2026-06-15", "dep_airport": "MEL", "dep_time": "23:30", "arr_airport": "KUL", "arr_date": "2026-06-16", "arr_time": "06:45", "ac_type": "339"},
+    {"flight": "MH127", "dep_date": "2026-06-25", "dep_airport": "KUL", "dep_time": "19:30", "arr_airport": "PER", "arr_date": "2026-06-26", "arr_time": "01:55", "ac_type": "339"},
+    {"flight": "MH126", "dep_date": "2026-06-27", "dep_airport": "PER", "dep_time": "02:10", "arr_airport": "KUL", "arr_date": "2026-06-27", "arr_time": "08:45", "ac_type": "339"}
+  ],
+  "standby": [
+    {"code": "S4-330", "dates": ["2026-06-19","2026-06-20","2026-06-21","2026-06-22"], "location": "KUL", "report": "17:00", "release": "23:59"},
+    {"code": "S3-330", "dates": ["2026-06-28","2026-06-29","2026-06-30"], "location": "KUL", "report": "12:00", "release": "22:00"}
+  ],
+  "days_off": ["2026-06-04","2026-06-05","2026-06-12","2026-06-13","2026-06-17","2026-06-18","2026-06-23","2026-06-24"]
+};
+
+// NOTE: TZ offsets assume June, AEST (no AU daylight saving). If the roster
+// is updated for Oct-Apr, SYD/MEL should be +11 (AEDT).
+const TZ_OFFSETS = {KUL:8, SYD:10, KIX:9, CAN:8, MEL:10, PER:8};
+const IATA_TO_ICAO = {KUL:"WMKK", SYD:"YSSY", MEL:"YMML", PER:"YPPH", KIX:"RJBB", CAN:"ZGGG"};
+const ICAO_INFO = {
+  WMKK: {name:"Kuala Lumpur (KLIA) — home base", firs:["WMFC"]},
+  YSSY: {name:"Sydney", firs:["YBBB","YMMM"]},
+  YMML: {name:"Melbourne (Tullamarine)", firs:["YMMM"]},
+  YPPH: {name:"Perth", firs:["YMMM"]},
+  RJBB: {name:"Osaka (Kansai)", firs:["RJJJ"]},
+  ZGGG: {name:"Guangzhou Baiyun", firs:["ZGZU"]},
+};
+const REPORT_BUFFER_MIN = 75;
+const DEBRIEF_BUFFER_MIN = 45;
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function pad(n){ return String(n).padStart(2,'0'); }
+function localDateStr(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function addDays(dateStr, n){
+  const [y,m,d] = dateStr.split('-').map(Number);
+  const dt = new Date(Date.UTC(y,m-1,d));
+  dt.setUTCDate(dt.getUTCDate()+n);
+  return `${dt.getUTCFullYear()}-${pad(dt.getUTCMonth()+1)}-${pad(dt.getUTCDate())}`;
+}
+function toUTC(dateStr, timeStr, station){
+  const [y,m,d] = dateStr.split('-').map(Number);
+  const [hh,mi] = timeStr.split(':').map(Number);
+  return new Date(Date.UTC(y,m-1,d,hh,mi) - TZ_OFFSETS[station]*3600000);
+}
+function fmtHM(ms){
+  const sign = ms < 0 ? '-' : '';
+  ms = Math.abs(ms);
+  const totalMin = Math.round(ms/60000);
+  return `${sign}${Math.floor(totalMin/60)}h${pad(totalMin%60)}m`;
+}
+function fmtLocal(dtUTC, station){
+  const local = new Date(dtUTC.getTime() + TZ_OFFSETS[station]*3600000);
+  return `${pad(local.getUTCDate())}-${MONTHS[local.getUTCMonth()]} ${pad(local.getUTCHours())}:${pad(local.getUTCMinutes())} ${station}`;
+}
+
+function computeLegs(){
+  const legs = ROSTER.legs.map(leg => {
+    const depUTC = toUTC(leg.dep_date, leg.dep_time, leg.dep_airport);
+    const arrUTC = toUTC(leg.arr_date, leg.arr_time, leg.arr_airport);
+    const block = arrUTC - depUTC;
+    const reportUTC = new Date(depUTC.getTime() - REPORT_BUFFER_MIN*60000);
+    const releaseUTC = new Date(arrUTC.getTime() + DEBRIEF_BUFFER_MIN*60000);
+    const duty = releaseUTC - reportUTC;
+    return {...leg, depUTC, arrUTC, block, reportUTC, releaseUTC, duty};
+  });
+  for(let i=0;i<legs.length-1;i++){
+    legs[i].restAfter = legs[i+1].reportUTC - legs[i].releaseUTC;
+  }
+  if(legs.length) legs[legs.length-1].restAfter = null;
+  return legs;
+}
+
+function describeDay(dateStr, legs){
+  let leg = legs.find(l => l.dep_date === dateStr);
+  if(leg) return {kind:'dep', leg};
+  leg = legs.find(l => l.arr_date === dateStr && l.arr_date !== l.dep_date);
+  if(leg) return {kind:'arr', leg};
+  const sb = ROSTER.standby.find(s => s.dates.includes(dateStr));
+  if(sb) return {kind:'standby', sb};
+  if(ROSTER.days_off.includes(dateStr)) return {kind:'dayoff'};
+  return {kind:'unknown'};
+}
+
+function dayCardHTML(dateStr, label, info, isToday){
+  const cls = 'highlight-card' + (isToday ? ' today' : '');
+  let route='', detail='';
+  if(info.kind === 'dep'){
+    route = `${info.leg.flight} · ${info.leg.dep_airport} → ${info.leg.arr_airport}`;
+    detail = `Dep ${info.leg.dep_airport} ${info.leg.dep_time} · Arr ${info.leg.arr_airport} ${info.leg.arr_time}${info.leg.arr_date!==info.leg.dep_date?' (+1)':''} local · ${info.leg.ac_type}`;
+  } else if(info.kind === 'arr'){
+    route = `Arriving ${info.leg.arr_airport} (${info.leg.flight})`;
+    detail = `From ${info.leg.dep_airport}, lands ${info.leg.arr_time} local · ${info.leg.ac_type}`;
+  } else if(info.kind === 'standby'){
+    route = `Standby ${info.sb.code}`;
+    detail = `${info.sb.location} · Report ${info.sb.report} – Release ${info.sb.release}`;
+  } else if(info.kind === 'dayoff'){
+    route = 'Day Off';
+    detail = 'No duty scheduled';
+  } else {
+    route = 'No roster data';
+    detail = 'Not covered by current roster — update the ROSTER object in index.html';
+  }
+  return `<div class="${cls}"><div class="label">${label} · ${dateStr}</div><div class="route">${route}</div><div class="detail">${detail}</div></div>`;
+}
+
+function findRotation(legs, todayStr){
+  const sorted = [...legs].sort((a,b)=> a.dep_date.localeCompare(b.dep_date));
+  const idx = sorted.findIndex(l => l.dep_date >= todayStr || l.arr_date >= todayStr);
+  if(idx === -1) return [];
+  const a = sorted[idx];
+  const rotation = [a];
+  const b = sorted[idx+1];
+  if(b && b.dep_airport === a.arr_airport) rotation.push(b);
+  return rotation;
+}
+
+function classify(raw){
+  const r = (raw || '').toUpperCase();
+  if(/\bFG\b|FZFG|LIFR|\b0\/0\b/.test(r)) return 'alert';
+  if(/\bTS\b|CB|SHRA|SH|G\d{2}KT|BKN00[0-3]|OVC00[0-3]|FG/.test(r)) return 'watch';
+  return 'ok';
+}
+function tagLabel(cls){
+  return cls === 'alert' ? 'Alert' : (cls === 'watch' ? 'Watch' : 'OK');
+}
+
+// ---------- Render: Today & Tomorrow ----------
+const legs = computeLegs();
+const today = new Date();
+const todayStr = localDateStr(today);
+const tomorrowStr = addDays(todayStr, 1);
+
+document.getElementById('reloadedAt').innerHTML =
+  `Page loaded: ${today.toLocaleString('en-GB',{hour12:false})}<br>Roster data: ${ROSTER.month}`;
+
+const todayInfo = describeDay(todayStr, legs);
+const tomorrowInfo = describeDay(tomorrowStr, legs);
+document.getElementById('todayTomorrow').innerHTML =
+  dayCardHTML(todayStr, 'Today', todayInfo, true) +
+  dayCardHTML(tomorrowStr, 'Tomorrow', tomorrowInfo, false);
+
+// ---------- Render: Full roster (collapsed reference) ----------
+document.getElementById('fullRosterBody').innerHTML = legs.map(l => {
+  const style = l.dep_date === todayStr ? ' style="background:#eefcf3"' : (l.dep_date === tomorrowStr ? ' style="background:#f0f4ff"' : '');
+  return `<tr${style}><td>${l.dep_date.slice(5)}</td><td>${l.flight}</td><td class="dest-cell">${l.dep_airport} → ${l.arr_airport}</td><td>${l.dep_time}</td><td>${l.arr_time}${l.arr_date!==l.dep_date?' (+1)':''}</td><td>${l.ac_type}</td></tr>`;
+}).join('');
+
+// ---------- Render: Duty & Flight Time ----------
+function windowTotal(days, field){
+  const start = addDays(todayStr, -(days-1));
+  let total = 0;
+  for(const l of legs){
+    if(l.dep_date >= start && l.dep_date <= todayStr) total += l[field];
+  }
+  return total;
+}
+let mtdTotal = 0;
+for(const l of legs){
+  if(l.dep_date.slice(0,7) === todayStr.slice(0,7) && l.dep_date <= todayStr) mtdTotal += l.block;
+}
+document.getElementById('dutySummary').innerHTML = `
+  <div class="highlight-card"><div class="label">MTD Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(mtdTotal)}</div></div>
+  <div class="highlight-card"><div class="label">Rolling 7-Day Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(7,'block'))}</div></div>
+  <div class="highlight-card"><div class="label">Rolling 7-Day Duty Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(7,'duty'))}</div></div>
+  <div class="highlight-card"><div class="label">Rolling 28-Day Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(28,'block'))}</div></div>
+`;
+
+const rotation = findRotation(legs, todayStr);
+
+document.getElementById('dutyTable').querySelector('tbody').innerHTML = rotation.length
+  ? rotation.map(l => {
+      const style = l.dep_date === todayStr ? ' style="background:#eefcf3"' : (l.dep_date === tomorrowStr ? ' style="background:#f0f4ff"' : '');
+      return `<tr${style}><td>${l.dep_date.slice(5)}</td><td><b>${l.flight}</b></td><td class="dest-cell">${l.dep_airport} → ${l.arr_airport}</td><td>${fmtLocal(l.reportUTC,l.dep_airport)}</td><td>${fmtLocal(l.releaseUTC,l.arr_airport)}</td><td>${fmtHM(l.block)}</td><td>${fmtHM(l.duty)}</td><td>${l.restAfter!=null?fmtHM(l.restAfter):'-'}</td></tr>`;
+    }).join('')
+  : `<tr><td colspan="8">No upcoming legs found in the loaded roster — update the ROSTER object in index.html.</td></tr>`;
+
+// ---------- Render: Current Rotation summary + relevant airports ----------
+let relevantIcaos = [];
+let relevantFirs = new Set();
+if(rotation.length){
+  const stations = new Set();
+  rotation.forEach(l => { stations.add(l.dep_airport); stations.add(l.arr_airport); });
+  relevantIcaos = [...stations].map(s => IATA_TO_ICAO[s]).filter(Boolean);
+  relevantIcaos.forEach(icao => (ICAO_INFO[icao]?.firs || []).forEach(f => relevantFirs.add(f)));
+
+  document.getElementById('rotationLabel').textContent = `(${rotation.map(l=>l.flight).join(' / ')})`;
+  document.getElementById('rotationInfo').innerHTML = `<div class="highlight-grid">` + rotation.map(l => {
+    const isToday = l.dep_date === todayStr;
+    return `<div class="highlight-card${isToday?' today':''}">
+      <div class="label">${l.dep_date} · ${l.dep_date===todayStr?'Today':(l.dep_date===tomorrowStr?'Tomorrow':'')}</div>
+      <div class="route">${l.flight} · ${l.dep_airport} → ${l.arr_airport}</div>
+      <div class="detail">Dep ${l.dep_airport} ${l.dep_time} · Arr ${l.arr_airport} ${l.arr_time}${l.arr_date!==l.dep_date?' (+1)':''} local · ${l.ac_type}</div>
+    </div>`;
+  }).join('') + `</div>`;
+} else {
+  document.getElementById('rotationInfo').innerHTML = `<div class="error-note">No upcoming legs found in the loaded roster.</div>`;
+  document.getElementById('metarCards').innerHTML = '';
+  document.getElementById('tafCards').innerHTML = '';
+  document.getElementById('sigmetSection').innerHTML = '';
+}
+
+// ---------- Load data.json (refreshed every ~30min by a GitHub Action) ----------
+async function loadWeatherAndSigmets(){
+  if(!relevantIcaos.length) return;
+  try {
+    const res = await fetch('./data.json', {cache: 'no-store'});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    // Freshness note
+    if(data.fetched_at){
+      const fetched = new Date(data.fetched_at);
+      const ageMin = Math.round((Date.now() - fetched.getTime())/60000);
+      document.getElementById('weatherFreshness').textContent =
+        `Source: aviationweather.gov · data.json last updated ${fetched.toLocaleString()} (${ageMin} min ago)`;
+    }
+
+    // METAR
+    const metars = (data.metar || []).filter(m => relevantIcaos.includes(m.icaoId));
+    document.getElementById('metarCards').innerHTML = '<h3 style="font-size:13px;color:#6b7280;margin:0 0 8px;">Current Conditions (METAR)</h3>' +
+      (metars.length ? metars.map(m => {
+        const cls = classify(m.rawOb || '');
+        return `<div class="taf-card">
+          <span class="icao">${m.icaoId}</span><span class="name">${ICAO_INFO[m.icaoId]?.name || m.name || ''}</span>
+          <span class="tag ${cls}">${tagLabel(cls)}</span>
+          <div class="raw">${m.rawOb}</div>
+        </div>`;
+      }).join('') : '<div class="loading">No METAR data for these airports in data.json.</div>');
+
+    // TAF
+    const tafs = (data.taf || []).filter(t => relevantIcaos.includes(t.icaoId));
+    document.getElementById('tafCards').innerHTML = '<h3 style="font-size:13px;color:#6b7280;margin:12px 0 8px;">TAF — Forecast</h3>' +
+      (tafs.length ? tafs.map(t => {
+        const cls = classify(t.rawTAF || '');
+        return `<div class="taf-card">
+          <span class="icao">${t.icaoId}</span><span class="name">${ICAO_INFO[t.icaoId]?.name || ''}</span>
+          <span class="tag ${cls}">${tagLabel(cls)}</span>
+          <div class="raw">${t.rawTAF}</div>
+        </div>`;
+      }).join('') : '<div class="loading">No TAF data for these airports in data.json.</div>');
+
+    // SIGMET
+    const sigmetData = data.sigmet;
+    if(Array.isArray(sigmetData)){
+      const now = new Date();
+      const relevant = sigmetData.filter(s => relevantFirs.has(s.firId) && (!s.validTimeTo || new Date(s.validTimeTo) > now));
+      if(relevant.length){
+        document.getElementById('sigmetSection').innerHTML = relevant.map(s => `
+          <div class="sigmet-item">
+            <b>${s.firId || ''}</b> — ${s.hazard || 'SIGMET'} ${s.validTimeFrom ? `(valid ${s.validTimeFrom} → ${s.validTimeTo || '?'})` : ''}
+            <div class="raw">${s.rawSigmet || ''}</div>
+          </div>`).join('');
+      } else {
+        document.getElementById('sigmetSection').innerHTML = `<div class="sigmet-item none">
+          No active SIGMETs for ${[...relevantFirs].join(', ')} as of the last data.json update.
+        </div>`;
+      }
+    } else {
+      document.getElementById('sigmetSection').innerHTML = `<div class="error-note">SIGMET feed had an issue on last update: ${sigmetData?.error || 'unknown'}.</div>`;
+    }
+  } catch(e) {
+    document.getElementById('metarCards').innerHTML = `<div class="error-note">Couldn't load data.json (${e.message}). If this is the first run, trigger the "Update weather data" workflow manually from the Actions tab.</div>`;
+    document.getElementById('tafCards').innerHTML = '';
+    document.getElementById('sigmetSection').innerHTML = '';
+  }
+}
+
+if(rotation.length){
+  loadWeatherAndSigmets();
+}
+</script>
+
+</body>
+</html>
