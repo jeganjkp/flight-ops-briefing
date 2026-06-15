@@ -247,7 +247,23 @@ details.roster-details table { margin-top: 8px; }
     <tbody><tr><td colspan="8" class="loading">Calculating…</td></tr></tbody>
   </table>
   <div class="footer-note" style="text-align:left; margin-top:8px;">
-    Reference figures only — assumes 75min pre-flight report / 45min post-flight release, single-sector duty days, computed from local station times (UTC offsets: KUL/CAN/PER +8, KIX +9, SYD/MEL +10 for June/AEST). Not an FTL/legality check — verify actuals against MAB's CAAM-approved duty-time system.
+    Reference figures only — assumes report time 75min before departure at KUL (home base), 60min ex-station, and 45min post-flight release; single-sector duty days; computed from local station times (UTC offsets: KUL/CAN/PER +8, KIX +9, SYD/MEL +10 for June/AEST). Not an FTL/legality check — verify actuals against MAB's CAAM-approved duty-time system.
+  </div>
+</div>
+
+<div class="section">
+  <h2>FTL Status — CAAM/MCAR Limits</h2>
+  <div class="highlight-grid" style="margin-bottom:12px;" id="ftlCumSummary">
+    <div class="highlight-card muted"><div class="loading">Calculating…</div></div>
+  </div>
+  <table id="fdpTable">
+    <thead>
+      <tr><th>Date</th><th>Flight</th><th>Report (local)</th><th>FDP Table A Bracket</th><th>Sectors</th><th>FDP</th><th>Max FDP</th><th>Status</th></tr>
+    </thead>
+    <tbody><tr><td colspan="8" class="loading">Calculating…</td></tr></tbody>
+  </table>
+  <div class="footer-note" style="text-align:left; margin-top:8px;">
+    Max FDP per CAAM MCAR Part 1, Fig 7.5.8(1) Table A (2 flight crew, acclimatized) — banded by report local time and sector count. Report time assumed 75min before departure at KUL (home base), 60min ex-station. Cumulative duty limits per Table 7.5.17(1), flight crew: 55h/7 days, 95h/14 days, 190h/28 days. Flight time limit per 7.5.16.1(a): 100h/28 days. The 1000h/12-month flying limit (7.5.16.1(b)) requires a full rolling 12-month history and is <b>not computed here</b> — track that separately. Table A assumes acclimatized status; if not acclimatized at the report station, Table B (generally lower limits) applies instead — verify against MAB's CAAM-approved duty-time system.
   </div>
 </div>
 
@@ -329,8 +345,11 @@ const ICAO_INFO = {
   RJBB: {name:"Osaka (Kansai)", firs:["RJJJ"]},
   ZGGG: {name:"Guangzhou Baiyun", firs:["ZGZU"]},
 };
-const REPORT_BUFFER_MIN = 75;
+// Report time: 75min before departure at KUL (home base), 60min ex-station.
+const REPORT_BUFFER_MIN_HOME = 75;
+const REPORT_BUFFER_MIN_AWAY = 60;
 const DEBRIEF_BUFFER_MIN = 45;
+function reportBufferMin(depAirport){ return depAirport === 'KUL' ? REPORT_BUFFER_MIN_HOME : REPORT_BUFFER_MIN_AWAY; }
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 // WMO weather codes (Open-Meteo) -> layman icon/label
@@ -425,7 +444,7 @@ function computeLegs(){
     const depUTC = toUTC(leg.dep_date, leg.dep_time, leg.dep_airport);
     const arrUTC = toUTC(leg.arr_date, leg.arr_time, leg.arr_airport);
     const block = arrUTC - depUTC;
-    const reportUTC = new Date(depUTC.getTime() - REPORT_BUFFER_MIN*60000);
+    const reportUTC = new Date(depUTC.getTime() - reportBufferMin(leg.dep_airport)*60000);
     const releaseUTC = new Date(arrUTC.getTime() + DEBRIEF_BUFFER_MIN*60000);
     const duty = releaseUTC - reportUTC;
     return {...leg, depUTC, arrUTC, block, reportUTC, releaseUTC, duty};
@@ -577,6 +596,59 @@ document.getElementById('dutyTable').querySelector('tbody').innerHTML = rotation
   ? rotation.map(l => {
       const style = l.dep_date === todayStr ? ' style="background:#eefcf3"' : (l.dep_date === tomorrowStr ? ' style="background:#f0f4ff"' : '');
       return `<tr${style}><td>${l.dep_date.slice(5)}</td><td><b>${l.flight}</b></td><td class="dest-cell">${l.dep_airport} → ${l.arr_airport}</td><td>${fmtLocal(l.reportUTC,l.dep_airport)}</td><td>${fmtLocal(l.releaseUTC,l.arr_airport)}</td><td>${fmtHM(l.block)}</td><td>${fmtHM(l.duty)}</td><td>${l.restAfter!=null?fmtHM(l.restAfter):'-'}</td></tr>`;
+    }).join('')
+  : `<tr><td colspan="8">No upcoming legs found in the loaded roster — update the ROSTER object in index.html.</td></tr>`;
+
+// ---------- Render: FTL Status (CAAM/MCAR limits) ----------
+// Fig 7.5.8(1) Table A — two or more flight crew, acclimatized. Hours by
+// report-local-time band (rows) x number of sectors 1..8+ (columns).
+const FDP_TABLE_A_HOURS = [
+  {label:'0600-0759', test:m=> m>=360 && m<=479,  limits:[13,12.25,11.5,10.75,10,9.5,9,9]},
+  {label:'0800-1259', test:m=> m>=480 && m<=779,  limits:[14,13.25,12.5,11.75,11,10.5,10,9.5]},
+  {label:'1300-1759', test:m=> m>=780 && m<=1079, limits:[13,12.25,11.5,10.75,10,9.5,9,9]},
+  {label:'1800-2159', test:m=> m>=1080 && m<=1319,limits:[12,11.25,10.5,9.75,9,9,9,9]},
+  {label:'2200-0559', test:m=> m>=1320 || m<360,  limits:[11,10.25,9.5,9,9,9,9,9]},
+];
+function localMinutesOfDay(dtUTC, station){
+  const local = new Date(dtUTC.getTime() + TZ_OFFSETS[station]*3600000);
+  return local.getUTCHours()*60 + local.getUTCMinutes();
+}
+function getFDPLimitMs(reportLocalMin, sectors){
+  const bracket = FDP_TABLE_A_HOURS.find(b => b.test(reportLocalMin));
+  const idx = Math.min(Math.max(sectors,1),8) - 1;
+  return {bracket: bracket.label, limitMs: bracket.limits[idx] * 3600000};
+}
+// >limit -> alert; >=85% -> watch; else ok
+function pctTag(valueMs, limitMs){
+  const pct = Math.round(valueMs/limitMs*100);
+  const cls = valueMs > limitMs ? 'alert' : (pct >= 85 ? 'watch' : 'ok');
+  return {pct, cls, label: tagLabel(cls)};
+}
+
+const CUM_DUTY_LIMITS_MS = {7: 55*3600000, 14: 95*3600000, 28: 190*3600000};
+const FLIGHT_TIME_LIMIT_28D_MS = 100*3600000;
+
+const cum7 = windowTotal(7,'duty'), cum14 = windowTotal(14,'duty'), cum28 = windowTotal(28,'duty'), ft28 = windowTotal(28,'block');
+const t7 = pctTag(cum7, CUM_DUTY_LIMITS_MS[7]);
+const t14 = pctTag(cum14, CUM_DUTY_LIMITS_MS[14]);
+const t28 = pctTag(cum28, CUM_DUTY_LIMITS_MS[28]);
+const tFt28 = pctTag(ft28, FLIGHT_TIME_LIMIT_28D_MS);
+
+document.getElementById('ftlCumSummary').innerHTML = `
+  <div class="highlight-card"><div class="label">7-Day Duty <span class="tag ${t7.cls}">${t7.label}</span></div><div class="route" style="font-size:20px;">${fmtHM(cum7)} / 55h00m</div><div class="detail">${t7.pct}% of limit</div></div>
+  <div class="highlight-card"><div class="label">14-Day Duty <span class="tag ${t14.cls}">${t14.label}</span></div><div class="route" style="font-size:20px;">${fmtHM(cum14)} / 95h00m</div><div class="detail">${t14.pct}% of limit</div></div>
+  <div class="highlight-card"><div class="label">28-Day Duty <span class="tag ${t28.cls}">${t28.label}</span></div><div class="route" style="font-size:20px;">${fmtHM(cum28)} / 190h00m</div><div class="detail">${t28.pct}% of limit</div></div>
+  <div class="highlight-card"><div class="label">28-Day Flight Time <span class="tag ${tFt28.cls}">${tFt28.label}</span></div><div class="route" style="font-size:20px;">${fmtHM(ft28)} / 100h00m</div><div class="detail">${tFt28.pct}% of limit · 1000h/12mo not computable from this roster</div></div>
+`;
+
+document.getElementById('fdpTable').querySelector('tbody').innerHTML = rotation.length
+  ? rotation.map(l => {
+      const sectorsThatDay = legs.filter(x => x.dep_date === l.dep_date).length;
+      const reportMin = localMinutesOfDay(l.reportUTC, l.dep_airport);
+      const {bracket, limitMs} = getFDPLimitMs(reportMin, sectorsThatDay);
+      const tag = pctTag(l.duty, limitMs);
+      const style = l.dep_date === todayStr ? ' style="background:#eefcf3"' : (l.dep_date === tomorrowStr ? ' style="background:#f0f4ff"' : '');
+      return `<tr${style}><td>${l.dep_date.slice(5)}</td><td><b>${l.flight}</b></td><td>${fmtLocal(l.reportUTC,l.dep_airport)}</td><td>${bracket}</td><td>${sectorsThatDay}</td><td>${fmtHM(l.duty)}</td><td>${fmtHM(limitMs)}</td><td><span class="tag ${tag.cls}">${tag.label}</span> ${tag.pct}%</td></tr>`;
     }).join('')
   : `<tr><td colspan="8">No upcoming legs found in the loaded roster — update the ROSTER object in index.html.</td></tr>`;
 
