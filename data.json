@@ -1,123 +1,40 @@
 {
-  "fetched_at": "2026-06-15T19:23:21Z",
+  "fetched_at": "2026-06-15T19:59:27Z",
   "metar": [
     {
       "icaoId": "YPPH",
-      "receiptTime": "2026-06-15T19:17:04.250Z",
-      "obsTime": 1781550960,
-      "reportTime": "2026-06-15T19:16:00.000Z",
-      "temp": 4,
-      "dewp": 3,
-      "wdir": 210,
+      "receiptTime": "2026-06-15T19:42:10.106Z",
+      "obsTime": 1781552460,
+      "reportTime": "2026-06-15T19:41:00.000Z",
+      "temp": 3,
+      "dewp": 2,
+      "wdir": 180,
       "wspd": 4,
-      "visib": "6+",
+      "visib": 0.62,
       "altim": 1024,
       "qcField": 2,
+      "wxString": "BR",
       "metarType": "SPECI",
-      "rawOb": "SPECI YPPH 151916Z AUTO 21004KT 9999 // NCD 04/03 Q1024",
+      "rawOb": "SPECI YPPH 151941Z AUTO 18004KT 1000 R21/P2000N BR ////// 03/02 Q1024",
       "lat": -31.927,
       "lon": 115.976,
       "elev": 16,
-      "name": "Perth Intl, WA, AU",
-      "cover": "CLR",
-      "clouds": [],
-      "fltCat": "VFR"
-    },
-    {
-      "icaoId": "ZGGG",
-      "receiptTime": "2026-06-15T19:05:25.264Z",
-      "obsTime": 1781550000,
-      "reportTime": "2026-06-15T19:00:00.000Z",
-      "temp": 26,
-      "dewp": 24,
-      "wdir": 70,
-      "wspd": 6,
-      "visib": "6+",
-      "altim": 1006,
-      "qcField": 16,
-      "wxString": "-SHRA",
-      "metarType": "METAR",
-      "rawOb": "METAR ZGGG 151900Z 07003MPS 9999 -SHRA BKN033 26/24 Q1006 NOSIG",
-      "lat": 23.392,
-      "lon": 113.307,
-      "elev": 11,
-      "name": "Guangzhou/Baiyun Intl, GD, CN",
-      "cover": "BKN",
-      "clouds": [
-        {
-          "cover": "BKN",
-          "base": 3300
-        }
-      ],
-      "fltCat": "VFR"
-    },
-    {
-      "icaoId": "RJBB",
-      "receiptTime": "2026-06-15T19:06:06.702Z",
-      "obsTime": 1781550000,
-      "reportTime": "2026-06-15T19:00:00.000Z",
-      "temp": 21,
-      "dewp": 17,
-      "wdir": 120,
-      "wspd": 3,
-      "visib": "6+",
-      "altim": 1016,
-      "qcField": 18,
-      "metarType": "METAR",
-      "rawOb": "METAR RJBB 151900Z AUTO 12003KT 9999 NCD 21/17 Q1016 NOSIG",
-      "lat": 34.434,
-      "lon": 135.233,
-      "elev": 8,
-      "name": "Osaka/Kansai Intl, 28, JP",
-      "cover": "CLR",
-      "clouds": [],
-      "fltCat": "VFR"
-    },
-    {
-      "icaoId": "YMML",
-      "receiptTime": "2026-06-15T19:08:09.228Z",
-      "obsTime": 1781550000,
-      "reportTime": "2026-06-15T19:00:00.000Z",
-      "temp": 15,
-      "dewp": 13,
-      "wdir": 20,
-      "wspd": 16,
-      "visib": "6+",
-      "altim": 1023,
-      "qcField": 2,
-      "metarType": "METAR",
-      "rawOb": "METAR YMML 151900Z AUTO 02016KT 9999 // BKN100 OVC125 15/13 Q1023",
-      "lat": -37.666,
-      "lon": 144.832,
-      "elev": 115,
-      "name": "Melbourne Intl, VI, AU",
-      "cover": "OVC",
-      "clouds": [
-        {
-          "cover": "BKN",
-          "base": 10000
-        },
-        {
-          "cover": "OVC",
-          "base": 12500
-        }
-      ],
-      "fltCat": "VFR"
+      "name": "Perth Intl, WA, AU"
     },
     {
       "icaoId": "YSSY",
-      "receiptTime": "2026-06-15T19:08:09.293Z",
-      "obsTime": 1781550000,
-      "reportTime": "2026-06-15T19:00:00.000Z",
+      "receiptTime": "2026-06-15T19:38:06.662Z",
+      "obsTime": 1781551800,
+      "reportTime": "2026-06-15T19:30:00.000Z",
       "temp": 13,
-      "dewp": 12,
-      "wdir": 330,
-      "wspd": 5,
+      "dewp": 11,
+      "wdir": 310,
+      "wspd": 7,
       "visib": "6+",
       "altim": 1030,
       "qcField": 2,
       "metarType": "METAR",
-      "rawOb": "METAR YSSY 151900Z AUTO 33005KT 9999 // NCD 13/12 Q1030",
+      "rawOb": "METAR YSSY 151930Z AUTO 31007KT 9999 // NCD 13/11 Q1030",
       "lat": -33.946,
       "lon": 151.173,
       "elev": 3,
@@ -128,18 +45,18 @@
     },
     {
       "icaoId": "WMKK",
-      "receiptTime": "2026-06-15T19:08:20.704Z",
-      "obsTime": 1781550000,
-      "reportTime": "2026-06-15T19:00:00.000Z",
+      "receiptTime": "2026-06-15T19:38:16.660Z",
+      "obsTime": 1781551800,
+      "reportTime": "2026-06-15T19:30:00.000Z",
       "temp": 27,
       "dewp": 24,
-      "wdir": "VRB",
-      "wspd": 1,
+      "wdir": 0,
+      "wspd": 0,
       "visib": "6+",
       "altim": 1010,
       "qcField": 16,
       "metarType": "METAR",
-      "rawOb": "METAR WMKK 151900Z VRB01KT 9999 FEW017CB 27/24 Q1010 NOSIG",
+      "rawOb": "METAR WMKK 151930Z 00000KT 9999 FEW017CB 27/24 Q1010 NOSIG",
       "lat": 2.747,
       "lon": 101.714,
       "elev": 21,
@@ -149,6 +66,88 @@
         {
           "cover": "FEW",
           "base": 1700
+        }
+      ],
+      "fltCat": "VFR"
+    },
+    {
+      "icaoId": "RJBB",
+      "receiptTime": "2026-06-15T19:38:32.862Z",
+      "obsTime": 1781551800,
+      "reportTime": "2026-06-15T19:30:00.000Z",
+      "temp": 21,
+      "dewp": 17,
+      "wdir": 120,
+      "wspd": 3,
+      "visib": "6+",
+      "altim": 1016,
+      "qcField": 18,
+      "metarType": "METAR",
+      "rawOb": "METAR RJBB 151930Z AUTO 12003KT 9999 NCD 21/17 Q1016 NOSIG",
+      "lat": 34.434,
+      "lon": 135.233,
+      "elev": 8,
+      "name": "Osaka/Kansai Intl, 28, JP",
+      "cover": "CLR",
+      "clouds": [],
+      "fltCat": "VFR"
+    },
+    {
+      "icaoId": "YMML",
+      "receiptTime": "2026-06-15T19:38:06.594Z",
+      "obsTime": 1781551800,
+      "reportTime": "2026-06-15T19:30:00.000Z",
+      "temp": 16,
+      "dewp": 13,
+      "wdir": 10,
+      "wspd": 16,
+      "wgst": 27,
+      "visib": "6+",
+      "altim": 1023,
+      "qcField": 2,
+      "metarType": "METAR",
+      "rawOb": "METAR YMML 151930Z AUTO 01016G27KT 9999 // SCT062 BKN100 16/13 Q1023",
+      "lat": -37.666,
+      "lon": 144.832,
+      "elev": 115,
+      "name": "Melbourne Intl, VI, AU",
+      "cover": "BKN",
+      "clouds": [
+        {
+          "cover": "SCT",
+          "base": 6200
+        },
+        {
+          "cover": "BKN",
+          "base": 10000
+        }
+      ],
+      "fltCat": "VFR"
+    },
+    {
+      "icaoId": "ZGGG",
+      "receiptTime": "2026-06-15T19:36:21.547Z",
+      "obsTime": 1781551800,
+      "reportTime": "2026-06-15T19:30:00.000Z",
+      "temp": 26,
+      "dewp": 24,
+      "wdir": 90,
+      "wspd": 6,
+      "visib": "6+",
+      "altim": 1006,
+      "qcField": 16,
+      "wxString": "-SHRA",
+      "metarType": "METAR",
+      "rawOb": "METAR ZGGG 151930Z 09003MPS 070V180 9999 -SHRA BKN033 26/24 Q1006 NOSIG",
+      "lat": 23.392,
+      "lon": 113.307,
+      "elev": 11,
+      "name": "Guangzhou/Baiyun Intl, GD, CN",
+      "cover": "BKN",
+      "clouds": [
+        {
+          "cover": "BKN",
+          "base": 3300
         }
       ],
       "fltCat": "VFR"
@@ -851,86 +850,6 @@
       "rawSigmet": "WSCI35 ZGGG 151556\nZGZU SIGMET 4 VALID 151625/152025 ZGGG-\nZGZU GUANGZHOU FIR EMBD TS FCST S OF N2328 AND E OF E10834 TOP FL480\n MOV ENE 20KMH NC="
     },
     {
-      "icaoId": "RJTD",
-      "firId": "RJJJ",
-      "firName": "RJJJ FUKUOKA",
-      "receiptTime": "2026-06-15T16:26:28.808Z",
-      "validTimeFrom": 1781540580,
-      "validTimeTo": 1781554980,
-      "seriesId": "P01",
-      "hazard": "TS",
-      "qualifier": "EMBD",
-      "base": null,
-      "top": 46000,
-      "geom": "AREA",
-      "coords": [
-        {
-          "lon": 153.367,
-          "lat": 36.433
-        },
-        {
-          "lon": 149.917,
-          "lat": 37.75
-        },
-        {
-          "lon": 153.5,
-          "lat": 41.75
-        },
-        {
-          "lon": 158.267,
-          "lat": 40
-        },
-        {
-          "lon": 153.367,
-          "lat": 36.433
-        }
-      ],
-      "dir": "ENE",
-      "spd": "30",
-      "chng": "INTSF",
-      "rawSigmet": "WSJP31 RJTD 151623\nRJJJ SIGMET P01 VALID 151623/152023 RJTD-\nRJJJ FUKUOKA FIR EMBD TS FCST WI N3626 E15322 - N3745 E14955 - N4145\nE15330 - N4000 E15816 - N3626 E15322 TOP FL460 MOV ENE 30KT INTSF="
-    },
-    {
-      "icaoId": "RJTD",
-      "firId": "RJJJ",
-      "firName": "RJJJ FUKUOKA",
-      "receiptTime": "2026-06-15T16:26:28.833Z",
-      "validTimeFrom": 1781540520,
-      "validTimeTo": 1781554920,
-      "seriesId": "O01",
-      "hazard": "TS",
-      "qualifier": "FRQ",
-      "base": null,
-      "top": 50000,
-      "geom": "AREA",
-      "coords": [
-        {
-          "lon": 124,
-          "lat": 23.85
-        },
-        {
-          "lon": 124,
-          "lat": 25.717
-        },
-        {
-          "lon": 130.15,
-          "lat": 27.75
-        },
-        {
-          "lon": 129.85,
-          "lat": 25.783
-        },
-        {
-          "lon": 124,
-          "lat": 23.85
-        }
-      ],
-      "dir": "ENE",
-      "spd": "20",
-      "chng": "INTSF",
-      "rawSigmet": "WSJP31 RJTD 151622\nRJJJ SIGMET O01 VALID 151622/152022 RJTD-\nRJJJ FUKUOKA FIR FRQ TS FCST WI N2351 E12400 - N2543 E12400 - N2745\nE13009 - N2547 E12951 - N2351 E12400 TOP FL500 MOV ENE 20KT INTSF="
-    },
-    {
       "icaoId": "YMMC",
       "firId": "YMMM",
       "firName": "YMMM MELBOURNE",
@@ -1313,6 +1232,86 @@
       "spd": "25",
       "chng": "NC",
       "rawSigmet": "WSAU21 YMRF 151857\nYMMM SIGMET S02 VALID 151915/152115 YMRF-\nYMMM MELBOURNE FIR FRQ TS OBS WI S2611 E12950 - S2700 E12800 - S2430\nE12530 - S2400 E12610 TOP FL320 MOV ESE 25KT NC="
+    },
+    {
+      "icaoId": "RJTD",
+      "firId": "RJJJ",
+      "firName": "RJJJ FUKUOKA",
+      "receiptTime": "2026-06-15T19:36:03.141Z",
+      "validTimeFrom": 1781552040,
+      "validTimeTo": 1781566440,
+      "seriesId": "P02",
+      "hazard": "TS",
+      "qualifier": "EMBD",
+      "base": null,
+      "top": 43000,
+      "geom": "AREA",
+      "coords": [
+        {
+          "lon": 153.967,
+          "lat": 36.883
+        },
+        {
+          "lon": 151.5,
+          "lat": 38.033
+        },
+        {
+          "lon": 153.9,
+          "lat": 41.883
+        },
+        {
+          "lon": 159.267,
+          "lat": 39.333
+        },
+        {
+          "lon": 153.967,
+          "lat": 36.883
+        }
+      ],
+      "dir": "ENE",
+      "spd": "30",
+      "chng": "NC",
+      "rawSigmet": "WSJP31 RJTD 151934\nRJJJ SIGMET P02 VALID 151934/152334 RJTD-\nRJJJ FUKUOKA FIR EMBD TS FCST WI N3653 E15358 - N3802 E15130 - N4153\nE15354 - N3920 E15916 - N3653 E15358 TOP FL430 MOV ENE 30KT NC="
+    },
+    {
+      "icaoId": "RJTD",
+      "firId": "RJJJ",
+      "firName": "RJJJ FUKUOKA",
+      "receiptTime": "2026-06-15T19:36:03.180Z",
+      "validTimeFrom": 1781551980,
+      "validTimeTo": 1781566380,
+      "seriesId": "O02",
+      "hazard": "TS",
+      "qualifier": "FRQ",
+      "base": null,
+      "top": 50000,
+      "geom": "AREA",
+      "coords": [
+        {
+          "lon": 124.017,
+          "lat": 24.317
+        },
+        {
+          "lon": 124,
+          "lat": 26.433
+        },
+        {
+          "lon": 131.633,
+          "lat": 28.183
+        },
+        {
+          "lon": 131.15,
+          "lat": 26.133
+        },
+        {
+          "lon": 124.017,
+          "lat": 24.317
+        }
+      ],
+      "dir": "ENE",
+      "spd": "10",
+      "chng": "NC",
+      "rawSigmet": "WSJP31 RJTD 151933\nRJJJ SIGMET O02 VALID 151933/152333 RJTD-\nRJJJ FUKUOKA FIR FRQ TS FCST WI N2419 E12401 - N2626 E12400 - N2811\nE13138 - N2608 E13109 - N2419 E12401 TOP FL500 MOV ENE 10KT NC="
     }
   ],
   "forecast": {
