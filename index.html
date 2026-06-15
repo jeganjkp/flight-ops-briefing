@@ -58,7 +58,7 @@ Send the screenshot when ready — I'll start with that while we sort out the Te
 
 16 hours ago
 Uploaded image
-15 hours ago
+16 hours ago
 
 Used 2 tools, loaded tools, created a file
 Used 2 tools, loaded tools, created a file
@@ -78,10 +78,10 @@ Telegram delivery — need a bot token. Want me to walk you through creating one
 Roster updates — since I can't reach the portal directly, the system will need a fresh roster screenshot from you periodically (e.g., monthly when published). I'll re-parse and update roster.json each time.
 Want to proceed with Telegram setup now?
 
-15 hours ago
+16 hours ago
 actually, a prompt on claude will do too, since i have claude mobile as well
 
-15 hours ago
+16 hours ago
 
 Used 4 tools, used a skill, loaded tools
 Used 4 tools, used a skill, loaded tools
@@ -99,10 +99,10 @@ One open item: I couldn't get crew hotel/layover details since that needs portal
 
 Want me to trigger a test run now for Melbourne (today's destination) as a richer proof-of-concept, separate from tomorrow's scheduled KUL briefing?
 
-15 hours ago
+16 hours ago
 no, but i want a dedicated chat/portal in claude that only deals with this. I want airport notams included, latest TAFS, relevent sigmets, etc\
 
-15 hours ago
+16 hours ago
 
 Searched the web, loaded tools, used 2 tools
 Searched the web, loaded tools, used 2 tools
@@ -124,7 +124,7 @@ Option C: Generalize — same pattern (roster → scheduled enrichment → artif
 
 C:\Users\Asus\AppData\Roaming\Claude\local-agent-mode-sessions\32881646-1d86-42d3-b4f5-647ec68cfa86\72efc103-428d-4001-a43a-92807ebe3b80\local_d749089e-abfd-4d87-8273-a76733127177\outputs\roster.json
 Code 
-15 hours ago
+16 hours ago
 does lido Mbriefing have an API?
 
 15 hours ago
@@ -178,7 +178,7 @@ One open item: with the artifact now self-refreshing, the daily scheduled task i
 15 hours ago
 why cant i see this HTML page from my mobile version of claude?
 
-1 hour ago
+2 hours ago
 
 Searched the web
 Searched the web
@@ -194,7 +194,7 @@ Want me to set up one of these (e.g., a static HTML export you can email to your
 
 Sources: Use live artifacts in Claude Cowork, Get started with Claude Cowork
 
-1 hour ago
+2 hours ago
 if i do host it on my github, which i have, can i get it to automatically update everytime i open it on mobile?
 
 1 hour ago
@@ -616,7 +616,61 @@ File size of the version I produced: 24,211 bytes.
 
 Want me to re-export the file again, or would it help if I diffed it against what's currently in your repo (if you paste the repo's raw index.html content or its GitHub URL)?
 
+Uploaded image
+okay, all done. 
 
+Next, this is messy. I'm on my current rotation. The top card should reflect current rotation, the bottom card next flight.
+
+
+Read 4 files, used 2 tools, searched code
+Read 4 files, used 2 tools, searched code
+Now let's update the HTML structure first:
+
+
+Edited a file
+Edited a file
+Now replace describeDay/dayCardHTML with the new status logic:
+
+
+Edited a file
+Edited a file
+Now update the render section that used describeDay/dayCardHTML for "Today & Tomorrow":
+
+
+Read a file, edited a file
+Read a file, edited a file
+Now remove the old rotationInfo/rotationLabel rendering block that's now obsolete:
+
+
+Read 2 files, edited a file
+Read 2 files, edited a file
+Now let's verify no stale references remain and check the CSS for .highlight-card.today styling still applies correctly:
+
+
+Edited 2 files, searched code
+Edited 2 files, searched code
+Now let's sanity-test the new logic against the user's actual roster data shown in the screenshot:
+
+
+Read a file
+Read a file
+I need to fix an ordering issue — my "layover" detection runs before the days_off check, so it would incorrectly override explicit days-off entries that fall within a same-airport gap (e.g. 17/18 Jun, which are listed as days off between the MH128 arrival and MH127 departure, both at KUL).
+
+
+Read a file, edited a file
+Read a file, edited a file
+Now let's run a node test against the actual roster data and several dates to verify the cards render correctly:
+
+
+Used 2 tools, created a file, ran a command
+Used 2 tools, created a file, ran a command
+Verified against your roster — all the key cases land right: 15 Jun shows "Current: MH128 departing" + "Next: MH127 in 10 days", 16 Jun flips to "arrived", 17-18 Jun correctly show "Day Off" (not layover), 19-22 show standby, and 25-28 cycle through MH127/MH126 correctly with no duplicates.
+
+The section is now just "Current Rotation" with two cards: left = your status today (departing/arrived/standby/day off/layover), right = next flight with a "Today/Tomorrow/in N days" label. Updated index.html is ready above.
+
+
+C:\Users\Asus\AppData\Roaming\Claude\local-agent-mode-sessions\32881646-1d86-42d3-b4f5-647ec68cfa86\72efc103-428d-4001-a43a-92807ebe3b80\local_d749089e-abfd-4d87-8273-a76733127177\outputs\index.html
+Code 
 
 Claude Fable 5 is currently unavailable.
 Learn more(opens in new tab)
@@ -851,16 +905,11 @@ details.roster-details table { margin-top: 8px; }
 </div>
  
 <div class="section">
-  <h2>Today &amp; Tomorrow</h2>
-  <div class="highlight-grid" id="todayTomorrow">
+  <h2>Current Rotation</h2>
+  <div class="highlight-grid" id="rotationStatus">
     <div class="highlight-card today"><div class="loading">Computing from roster…</div></div>
     <div class="highlight-card"><div class="loading">Computing from roster…</div></div>
   </div>
-</div>
- 
-<div class="section">
-  <h2>Current Rotation <span id="rotationLabel"></span></h2>
-  <div id="rotationInfo"><div class="loading">Determining current rotation from roster…</div></div>
 </div>
  
 <div class="section">
@@ -1082,7 +1131,9 @@ function computeLegs(){
   return legs;
 }
  
-function describeDay(dateStr, legs){
+// What's going on TODAY: departing, arriving (overnight), on standby, on a
+// layover between two connecting legs of the same rotation, or a day off.
+function describeToday(dateStr, legs){
   let leg = legs.find(l => l.dep_date === dateStr);
   if(leg) return {kind:'dep', leg};
   leg = legs.find(l => l.arr_date === dateStr && l.arr_date !== l.dep_date);
@@ -1090,21 +1141,49 @@ function describeDay(dateStr, legs){
   const sb = ROSTER.standby.find(s => s.dates.includes(dateStr));
   if(sb) return {kind:'standby', sb};
   if(ROSTER.days_off.includes(dateStr)) return {kind:'dayoff'};
+  // Fallback: unaccounted day sitting between two connecting legs at the same
+  // station (e.g. a roster gap not explicitly marked as days off/standby).
+  const sorted = [...legs].sort((a,b)=> a.dep_date.localeCompare(b.dep_date));
+  for(let i=0;i<sorted.length-1;i++){
+    const a = sorted[i], b = sorted[i+1];
+    if(a.arr_date < dateStr && dateStr < b.dep_date && a.arr_airport === b.dep_airport){
+      return {kind:'layover', station: a.arr_airport, nextLeg: b};
+    }
+  }
   return {kind:'unknown'};
 }
  
-function dayCardHTML(dateStr, label, info, isToday){
-  const cls = 'highlight-card' + (isToday ? ' today' : '');
+// The next leg coming up after today's status.
+function findNextLeg(legs, todayStr, info){
+  const sorted = [...legs].sort((a,b)=> a.dep_date.localeCompare(b.dep_date));
+  if(info.kind === 'dep' || info.kind === 'arr'){
+    const idx = sorted.indexOf(info.leg);
+    return sorted[idx+1] || null;
+  }
+  if(info.kind === 'layover') return info.nextLeg;
+  return sorted.find(l => l.dep_date > todayStr) || sorted.find(l => l.dep_date >= todayStr) || null;
+}
+ 
+function daysBetween(d1, d2){
+  const [y1,m1,dd1] = d1.split('-').map(Number);
+  const [y2,m2,dd2] = d2.split('-').map(Number);
+  return Math.round((Date.UTC(y2,m2-1,dd2) - Date.UTC(y1,m1-1,dd1)) / 86400000);
+}
+ 
+function currentCardHTML(info, todayStr){
   let route='', detail='';
   if(info.kind === 'dep'){
     route = `${info.leg.flight} · ${info.leg.dep_airport} → ${info.leg.arr_airport}`;
-    detail = `Dep ${info.leg.dep_airport} ${info.leg.dep_time} · Arr ${info.leg.arr_airport} ${info.leg.arr_time}${info.leg.arr_date!==info.leg.dep_date?' (+1)':''} local · ${info.leg.ac_type}`;
+    detail = `Departing today · Dep ${info.leg.dep_airport} ${info.leg.dep_time} · Arr ${info.leg.arr_airport} ${info.leg.arr_time}${info.leg.arr_date!==info.leg.dep_date?' (+1)':''} local · ${info.leg.ac_type}`;
   } else if(info.kind === 'arr'){
-    route = `Arriving ${info.leg.arr_airport} (${info.leg.flight})`;
-    detail = `From ${info.leg.dep_airport}, lands ${info.leg.arr_time} local · ${info.leg.ac_type}`;
+    route = `${info.leg.flight} · ${info.leg.dep_airport} → ${info.leg.arr_airport}`;
+    detail = `Arrived ${info.leg.arr_airport} ${info.leg.arr_time} local today · ${info.leg.ac_type}`;
   } else if(info.kind === 'standby'){
     route = `Standby ${info.sb.code}`;
     detail = `${info.sb.location} · Report ${info.sb.report} – Release ${info.sb.release}`;
+  } else if(info.kind === 'layover'){
+    route = `On Layover · ${info.station}`;
+    detail = `Next sector: ${info.nextLeg.flight} ${info.nextLeg.dep_airport} → ${info.nextLeg.arr_airport} on ${info.nextLeg.dep_date}`;
   } else if(info.kind === 'dayoff'){
     route = 'Day Off';
     detail = 'No duty scheduled';
@@ -1112,7 +1191,16 @@ function dayCardHTML(dateStr, label, info, isToday){
     route = 'No roster data';
     detail = 'Not covered by current roster — update the ROSTER object in index.html';
   }
-  return `<div class="${cls}"><div class="label">${label} · ${dateStr}</div><div class="route">${route}</div><div class="detail">${detail}</div></div>`;
+  return `<div class="highlight-card today"><div class="label">Current · ${todayStr}</div><div class="route">${route}</div><div class="detail">${detail}</div></div>`;
+}
+ 
+function nextFlightCardHTML(leg, todayStr){
+  if(!leg){
+    return `<div class="highlight-card"><div class="label">Next Flight</div><div class="route">No upcoming flights in roster</div><div class="detail">Update the ROSTER object in index.html</div></div>`;
+  }
+  const days = daysBetween(todayStr, leg.dep_date);
+  const when = days <= 0 ? 'Today' : days === 1 ? 'Tomorrow' : `in ${days} days`;
+  return `<div class="highlight-card"><div class="label">Next Flight · ${leg.dep_date} (${when})</div><div class="route">${leg.flight} · ${leg.dep_airport} → ${leg.arr_airport}</div><div class="detail">Dep ${leg.dep_airport} ${leg.dep_time} · Arr ${leg.arr_airport} ${leg.arr_time}${leg.arr_date!==leg.dep_date?' (+1)':''} local · ${leg.ac_type}</div></div>`;
 }
  
 function findRotation(legs, todayStr){
@@ -1145,11 +1233,11 @@ const tomorrowStr = addDays(todayStr, 1);
 document.getElementById('reloadedAt').innerHTML =
   `Page loaded: ${today.toLocaleString('en-GB',{hour12:false})}<br>Roster data: ${ROSTER.month}`;
  
-const todayInfo = describeDay(todayStr, legs);
-const tomorrowInfo = describeDay(tomorrowStr, legs);
-document.getElementById('todayTomorrow').innerHTML =
-  dayCardHTML(todayStr, 'Today', todayInfo, true) +
-  dayCardHTML(tomorrowStr, 'Tomorrow', tomorrowInfo, false);
+const currentInfo = describeToday(todayStr, legs);
+const nextLeg = findNextLeg(legs, todayStr, currentInfo);
+document.getElementById('rotationStatus').innerHTML =
+  currentCardHTML(currentInfo, todayStr) +
+  nextFlightCardHTML(nextLeg, todayStr);
  
 // ---------- Render: Full roster (collapsed reference) ----------
 document.getElementById('fullRosterBody').innerHTML = legs.map(l => {
@@ -1186,7 +1274,7 @@ document.getElementById('dutyTable').querySelector('tbody').innerHTML = rotation
     }).join('')
   : `<tr><td colspan="8">No upcoming legs found in the loaded roster — update the ROSTER object in index.html.</td></tr>`;
  
-// ---------- Render: Current Rotation summary + relevant airports ----------
+// ---------- Determine relevant airports/FIRs for weather (current rotation) ----------
 let relevantIcaos = [];
 let relevantFirs = new Set();
 if(rotation.length){
@@ -1194,18 +1282,7 @@ if(rotation.length){
   rotation.forEach(l => { stations.add(l.dep_airport); stations.add(l.arr_airport); });
   relevantIcaos = [...stations].map(s => IATA_TO_ICAO[s]).filter(Boolean);
   relevantIcaos.forEach(icao => (ICAO_INFO[icao]?.firs || []).forEach(f => relevantFirs.add(f)));
- 
-  document.getElementById('rotationLabel').textContent = `(${rotation.map(l=>l.flight).join(' / ')})`;
-  document.getElementById('rotationInfo').innerHTML = `<div class="highlight-grid">` + rotation.map(l => {
-    const isToday = l.dep_date === todayStr;
-    return `<div class="highlight-card${isToday?' today':''}">
-      <div class="label">${l.dep_date} · ${l.dep_date===todayStr?'Today':(l.dep_date===tomorrowStr?'Tomorrow':'')}</div>
-      <div class="route">${l.flight} · ${l.dep_airport} → ${l.arr_airport}</div>
-      <div class="detail">Dep ${l.dep_airport} ${l.dep_time} · Arr ${l.arr_airport} ${l.arr_time}${l.arr_date!==l.dep_date?' (+1)':''} local · ${l.ac_type}</div>
-    </div>`;
-  }).join('') + `</div>`;
 } else {
-  document.getElementById('rotationInfo').innerHTML = `<div class="error-note">No upcoming legs found in the loaded roster.</div>`;
   document.getElementById('wxCards').innerHTML = '';
   document.getElementById('sigmetSection').innerHTML = '';
   document.getElementById('destForecast').innerHTML = '';
