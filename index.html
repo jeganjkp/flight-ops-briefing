@@ -111,6 +111,16 @@ tr:hover td { background: #fafafa; }
 .tag.ok { background: #d1fae5; color: #065f46; }
 .tag.watch { background: #fef3c7; color: #92400e; }
 .tag.alert { background: #fee2e2; color: #991b1b; }
+.wx-line {
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.wx-line .tag { margin-left: 6px; text-transform: none; letter-spacing: normal; vertical-align: middle; }
+.taf-card .raw:first-of-type { margin-top: 4px; }
 
 .sigmet-item {
   border-left: 3px solid #f59e0b;
@@ -248,8 +258,7 @@ details.roster-details table { margin-top: 8px; }
 
 <div class="section">
   <h2>Weather — Current Rotation Airports <span class="live-badge" id="weatherBadge">auto-updates</span></h2>
-  <div id="metarCards"><div class="loading">Loading current conditions (METAR)…</div></div>
-  <div id="tafCards"><div class="loading">Loading forecasts (TAF)…</div></div>
+  <div id="wxCards"><div class="loading">Loading current conditions &amp; forecasts (METAR / TAF)…</div></div>
   <div class="footer-note" id="weatherFreshness">Source: aviationweather.gov, via data.json updated by a scheduled GitHub Action.</div>
 </div>
 
@@ -568,8 +577,7 @@ if(rotation.length){
   }).join('') + `</div>`;
 } else {
   document.getElementById('rotationInfo').innerHTML = `<div class="error-note">No upcoming legs found in the loaded roster.</div>`;
-  document.getElementById('metarCards').innerHTML = '';
-  document.getElementById('tafCards').innerHTML = '';
+  document.getElementById('wxCards').innerHTML = '';
   document.getElementById('sigmetSection').innerHTML = '';
   document.getElementById('destForecast').innerHTML = '';
   document.getElementById('destForecastFreshness').innerHTML = '';
@@ -670,29 +678,40 @@ async function loadWeatherAndSigmets(){
     // Layman destination forecast (today/tomorrow/day-after)
     renderDestForecast(data);
 
-    // METAR
-    const metars = (data.metar || []).filter(m => relevantIcaos.includes(m.icaoId));
-    document.getElementById('metarCards').innerHTML = '<h3 style="font-size:13px;color:#6b7280;margin:0 0 8px;">Current Conditions (METAR)</h3>' +
-      (metars.length ? metars.map(m => {
-        const cls = classify(m.rawOb || '');
-        return `<div class="taf-card">
-          <span class="icao">${m.icaoId}</span><span class="name">${ICAO_INFO[m.icaoId]?.name || m.name || ''}</span>
-          <span class="tag ${cls}">${tagLabel(cls)}</span>
-          <div class="raw">${m.rawOb}</div>
-        </div>`;
-      }).join('') : '<div class="loading">No METAR data for these airports in data.json.</div>');
+    // METAR + TAF — one card per airport, in roster order (relevantIcaos is
+    // already ordered by the sequence airports appear in the current rotation,
+    // e.g. dep of leg1, arr of leg1 / dep of leg2, arr of leg2 ...).
+    const metars = data.metar || [];
+    const tafs = data.taf || [];
+    document.getElementById('wxCards').innerHTML = relevantIcaos.length
+      ? relevantIcaos.map(icao => {
+          const m = metars.find(x => x.icaoId === icao);
+          const t = tafs.find(x => x.icaoId === icao);
+          const name = ICAO_INFO[icao]?.name || m?.name || '';
 
-    // TAF
-    const tafs = (data.taf || []).filter(t => relevantIcaos.includes(t.icaoId));
-    document.getElementById('tafCards').innerHTML = '<h3 style="font-size:13px;color:#6b7280;margin:12px 0 8px;">TAF — Forecast</h3>' +
-      (tafs.length ? tafs.map(t => {
-        const cls = classify(t.rawTAF || '');
-        return `<div class="taf-card">
-          <span class="icao">${t.icaoId}</span><span class="name">${ICAO_INFO[t.icaoId]?.name || ''}</span>
-          <span class="tag ${cls}">${tagLabel(cls)}</span>
-          <div class="raw">${t.rawTAF}</div>
-        </div>`;
-      }).join('') : '<div class="loading">No TAF data for these airports in data.json.</div>');
+          const metarBlock = m
+            ? (() => {
+                const cls = classify(m.rawOb || '');
+                return `<div class="wx-line">METAR <span class="tag ${cls}">${tagLabel(cls)}</span></div>
+                <div class="raw">${m.rawOb}</div>`;
+              })()
+            : `<div class="wx-line">METAR</div><div class="raw">No METAR data for ${icao} in data.json.</div>`;
+
+          const tafBlock = t
+            ? (() => {
+                const cls = classify(t.rawTAF || '');
+                return `<div class="wx-line">TAF <span class="tag ${cls}">${tagLabel(cls)}</span></div>
+                <div class="raw">${t.rawTAF}</div>`;
+              })()
+            : `<div class="wx-line">TAF</div><div class="raw">No TAF data for ${icao} in data.json.</div>`;
+
+          return `<div class="taf-card">
+            <span class="icao">${icao}</span><span class="name">${name}</span>
+            ${metarBlock}
+            ${tafBlock}
+          </div>`;
+        }).join('')
+      : '<div class="loading">No relevant airports for the current rotation.</div>';
 
     // SIGMET
     const sigmetData = data.sigmet;
@@ -740,8 +759,7 @@ async function loadWeatherAndSigmets(){
       document.getElementById('sigmetSection').innerHTML = `<div class="error-note">SIGMET feed had an issue on last update: ${sigmetData?.error || 'unknown'}.</div>`;
     }
   } catch(e) {
-    document.getElementById('metarCards').innerHTML = `<div class="error-note">Couldn't load data.json (${e.message}). If this is the first run, trigger the "Update weather data" workflow manually from the Actions tab.</div>`;
-    document.getElementById('tafCards').innerHTML = '';
+    document.getElementById('wxCards').innerHTML = `<div class="error-note">Couldn't load data.json (${e.message}). If this is the first run, trigger the "Update weather data" workflow manually from the Actions tab.</div>`;
     document.getElementById('sigmetSection').innerHTML = '';
     document.getElementById('destForecast').innerHTML = '';
   }
