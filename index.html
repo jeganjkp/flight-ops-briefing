@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flight Ops Briefing</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root { color-scheme: light; }
 * { box-sizing: border-box; }
@@ -152,6 +154,51 @@ details.roster-details table { margin-top: 8px; }
   text-align: center;
   margin-top: 8px;
 }
+
+.fc-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
+}
+.fc-hour {
+  flex: 0 0 auto;
+  min-width: 64px;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 6px;
+  background: #f9fafb;
+}
+.fc-hour .time { font-size: 11px; color: #6b7280; }
+.fc-hour .icon { font-size: 22px; margin: 4px 0; }
+.fc-hour .temp { font-size: 13px; font-weight: 600; }
+.fc-hour .pop { font-size: 11px; color: #2563eb; margin-top: 2px; }
+.fc-daily-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.fc-day {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #f0f4ff;
+}
+.fc-day .label { font-size: 11px; text-transform: uppercase; color: #6b7280; letter-spacing: 0.04em; }
+.fc-day .icon { font-size: 28px; margin: 6px 0; }
+.fc-day .desc { font-size: 13px; font-weight: 600; }
+.fc-day .temps { font-size: 13px; color: #4b5563; margin-top: 2px; }
+.fc-day .pop { font-size: 12px; color: #2563eb; margin-top: 2px; }
+
+#sigmetMap {
+  height: 280px;
+  border-radius: 8px;
+  margin-top: 10px;
+  z-index: 0;
+}
 </style>
 </head>
 <body>
@@ -175,6 +222,12 @@ details.roster-details table { margin-top: 8px; }
 <div class="section">
   <h2>Current Rotation <span id="rotationLabel"></span></h2>
   <div id="rotationInfo"><div class="loading">Determining current rotation from roster…</div></div>
+</div>
+
+<div class="section">
+  <h2>Destination Forecast <span id="destForecastLabel"></span> <span class="live-badge">auto-updates</span></h2>
+  <div id="destForecast"><div class="loading">Loading forecast…</div></div>
+  <div class="footer-note" id="destForecastFreshness">Source: open-meteo.com, via data.json updated by a scheduled GitHub Action.</div>
 </div>
 
 <div class="section">
@@ -286,6 +339,69 @@ const ICAO_INFO = {
 const REPORT_BUFFER_MIN = 75;
 const DEBRIEF_BUFFER_MIN = 45;
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// WMO weather codes (Open-Meteo) -> layman icon/label
+const WX_CODES = {
+  0:  {icon:'☀️', label:'Clear sky'},
+  1:  {icon:'🌤️', label:'Mainly clear'},
+  2:  {icon:'⛅', label:'Partly cloudy'},
+  3:  {icon:'☁️', label:'Overcast'},
+  45: {icon:'🌫️', label:'Fog'},
+  48: {icon:'🌫️', label:'Freezing fog'},
+  51: {icon:'🌦️', label:'Light drizzle'},
+  53: {icon:'🌦️', label:'Drizzle'},
+  55: {icon:'🌧️', label:'Heavy drizzle'},
+  56: {icon:'🌧️', label:'Freezing drizzle'},
+  57: {icon:'🌧️', label:'Freezing drizzle'},
+  61: {icon:'🌦️', label:'Light rain'},
+  63: {icon:'🌧️', label:'Rain'},
+  65: {icon:'🌧️', label:'Heavy rain'},
+  66: {icon:'🌧️', label:'Freezing rain'},
+  67: {icon:'🌧️', label:'Heavy freezing rain'},
+  71: {icon:'🌨️', label:'Light snow'},
+  73: {icon:'🌨️', label:'Snow'},
+  75: {icon:'❄️', label:'Heavy snow'},
+  77: {icon:'🌨️', label:'Snow grains'},
+  80: {icon:'🌦️', label:'Rain showers'},
+  81: {icon:'🌧️', label:'Rain showers'},
+  82: {icon:'⛈️', label:'Heavy rain showers'},
+  85: {icon:'🌨️', label:'Snow showers'},
+  86: {icon:'🌨️', label:'Heavy snow showers'},
+  95: {icon:'⛈️', label:'Thunderstorm'},
+  96: {icon:'⛈️', label:'Thunderstorm, hail'},
+  99: {icon:'⛈️', label:'Severe thunderstorm'},
+};
+function wxInfo(code){ return WX_CODES[code] ?? {icon:'❓', label:'Unknown'}; }
+
+// "Now" formatted as YYYY-MM-DDTHH:MM in a given IANA timezone (matches
+// Open-Meteo's local-time strings so they can be string-compared directly).
+function nowInTZ(tz){
+  try {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: tz, year:'numeric', month:'2-digit', day:'2-digit',
+      hour:'2-digit', minute:'2-digit', hour12:false
+    }).formatToParts(new Date());
+    const o = {};
+    parts.forEach(p => o[p.type] = p.value);
+    return `${o.year}-${o.month}-${o.day}T${o.hour}:${o.minute}`;
+  } catch(e){
+    return new Date().toISOString().slice(0,16);
+  }
+}
+
+// Normalize aviationweather.gov SIGMET "coords" into an array of rings,
+// each ring an array of [lat, lon] pairs. Handles both shapes seen in the
+// isigmet feed: a flat array of {lat,lon} points, or an array of such arrays
+// (multiple polygons/segments). Drops points with null lat/lon.
+function normalizeSigmetCoords(coords){
+  if(!Array.isArray(coords) || !coords.length) return [];
+  const isPt = p => p && typeof p.lat === 'number' && typeof p.lon === 'number';
+  const rings = isPt(coords[0]) ? [coords] : coords;
+  return rings
+    .filter(r => Array.isArray(r))
+    .map(r => r.filter(isPt).map(p => [p.lat, p.lon]))
+    .filter(r => r.length >= 2);
+}
 
 function pad(n){ return String(n).padStart(2,'0'); }
 function localDateStr(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
@@ -455,6 +571,84 @@ if(rotation.length){
   document.getElementById('metarCards').innerHTML = '';
   document.getElementById('tafCards').innerHTML = '';
   document.getElementById('sigmetSection').innerHTML = '';
+  document.getElementById('destForecast').innerHTML = '';
+  document.getElementById('destForecastFreshness').innerHTML = '';
+}
+
+// ---------- Render: Destination Forecast (layman, today/tomorrow/day-after) ----------
+function renderDestForecast(data){
+  const el = document.getElementById('destForecast');
+  const destIata = rotation[0].arr_airport;
+  const destIcao = IATA_TO_ICAO[destIata];
+  const destName = ICAO_INFO[destIcao]?.name;
+  document.getElementById('destForecastLabel').textContent =
+    `— ${destIcao || destIata}${destName ? ' · ' + destName : ''}`;
+
+  const fc = data.forecast && data.forecast[destIcao];
+  if(!fc || fc.error || !fc.hourly?.time || !fc.daily?.time){
+    el.innerHTML = `<div class="loading">No forecast data for ${destIcao || destIata} in data.json${fc?.error ? ` (${fc.error})` : ''}.</div>`;
+    return;
+  }
+
+  const hourly = fc.hourly, daily = fc.daily;
+  const tz = fc.timezone || 'UTC';
+  const nowStr = nowInTZ(tz);
+  const todayDate = nowStr.slice(0,10);
+
+  // Today's remaining hours, sampled every 3h
+  let idxs = [];
+  for(let i=0;i<hourly.time.length;i++){
+    const t = hourly.time[i];
+    if(t.slice(0,10) !== todayDate || t < nowStr) continue;
+    if(Number(t.slice(11,13)) % 3 !== 0) continue;
+    idxs.push(i);
+  }
+  if(!idxs.length){
+    // Late in the day / edge case: just take the next few hourly slots
+    for(let i=0;i<hourly.time.length && idxs.length<4;i++){
+      if(hourly.time[i] >= nowStr) idxs.push(i);
+    }
+  }
+  const hourCardsHTML = idxs.slice(0,6).map(i => {
+    const t = hourly.time[i];
+    const wx = wxInfo(hourly.weather_code?.[i]);
+    const temp = Math.round(hourly.temperature_2m?.[i]);
+    const pop = hourly.precipitation_probability?.[i];
+    return `<div class="fc-hour">
+      <div class="time">${t.slice(11,16)}</div>
+      <div class="icon">${wx.icon}</div>
+      <div class="temp">${temp}°C</div>
+      ${pop != null ? `<div class="pop">💧${pop}%</div>` : ''}
+    </div>`;
+  }).join('');
+
+  function dailyCard(idx, label){
+    if(idx >= daily.time.length) return '';
+    const wx = wxInfo(daily.weather_code?.[idx]);
+    const max = Math.round(daily.temperature_2m_max?.[idx]);
+    const min = Math.round(daily.temperature_2m_min?.[idx]);
+    const pop = daily.precipitation_probability_max?.[idx];
+    return `<div class="fc-day">
+      <div class="label">${label} · ${daily.time[idx].slice(5)}</div>
+      <div class="icon">${wx.icon}</div>
+      <div class="desc">${wx.label}</div>
+      <div class="temps">${max}° / ${min}°C</div>
+      ${pop != null ? `<div class="pop">💧 ${pop}% chance of rain</div>` : ''}
+    </div>`;
+  }
+
+  el.innerHTML = `
+    <div style="font-size:13px;color:#6b7280;margin-bottom:6px;">Today, from now</div>
+    <div class="fc-row">${hourCardsHTML || '<div class="loading">No more hourly forecast slots for today.</div>'}</div>
+    <div class="fc-daily-grid">${dailyCard(1,'Tomorrow')}${dailyCard(2,'Day After')}</div>
+  `;
+
+  if(data.fetched_at){
+    const fetched = new Date(data.fetched_at);
+    const ageMin = Math.round((Date.now() - fetched.getTime())/60000);
+    document.getElementById('destForecastFreshness').textContent =
+      `Source: open-meteo.com (${tz}) · data.json last updated ${fetched.toLocaleString()} (${ageMin} min ago)`;
+  }
 }
 
 // ---------- Load data.json (refreshed every ~30min by a GitHub Action) ----------
@@ -472,6 +666,9 @@ async function loadWeatherAndSigmets(){
       document.getElementById('weatherFreshness').textContent =
         `Source: aviationweather.gov · data.json last updated ${fetched.toLocaleString()} (${ageMin} min ago)`;
     }
+
+    // Layman destination forecast (today/tomorrow/day-after)
+    renderDestForecast(data);
 
     // METAR
     const metars = (data.metar || []).filter(m => relevantIcaos.includes(m.icaoId));
@@ -508,6 +705,32 @@ async function loadWeatherAndSigmets(){
             <b>${s.firId || ''}</b> — ${s.hazard || 'SIGMET'} ${s.validTimeFrom ? `(valid ${s.validTimeFrom} → ${s.validTimeTo || '?'})` : ''}
             <div class="raw">${s.rawSigmet || ''}</div>
           </div>`).join('');
+
+        // Map highlighting any SIGMETs that carry coordinate geometry
+        const geoSigmets = relevant
+          .map(s => ({...s, rings: normalizeSigmetCoords(s.coords)}))
+          .filter(s => s.rings.length);
+        if(geoSigmets.length && window.L){
+          document.getElementById('sigmetSection').insertAdjacentHTML('beforeend', '<div id="sigmetMap"></div>');
+          const map = L.map('sigmetMap', {scrollWheelZoom:false});
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 10
+          }).addTo(map);
+          const allPts = [];
+          geoSigmets.forEach(s => {
+            s.rings.forEach(ring => {
+              allPts.push(...ring);
+              const layer = ring.length >= 3
+                ? L.polygon(ring, {color:'#f59e0b', weight:2, fillColor:'#f59e0b', fillOpacity:0.25})
+                : L.polyline(ring, {color:'#f59e0b', weight:3});
+              layer.addTo(map).bindPopup(
+                `<b>${s.firId || ''} — ${s.hazard || 'SIGMET'}</b><br>${(s.rawSigmet || '').replace(/\n/g,'<br>')}`
+              );
+            });
+          });
+          if(allPts.length) map.fitBounds(allPts, {padding:[20,20]});
+        }
       } else {
         document.getElementById('sigmetSection').innerHTML = `<div class="sigmet-item none">
           No active SIGMETs for ${[...relevantFirs].join(', ')} as of the last data.json update.
@@ -520,6 +743,7 @@ async function loadWeatherAndSigmets(){
     document.getElementById('metarCards').innerHTML = `<div class="error-note">Couldn't load data.json (${e.message}). If this is the first run, trigger the "Update weather data" workflow manually from the Actions tab.</div>`;
     document.getElementById('tafCards').innerHTML = '';
     document.getElementById('sigmetSection').innerHTML = '';
+    document.getElementById('destForecast').innerHTML = '';
   }
 }
 
