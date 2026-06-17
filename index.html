@@ -360,8 +360,29 @@ let ROSTER = {
 
 // NOTE: TZ offsets assume June, AEST (no AU daylight saving). If the roster
 // is updated for Oct-Apr, SYD/MEL should be +11 (AEDT).
-const TZ_OFFSETS = {KUL:8, SYD:10, KIX:9, CAN:8, MEL:10, PER:8, ADL:9.5};
-const IATA_TO_ICAO = {KUL:"WMKK", SYD:"YSSY", MEL:"YMML", PER:"YPPH", KIX:"RJBB", CAN:"ZGGG", ADL:"YPAD"};
+// Standard (non-DST) offsets. SYD/MEL/ADL flip +1 Oct-Apr; LHR/CDG/FRA/AMS/ZRH/MUC flip +1 Mar-Oct.
+const TZ_OFFSETS = {
+  KUL:8, CAN:8, PVG:8, PEK:8, CTU:8, XIY:8, HKG:8, TPE:8, PER:8,
+  SYD:10, MEL:10, BNE:10,
+  ADL:9.5,
+  KIX:9, NRT:9, HND:9, NGO:9, ICN:9,
+  BKK:7, CGK:7,
+  DPS:8,
+  DEL:5.5, BOM:5.5,
+  DXB:4, DOH:3,
+  LHR:0, CDG:1, FRA:1, AMS:1, ZRH:1, MUC:1,
+};
+const IATA_TO_ICAO = {
+  KUL:"WMKK", SYD:"YSSY", MEL:"YMML", PER:"YPPH", ADL:"YPAD", BNE:"YBBN",
+  KIX:"RJBB", NRT:"RJAA", HND:"RJTT", NGO:"RJGG",
+  ICN:"RKSI",
+  CAN:"ZGGG", PVG:"ZSPD", PEK:"ZBAA", CTU:"ZUUU", XIY:"ZLXY",
+  HKG:"VHHH", TPE:"RCTP",
+  BKK:"VTBS", CGK:"WIII", DPS:"WADD",
+  DEL:"VIDP", BOM:"VABB",
+  DXB:"OMDB", DOH:"OTHH",
+  LHR:"EGLL", CDG:"LFPG", FRA:"EDDF", AMS:"EHAM", ZRH:"LSZH", MUC:"EDDM",
+};
 const ICAO_INFO = {
   WMKK: {name:"Kuala Lumpur (KLIA) — home base", firs:["WMFC"]},
   YSSY: {name:"Sydney", firs:["YBBB","YMMM"]},
@@ -369,7 +390,31 @@ const ICAO_INFO = {
   YPPH: {name:"Perth", firs:["YMMM"]},
   RJBB: {name:"Osaka (Kansai)", firs:["RJJJ"]},
   ZGGG: {name:"Guangzhou Baiyun", firs:["ZGZU"]},
+  ZSPD: {name:"Shanghai Pudong", firs:["ZSHA"]},
+  ZBAA: {name:"Beijing Capital", firs:["ZBPE"]},
+  ZUUU: {name:"Chengdu Tianfu", firs:["ZGZU"]},
+  ZLXY: {name:"Xi'an Xianyang", firs:["ZBPE"]},
+  VHHH: {name:"Hong Kong", firs:["VHHK"]},
+  RCTP: {name:"Taipei Taoyuan", firs:["RCAA"]},
   YPAD: {name:"Adelaide", firs:["YMMM"]},
+  YBBN: {name:"Brisbane", firs:["YBBB"]},
+  RJAA: {name:"Tokyo Narita", firs:["RJJJ"]},
+  RJTT: {name:"Tokyo Haneda", firs:["RJJJ"]},
+  RJGG: {name:"Nagoya Centrair", firs:["RJJJ"]},
+  RKSI: {name:"Seoul Incheon", firs:["RKRR"]},
+  VTBS: {name:"Bangkok Suvarnabhumi", firs:["VVTS"]},
+  WIII: {name:"Jakarta Soekarno-Hatta", firs:["WSJC"]},
+  WADD: {name:"Bali Ngurah Rai", firs:["WSJC"]},
+  VIDP: {name:"Delhi Indira Gandhi", firs:["VECF"]},
+  VABB: {name:"Mumbai Chhatrapati Shivaji", firs:["VECF"]},
+  OMDB: {name:"Dubai", firs:["OMAE"]},
+  OTHH: {name:"Doha Hamad", firs:["OBBB"]},
+  EGLL: {name:"London Heathrow", firs:["EGTT"]},
+  LFPG: {name:"Paris Charles de Gaulle", firs:["LFFF"]},
+  EDDF: {name:"Frankfurt", firs:["EDGG"]},
+  EHAM: {name:"Amsterdam Schiphol", firs:["EHAA"]},
+  LSZH: {name:"Zurich", firs:["LSAS"]},
+  EDDM: {name:"Munich", firs:["EDGG"]},
 };
 const REPORT_BUFFER_MIN_HOME = 75;
 const REPORT_BUFFER_MIN_AWAY = 60;
