@@ -360,8 +360,8 @@ let ROSTER = {
 
 // NOTE: TZ offsets assume June, AEST (no AU daylight saving). If the roster
 // is updated for Oct-Apr, SYD/MEL should be +11 (AEDT).
-const TZ_OFFSETS = {KUL:8, SYD:10, KIX:9, CAN:8, MEL:10, PER:8};
-const IATA_TO_ICAO = {KUL:"WMKK", SYD:"YSSY", MEL:"YMML", PER:"YPPH", KIX:"RJBB", CAN:"ZGGG"};
+const TZ_OFFSETS = {KUL:8, SYD:10, KIX:9, CAN:8, MEL:10, PER:8, ADL:9.5};
+const IATA_TO_ICAO = {KUL:"WMKK", SYD:"YSSY", MEL:"YMML", PER:"YPPH", KIX:"RJBB", CAN:"ZGGG", ADL:"YPAD"};
 const ICAO_INFO = {
   WMKK: {name:"Kuala Lumpur (KLIA) — home base", firs:["WMFC"]},
   YSSY: {name:"Sydney", firs:["YBBB","YMMM"]},
@@ -369,6 +369,7 @@ const ICAO_INFO = {
   YPPH: {name:"Perth", firs:["YMMM"]},
   RJBB: {name:"Osaka (Kansai)", firs:["RJJJ"]},
   ZGGG: {name:"Guangzhou Baiyun", firs:["ZGZU"]},
+  YPAD: {name:"Adelaide", firs:["YMMM"]},
 };
 const REPORT_BUFFER_MIN_HOME = 75;
 const REPORT_BUFFER_MIN_AWAY = 60;
