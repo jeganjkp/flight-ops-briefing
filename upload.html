@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Upload Roster — Flight Ops</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f7f8fa;
+  color: #1a1a2e;
+  padding: 20px 16px 40px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+h1 { font-size: 20px; color: #2a3f5f; margin-bottom: 4px; }
+.sub { font-size: 13px; color: #6b7280; margin-bottom: 24px; }
+
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+label { font-size: 13px; font-weight: 600; color: #374151; display: block; margin-bottom: 8px; }
+
+/* Secret field */
+.secret-row { display: flex; gap: 8px; align-items: center; }
+input[type="password"], input[type="text"] {
+  flex: 1;
+  font-size: 15px;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  width: 100%;
+  background: #f9fafb;
+}
+input:focus { outline: 2px solid #2a3f5f; outline-offset: 1px; }
+.toggle-btn {
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Drop zone */
+.drop-zone {
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 32px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+.drop-zone.drag-over { border-color: #2a3f5f; background: #f0f4ff; }
+.drop-zone input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.drop-zone .icon { font-size: 40px; margin-bottom: 10px; }
+.drop-zone .hint { font-size: 14px; color: #6b7280; }
+.drop-zone .hint b { color: #2a3f5f; }
+
+/* Preview */
+#previewWrap { display: none; margin-top: 14px; text-align: center; }
+#previewImg { max-width: 100%; max-height: 240px; border-radius: 8px; border: 1px solid #e5e7eb; }
+#fileName { font-size: 12px; color: #6b7280; margin-top: 6px; }
+
+/* Buttons */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn:disabled { opacity: 0.45; cursor: default; }
+.btn-primary { background: #2a3f5f; color: #fff; }
+.btn-success { background: #059669; color: #fff; }
+.btn-danger  { background: #dc2626; color: #fff; }
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 22px; height: 22px;
+  border: 3px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Result card */
+#resultCard { display: none; }
+.result-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 14px; }
+.result-row:last-child { border-bottom: none; }
+.result-row .lbl { color: #6b7280; }
+.result-row .val { font-weight: 700; }
+
+.notice {
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.notice.err { background: #fee2e2; color: #991b1b; }
+.notice.ok  { background: #d1fae5; color: #065f46; }
+
+a.back { display: inline-block; margin-top: 16px; font-size: 13px; color: #2563eb; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<h1>Roster Upload</h1>
+<p class="sub">Photo or screenshot of the MAB roster portal — Claude will extract it automatically.</p>
+
+<!-- Step 1: Secret -->
+<div class="card" id="secretCard">
+  <label for="secretInput">Upload secret (stored locally after first use)</label>
+  <div class="secret-row">
+    <input type="password" id="secretInput" placeholder="Enter upload secret" autocomplete="current-password">
+    <button class="toggle-btn" id="toggleSecret" onclick="toggleSecret()" title="Show/hide">👁</button>
+  </div>
+</div>
+
+<!-- Step 2: File -->
+<div class="card">
+  <label>Roster image</label>
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept="image/*,image/heic,.heic" onchange="onFile(this.files[0])">
+    <div class="icon">📷</div>
+    <div class="hint">Tap to choose photo<br><b>JPEG / PNG / HEIC</b></div>
+  </div>
+  <div id="previewWrap">
+    <img id="previewImg" alt="preview">
+    <div id="fileName"></div>
+  </div>
+</div>
+
+<!-- Parse button -->
+<button class="btn btn-primary" id="parseBtn" onclick="parseRoster()" disabled>Parse Roster</button>
+
+<div id="notice"></div>
+
+<!-- Result -->
+<div class="card" id="resultCard">
+  <div style="font-size:15px;font-weight:700;color:#2a3f5f;margin-bottom:12px;">Parsed successfully</div>
+  <div id="resultRows"></div>
+  <div style="margin-top:16px;display:flex;gap:10px;">
+    <button class="btn btn-success" style="flex:1" onclick="applyRoster()">Go Live</button>
+    <button class="btn btn-danger"  style="flex:1;font-size:14px;" onclick="reupload()">Re-upload</button>
+  </div>
+</div>
+
+<a class="back" href="index.html">← Back to briefing</a>
+
+<script>
+const SUPABASE_URL = 'https://juohlwflvehlctiutrcu.supabase.co';
+const PARSE_URL  = `${SUPABASE_URL}/functions/v1/parse-roster`;
+const APPLY_URL  = `${SUPABASE_URL}/functions/v1/apply-roster`;
+
+let pendingId = null;
+let selectedFile = null;
+
+// --- Secret management ---
+const secretInput = document.getElementById('secretInput');
+const saved = localStorage.getItem('ftl_upload_secret');
+if (saved) secretInput.value = saved;
+
+function toggleSecret() {
+  secretInput.type = secretInput.type === 'password' ? 'text' : 'password';
+}
+
+function getSecret() {
+  const s = secretInput.value.trim();
+  if (s) localStorage.setItem('ftl_upload_secret', s);
+  return s;
+}
+
+// --- File selection ---
+function onFile(file) {
+  if (!file) return;
+  selectedFile = file;
+  document.getElementById('fileName').textContent = file.name + ' · ' + (file.size / 1024).toFixed(0) + ' KB';
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('previewImg').src = e.target.result;
+    document.getElementById('previewWrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+  document.getElementById('parseBtn').disabled = false;
+  setNotice('');
+  document.getElementById('resultCard').style.display = 'none';
+}
+
+// --- Drag & drop ---
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+dz.addEventListener('drop', e => {
+  e.preventDefault();
+  dz.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f) onFile(f);
+});
+
+// --- Notices ---
+function setNotice(msg, type = 'err') {
+  const el = document.getElementById('notice');
+  el.innerHTML = msg ? `<div class="notice ${type}">${msg}</div>` : '';
+}
+
+// --- Parse ---
+async function parseRoster() {
+  const secret = getSecret();
+  if (!secret) { setNotice('Enter the upload secret first.'); return; }
+  if (!selectedFile) { setNotice('Choose an image first.'); return; }
+
+  const btn = document.getElementById('parseBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Parsing with Claude…';
+  setNotice('');
+  document.getElementById('resultCard').style.display = 'none';
+
+  try {
+    const form = new FormData();
+    form.append('file', selectedFile);
+
+    const res = await fetch(PARSE_URL, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${secret}` },
+      body: form,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+    pendingId = data.id;
+    document.getElementById('resultRows').innerHTML = `
+      <div class="result-row"><span class="lbl">Month</span><span class="val">${data.month}</span></div>
+      <div class="result-row"><span class="lbl">Flights</span><span class="val">${data.leg_count}</span></div>
+      <div class="result-row"><span class="lbl">Standby blocks</span><span class="val">${data.standby_count}</span></div>
+      <div class="result-row"><span class="lbl">Days off</span><span class="val">${data.days_off_count}</span></div>
+    `;
+    document.getElementById('resultCard').style.display = 'block';
+    btn.innerHTML = 'Parse Roster';
+  } catch (err) {
+    setNotice('Parse failed: ' + err.message);
+    btn.innerHTML = 'Parse Roster';
+    btn.disabled = false;
+  }
+}
+
+// --- Apply ---
+async function applyRoster() {
+  if (!pendingId) return;
+  const secret = getSecret();
+  const applyBtn = document.querySelector('#resultCard .btn-success');
+  applyBtn.disabled = true;
+  applyBtn.innerHTML = '<span class="spinner"></span>Going live…';
+
+  try {
+    const res = await fetch(APPLY_URL, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${secret}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: pendingId }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+    setNotice('Roster is now live! The briefing page will use it on next load.', 'ok');
+    document.getElementById('resultCard').style.display = 'none';
+    pendingId = null;
+    applyBtn.innerHTML = 'Go Live';
+    applyBtn.disabled = false;
+  } catch (err) {
+    setNotice('Apply failed: ' + err.message);
+    applyBtn.innerHTML = 'Go Live';
+    applyBtn.disabled = false;
+  }
+}
+
+// --- Re-upload ---
+function reupload() {
+  selectedFile = null;
+  pendingId = null;
+  document.getElementById('fileInput').value = '';
+  document.getElementById('previewWrap').style.display = 'none';
+  document.getElementById('resultCard').style.display = 'none';
+  document.getElementById('parseBtn').disabled = true;
+  setNotice('');
+}
+</script>
+</body>
+</html>

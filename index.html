@@ -209,9 +209,33 @@ details.roster-details table { margin-top: 8px; }
   margin-top: 10px;
   z-index: 0;
 }
+
+#pendingBanner {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #92400e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+#pendingBanner a { color: #92400e; font-weight: 700; text-decoration: underline; }
+#pendingBanner button {
+  background: none; border: none; cursor: pointer; font-size: 18px; color: #92400e;
+  flex-shrink: 0; padding: 0 4px;
+}
 </style>
 </head>
 <body>
+
+<div id="pendingBanner" style="display:none">
+  <span id="pendingBannerText">📋 New roster pending review — <a href="upload.html">tap to review &amp; approve</a></span>
+  <button onclick="this.parentElement.style.display='none'" title="Dismiss">✕</button>
+</div>
 
 <div class="header">
   <div>
@@ -296,7 +320,7 @@ details.roster-details table { margin-top: 8px; }
 
 <div class="section">
   <details class="roster-details">
-    <summary>Full Roster — Jun-2026 (reference, all legs)</summary>
+    <summary id="rosterDetailsSummary">Full Roster — Jun-2026 (reference, all legs)</summary>
     <table>
       <thead>
         <tr><th>Date</th><th>Flight</th><th>Route</th><th>Dep (local)</th><th>Arr (local)</th><th>A/C</th></tr>
@@ -307,11 +331,12 @@ details.roster-details table { margin-top: 8px; }
 </div>
 
 <div class="footer-note">
-  Today/Tomorrow, current rotation and duty/flight time recompute every time this page loads. Weather/SIGMET come from data.json, refreshed every ~30min by a GitHub Action — edit the ROSTER object in this file whenever a new month's roster is published.
+  Today/Tomorrow, current rotation and duty/flight time recompute every time this page loads. Weather/SIGMET come from data.json, refreshed every ~30min by a GitHub Action. Roster is fetched live from Supabase — <a href="upload.html" style="color:#9ca3af">upload a new roster</a> when a new month is published.
 </div>
 
 <script>
-const ROSTER = {
+// Fallback roster — used when Supabase is unreachable
+let ROSTER = {
   "pilot": {"name": "JEGAN KUMAR PILLAY GOPAL", "staff_number": "2112499", "rank": "FO", "base": "KUL", "fleet": "330"},
   "month": "Jun-2026",
   "legs": [
@@ -345,14 +370,12 @@ const ICAO_INFO = {
   RJBB: {name:"Osaka (Kansai)", firs:["RJJJ"]},
   ZGGG: {name:"Guangzhou Baiyun", firs:["ZGZU"]},
 };
-// Report time: 75min before departure at KUL (home base), 60min ex-station.
 const REPORT_BUFFER_MIN_HOME = 75;
 const REPORT_BUFFER_MIN_AWAY = 60;
 const DEBRIEF_BUFFER_MIN = 45;
 function reportBufferMin(depAirport){ return depAirport === 'KUL' ? REPORT_BUFFER_MIN_HOME : REPORT_BUFFER_MIN_AWAY; }
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-// WMO weather codes (Open-Meteo) -> layman icon/label
 const WX_CODES = {
   0:  {icon:'☀️', label:'Clear sky'},
   1:  {icon:'🌤️', label:'Mainly clear'},
@@ -385,8 +408,6 @@ const WX_CODES = {
 };
 function wxInfo(code){ return WX_CODES[code] ?? {icon:'❓', label:'Unknown'}; }
 
-// "Now" formatted as YYYY-MM-DDTHH:MM in a given IANA timezone (matches
-// Open-Meteo's local-time strings so they can be string-compared directly).
 function nowInTZ(tz){
   try {
     const parts = new Intl.DateTimeFormat('en-CA', {
@@ -401,10 +422,6 @@ function nowInTZ(tz){
   }
 }
 
-// Normalize aviationweather.gov SIGMET "coords" into an array of rings,
-// each ring an array of [lat, lon] pairs. Handles both shapes seen in the
-// isigmet feed: a flat array of {lat,lon} points, or an array of such arrays
-// (multiple polygons/segments). Drops points with null lat/lon.
 function normalizeSigmetCoords(coords){
   if(!Array.isArray(coords) || !coords.length) return [];
   const isPt = p => p && typeof p.lat === 'number' && typeof p.lon === 'number';
@@ -456,8 +473,6 @@ function computeLegs(){
   return legs;
 }
 
-// What's going on TODAY: departing, arriving (overnight), on standby, on a
-// layover between two connecting legs of the same rotation, or a day off.
 function describeToday(dateStr, legs){
   let leg = legs.find(l => l.dep_date === dateStr);
   if(leg) return {kind:'dep', leg};
@@ -466,8 +481,6 @@ function describeToday(dateStr, legs){
   const sb = ROSTER.standby.find(s => s.dates.includes(dateStr));
   if(sb) return {kind:'standby', sb};
   if(ROSTER.days_off.includes(dateStr)) return {kind:'dayoff'};
-  // Fallback: unaccounted day sitting between two connecting legs at the same
-  // station (e.g. a roster gap not explicitly marked as days off/standby).
   const sorted = [...legs].sort((a,b)=> a.dep_date.localeCompare(b.dep_date));
   for(let i=0;i<sorted.length-1;i++){
     const a = sorted[i], b = sorted[i+1];
@@ -478,7 +491,6 @@ function describeToday(dateStr, legs){
   return {kind:'unknown'};
 }
 
-// The next leg coming up after today's status.
 function findNextLeg(legs, todayStr, info){
   const sorted = [...legs].sort((a,b)=> a.dep_date.localeCompare(b.dep_date));
   if(info.kind === 'dep' || info.kind === 'arr'){
@@ -514,14 +526,14 @@ function currentCardHTML(info, todayStr){
     detail = 'No duty scheduled';
   } else {
     route = 'No roster data';
-    detail = 'Not covered by current roster — update the ROSTER object in index.html';
+    detail = 'Not covered by current roster — upload a new roster via upload.html';
   }
   return `<div class="highlight-card today"><div class="label">Current · ${todayStr}</div><div class="route">${route}</div><div class="detail">${detail}</div></div>`;
 }
 
 function nextFlightCardHTML(leg, todayStr){
   if(!leg){
-    return `<div class="highlight-card"><div class="label">Next Flight</div><div class="route">No upcoming flights in roster</div><div class="detail">Update the ROSTER object in index.html</div></div>`;
+    return `<div class="highlight-card"><div class="label">Next Flight</div><div class="route">No upcoming flights in roster</div><div class="detail">Upload a new roster via <a href="upload.html">upload.html</a></div></div>`;
   }
   const days = daysBetween(todayStr, leg.dep_date);
   const when = days <= 0 ? 'Today' : days === 1 ? 'Tomorrow' : `in ${days} days`;
@@ -549,309 +561,323 @@ function tagLabel(cls){
   return cls === 'alert' ? 'Alert' : (cls === 'watch' ? 'Watch' : 'OK');
 }
 
-// ---------- Render: Today & Tomorrow ----------
-const legs = computeLegs();
-const today = new Date();
-const todayStr = localDateStr(today);
-const tomorrowStr = addDays(todayStr, 1);
+function renderAll(){
+  const legs = computeLegs();
+  const today = new Date();
+  const todayStr = localDateStr(today);
+  const tomorrowStr = addDays(todayStr, 1);
 
-document.getElementById('reloadedAt').innerHTML =
-  `Page loaded: ${today.toLocaleString('en-GB',{hour12:false})}<br>Roster data: ${ROSTER.month}`;
+  document.getElementById('reloadedAt').innerHTML =
+    `Page loaded: ${today.toLocaleString('en-GB',{hour12:false})}<br>Roster: ${ROSTER.month}`;
 
-const currentInfo = describeToday(todayStr, legs);
-const nextLeg = findNextLeg(legs, todayStr, currentInfo);
-document.getElementById('rotationStatus').innerHTML =
-  currentCardHTML(currentInfo, todayStr) +
-  nextFlightCardHTML(nextLeg, todayStr);
+  document.getElementById('rosterDetailsSummary').textContent =
+    `Full Roster — ${ROSTER.month} (reference, all legs)`;
 
-// ---------- Render: Full roster (collapsed reference) ----------
-document.getElementById('fullRosterBody').innerHTML = legs.map(l => {
-  const style = l.dep_date === todayStr ? ' style="background:#eefcf3"' : (l.dep_date === tomorrowStr ? ' style="background:#f0f4ff"' : '');
-  return `<tr${style}><td>${l.dep_date.slice(5)}</td><td>${l.flight}</td><td class="dest-cell">${l.dep_airport} → ${l.arr_airport}</td><td>${l.dep_time}</td><td>${l.arr_time}${l.arr_date!==l.dep_date?' (+1)':''}</td><td>${l.ac_type}</td></tr>`;
-}).join('');
+  const currentInfo = describeToday(todayStr, legs);
+  const nextLeg = findNextLeg(legs, todayStr, currentInfo);
+  document.getElementById('rotationStatus').innerHTML =
+    currentCardHTML(currentInfo, todayStr) +
+    nextFlightCardHTML(nextLeg, todayStr);
 
-// ---------- Render: Duty & Flight Time ----------
-function windowTotal(days, field){
-  const start = addDays(todayStr, -(days-1));
-  let total = 0;
-  for(const l of legs){
-    if(l.dep_date >= start && l.dep_date <= todayStr) total += l[field];
-  }
-  return total;
-}
-let mtdTotal = 0;
-for(const l of legs){
-  if(l.dep_date.slice(0,7) === todayStr.slice(0,7) && l.dep_date <= todayStr) mtdTotal += l.block;
-}
-document.getElementById('dutySummary').innerHTML = `
-  <div class="highlight-card"><div class="label">MTD Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(mtdTotal)}</div></div>
-  <div class="highlight-card"><div class="label">Rolling 7-Day Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(7,'block'))}</div></div>
-  <div class="highlight-card"><div class="label">Rolling 7-Day Duty Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(7,'duty'))}</div></div>
-  <div class="highlight-card"><div class="label">Rolling 28-Day Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(28,'block'))}</div></div>
-`;
-
-const rotation = findRotation(legs, todayStr);
-
-document.getElementById('dutyTable').querySelector('tbody').innerHTML = rotation.length
-  ? rotation.map(l => {
-      const style = l.dep_date === todayStr ? ' style="background:#eefcf3"' : (l.dep_date === tomorrowStr ? ' style="background:#f0f4ff"' : '');
-      return `<tr${style}><td>${l.dep_date.slice(5)}</td><td><b>${l.flight}</b></td><td class="dest-cell">${l.dep_airport} → ${l.arr_airport}</td><td>${fmtLocal(l.reportUTC,l.dep_airport)}</td><td>${fmtLocal(l.releaseUTC,l.arr_airport)}</td><td>${fmtHM(l.block)}</td><td>${fmtHM(l.duty)}</td><td>${l.restAfter!=null?fmtHM(l.restAfter):'-'}</td></tr>`;
-    }).join('')
-  : `<tr><td colspan="8">No upcoming legs found in the loaded roster — update the ROSTER object in index.html.</td></tr>`;
-
-// ---------- Render: FTL Status (CAAM/MCAR limits) ----------
-// Fig 7.5.8(1) Table A — two or more flight crew, acclimatized. Hours by
-// report-local-time band (rows) x number of sectors 1..8+ (columns).
-const FDP_TABLE_A_HOURS = [
-  {label:'0600-0759', test:m=> m>=360 && m<=479,  limits:[13,12.25,11.5,10.75,10,9.5,9,9]},
-  {label:'0800-1259', test:m=> m>=480 && m<=779,  limits:[14,13.25,12.5,11.75,11,10.5,10,9.5]},
-  {label:'1300-1759', test:m=> m>=780 && m<=1079, limits:[13,12.25,11.5,10.75,10,9.5,9,9]},
-  {label:'1800-2159', test:m=> m>=1080 && m<=1319,limits:[12,11.25,10.5,9.75,9,9,9,9]},
-  {label:'2200-0559', test:m=> m>=1320 || m<360,  limits:[11,10.25,9.5,9,9,9,9,9]},
-];
-function localMinutesOfDay(dtUTC, station){
-  const local = new Date(dtUTC.getTime() + TZ_OFFSETS[station]*3600000);
-  return local.getUTCHours()*60 + local.getUTCMinutes();
-}
-function getFDPLimitMs(reportLocalMin, sectors){
-  const bracket = FDP_TABLE_A_HOURS.find(b => b.test(reportLocalMin));
-  const idx = Math.min(Math.max(sectors,1),8) - 1;
-  return {bracket: bracket.label, limitMs: bracket.limits[idx] * 3600000};
-}
-// >limit -> alert; >=85% -> watch; else ok
-function pctTag(valueMs, limitMs){
-  const pct = Math.round(valueMs/limitMs*100);
-  const cls = valueMs > limitMs ? 'alert' : (pct >= 85 ? 'watch' : 'ok');
-  return {pct, cls, label: tagLabel(cls)};
-}
-
-const CUM_DUTY_LIMITS_MS = {7: 55*3600000, 14: 95*3600000, 28: 190*3600000};
-const FLIGHT_TIME_LIMIT_28D_MS = 100*3600000;
-
-const cum7 = windowTotal(7,'duty'), cum14 = windowTotal(14,'duty'), cum28 = windowTotal(28,'duty'), ft28 = windowTotal(28,'block');
-const t7 = pctTag(cum7, CUM_DUTY_LIMITS_MS[7]);
-const t14 = pctTag(cum14, CUM_DUTY_LIMITS_MS[14]);
-const t28 = pctTag(cum28, CUM_DUTY_LIMITS_MS[28]);
-const tFt28 = pctTag(ft28, FLIGHT_TIME_LIMIT_28D_MS);
-
-document.getElementById('ftlCumSummary').innerHTML = `
-  <div class="highlight-card"><div class="label">7-Day Duty <span class="tag ${t7.cls}">${t7.label}</span></div><div class="route" style="font-size:20px;">${fmtHM(cum7)} / 55h00m</div><div class="detail">${t7.pct}% of limit</div></div>
-  <div class="highlight-card"><div class="label">14-Day Duty <span class="tag ${t14.cls}">${t14.label}</span></div><div class="route" style="font-size:20px;">${fmtHM(cum14)} / 95h00m</div><div class="detail">${t14.pct}% of limit</div></div>
-  <div class="highlight-card"><div class="label">28-Day Duty <span class="tag ${t28.cls}">${t28.label}</span></div><div class="route" style="font-size:20px;">${fmtHM(cum28)} / 190h00m</div><div class="detail">${t28.pct}% of limit</div></div>
-  <div class="highlight-card"><div class="label">28-Day Flight Time <span class="tag ${tFt28.cls}">${tFt28.label}</span></div><div class="route" style="font-size:20px;">${fmtHM(ft28)} / 100h00m</div><div class="detail">${tFt28.pct}% of limit · 1000h/12mo not computable from this roster</div></div>
-`;
-
-document.getElementById('fdpTable').querySelector('tbody').innerHTML = rotation.length
-  ? rotation.map(l => {
-      const sectorsThatDay = legs.filter(x => x.dep_date === l.dep_date).length;
-      const reportMin = localMinutesOfDay(l.reportUTC, l.dep_airport);
-      const {bracket, limitMs} = getFDPLimitMs(reportMin, sectorsThatDay);
-      const tag = pctTag(l.duty, limitMs);
-      const style = l.dep_date === todayStr ? ' style="background:#eefcf3"' : (l.dep_date === tomorrowStr ? ' style="background:#f0f4ff"' : '');
-      return `<tr${style}><td>${l.dep_date.slice(5)}</td><td><b>${l.flight}</b></td><td>${fmtLocal(l.reportUTC,l.dep_airport)}</td><td>${bracket}</td><td>${sectorsThatDay}</td><td>${fmtHM(l.duty)}</td><td>${fmtHM(limitMs)}</td><td><span class="tag ${tag.cls}">${tag.label}</span> ${tag.pct}%</td></tr>`;
-    }).join('')
-  : `<tr><td colspan="8">No upcoming legs found in the loaded roster — update the ROSTER object in index.html.</td></tr>`;
-
-// ---------- Determine relevant airports/FIRs for weather (current rotation) ----------
-let relevantIcaos = [];
-let relevantFirs = new Set();
-if(rotation.length){
-  const stations = new Set();
-  rotation.forEach(l => { stations.add(l.dep_airport); stations.add(l.arr_airport); });
-  relevantIcaos = [...stations].map(s => IATA_TO_ICAO[s]).filter(Boolean);
-  relevantIcaos.forEach(icao => (ICAO_INFO[icao]?.firs || []).forEach(f => relevantFirs.add(f)));
-} else {
-  document.getElementById('wxCards').innerHTML = '';
-  document.getElementById('sigmetSection').innerHTML = '';
-  document.getElementById('destForecast').innerHTML = '';
-  document.getElementById('destForecastFreshness').innerHTML = '';
-}
-
-// ---------- Render: Destination Forecast (layman, today/tomorrow/day-after) ----------
-function renderDestForecast(data){
-  const el = document.getElementById('destForecast');
-  const destIata = rotation[0].arr_airport;
-  const destIcao = IATA_TO_ICAO[destIata];
-  const destName = ICAO_INFO[destIcao]?.name;
-  document.getElementById('destForecastLabel').textContent =
-    `— ${destIcao || destIata}${destName ? ' · ' + destName : ''}`;
-
-  const fc = data.forecast && data.forecast[destIcao];
-  if(!fc || fc.error || !fc.hourly?.time || !fc.daily?.time){
-    el.innerHTML = `<div class="loading">No forecast data for ${destIcao || destIata} in data.json${fc?.error ? ` (${fc.error})` : ''}.</div>`;
-    return;
-  }
-
-  const hourly = fc.hourly, daily = fc.daily;
-  const tz = fc.timezone || 'UTC';
-  const nowStr = nowInTZ(tz);
-  const todayDate = nowStr.slice(0,10);
-
-  // Today's remaining hours, sampled every 3h
-  let idxs = [];
-  for(let i=0;i<hourly.time.length;i++){
-    const t = hourly.time[i];
-    if(t.slice(0,10) !== todayDate || t < nowStr) continue;
-    if(Number(t.slice(11,13)) % 3 !== 0) continue;
-    idxs.push(i);
-  }
-  if(!idxs.length){
-    // Late in the day / edge case: just take the next few hourly slots
-    for(let i=0;i<hourly.time.length && idxs.length<4;i++){
-      if(hourly.time[i] >= nowStr) idxs.push(i);
-    }
-  }
-  const hourCardsHTML = idxs.slice(0,6).map(i => {
-    const t = hourly.time[i];
-    const wx = wxInfo(hourly.weather_code?.[i]);
-    const temp = Math.round(hourly.temperature_2m?.[i]);
-    const pop = hourly.precipitation_probability?.[i];
-    return `<div class="fc-hour">
-      <div class="time">${t.slice(11,16)}</div>
-      <div class="icon">${wx.icon}</div>
-      <div class="temp">${temp}°C</div>
-      ${pop != null ? `<div class="pop">💧${pop}%</div>` : ''}
-    </div>`;
+  document.getElementById('fullRosterBody').innerHTML = legs.map(l => {
+    const style = l.dep_date === todayStr ? ' style="background:#eefcf3"' : (l.dep_date === tomorrowStr ? ' style="background:#f0f4ff"' : '');
+    return `<tr${style}><td>${l.dep_date.slice(5)}</td><td>${l.flight}</td><td class="dest-cell">${l.dep_airport} → ${l.arr_airport}</td><td>${l.dep_time}</td><td>${l.arr_time}${l.arr_date!==l.dep_date?' (+1)':''}</td><td>${l.ac_type}</td></tr>`;
   }).join('');
 
-  function dailyCard(idx, label){
-    if(idx >= daily.time.length) return '';
-    const wx = wxInfo(daily.weather_code?.[idx]);
-    const max = Math.round(daily.temperature_2m_max?.[idx]);
-    const min = Math.round(daily.temperature_2m_min?.[idx]);
-    const pop = daily.precipitation_probability_max?.[idx];
-    return `<div class="fc-day">
-      <div class="label">${label} · ${daily.time[idx].slice(5)}</div>
-      <div class="icon">${wx.icon}</div>
-      <div class="desc">${wx.label}</div>
-      <div class="temps">${max}° / ${min}°C</div>
-      ${pop != null ? `<div class="pop">💧 ${pop}% chance of rain</div>` : ''}
-    </div>`;
+  function windowTotal(days, field){
+    const start = addDays(todayStr, -(days-1));
+    let total = 0;
+    for(const l of legs){
+      if(l.dep_date >= start && l.dep_date <= todayStr) total += l[field];
+    }
+    return total;
   }
-
-  el.innerHTML = `
-    <div style="font-size:13px;color:#6b7280;margin-bottom:6px;">Today, from now</div>
-    <div class="fc-row">${hourCardsHTML || '<div class="loading">No more hourly forecast slots for today.</div>'}</div>
-    <div class="fc-daily-grid">${dailyCard(1,'Tomorrow')}${dailyCard(2,'Day After')}</div>
+  let mtdTotal = 0;
+  for(const l of legs){
+    if(l.dep_date.slice(0,7) === todayStr.slice(0,7) && l.dep_date <= todayStr) mtdTotal += l.block;
+  }
+  document.getElementById('dutySummary').innerHTML = `
+    <div class="highlight-card"><div class="label">MTD Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(mtdTotal)}</div></div>
+    <div class="highlight-card"><div class="label">Rolling 7-Day Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(7,'block'))}</div></div>
+    <div class="highlight-card"><div class="label">Rolling 7-Day Duty Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(7,'duty'))}</div></div>
+    <div class="highlight-card"><div class="label">Rolling 28-Day Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(28,'block'))}</div></div>
   `;
 
-  if(data.fetched_at){
-    const fetched = new Date(data.fetched_at);
-    const ageMin = Math.round((Date.now() - fetched.getTime())/60000);
-    document.getElementById('destForecastFreshness').textContent =
-      `Source: open-meteo.com (${tz}) · data.json last updated ${fetched.toLocaleString()} (${ageMin} min ago)`;
+  const rotation = findRotation(legs, todayStr);
+
+  document.getElementById('dutyTable').querySelector('tbody').innerHTML = rotation.length
+    ? rotation.map(l => {
+        const style = l.dep_date === todayStr ? ' style="background:#eefcf3"' : (l.dep_date === tomorrowStr ? ' style="background:#f0f4ff"' : '');
+        return `<tr${style}><td>${l.dep_date.slice(5)}</td><td><b>${l.flight}</b></td><td class="dest-cell">${l.dep_airport} → ${l.arr_airport}</td><td>${fmtLocal(l.reportUTC,l.dep_airport)}</td><td>${fmtLocal(l.releaseUTC,l.arr_airport)}</td><td>${fmtHM(l.block)}</td><td>${fmtHM(l.duty)}</td><td>${l.restAfter!=null?fmtHM(l.restAfter):'-'}</td></tr>`;
+      }).join('')
+    : `<tr><td colspan="8">No upcoming legs found in the loaded roster.</td></tr>`;
+
+  const FDP_TABLE_A_HOURS = [
+    {label:'0600-0759', test:m=> m>=360 && m<=479,  limits:[13,12.25,11.5,10.75,10,9.5,9,9]},
+    {label:'0800-1259', test:m=> m>=480 && m<=779,  limits:[14,13.25,12.5,11.75,11,10.5,10,9.5]},
+    {label:'1300-1759', test:m=> m>=780 && m<=1079, limits:[13,12.25,11.5,10.75,10,9.5,9,9]},
+    {label:'1800-2159', test:m=> m>=1080 && m<=1319,limits:[12,11.25,10.5,9.75,9,9,9,9]},
+    {label:'2200-0559', test:m=> m>=1320 || m<360,  limits:[11,10.25,9.5,9,9,9,9,9]},
+  ];
+  function localMinutesOfDay(dtUTC, station){
+    const local = new Date(dtUTC.getTime() + TZ_OFFSETS[station]*3600000);
+    return local.getUTCHours()*60 + local.getUTCMinutes();
   }
-}
+  function getFDPLimitMs(reportLocalMin, sectors){
+    const bracket = FDP_TABLE_A_HOURS.find(b => b.test(reportLocalMin));
+    const idx = Math.min(Math.max(sectors,1),8) - 1;
+    return {bracket: bracket.label, limitMs: bracket.limits[idx] * 3600000};
+  }
+  function pctTag(valueMs, limitMs){
+    const pct = Math.round(valueMs/limitMs*100);
+    const cls = valueMs > limitMs ? 'alert' : (pct >= 85 ? 'watch' : 'ok');
+    return {pct, cls, label: tagLabel(cls)};
+  }
 
-// ---------- Load data.json (refreshed every ~30min by a GitHub Action) ----------
-async function loadWeatherAndSigmets(){
-  if(!relevantIcaos.length) return;
-  try {
-    const res = await fetch('./data.json', {cache: 'no-store'});
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+  const CUM_DUTY_LIMITS_MS = {7: 55*3600000, 14: 95*3600000, 28: 190*3600000};
+  const FLIGHT_TIME_LIMIT_28D_MS = 100*3600000;
 
-    // Freshness note
+  const cum7 = windowTotal(7,'duty'), cum14 = windowTotal(14,'duty'), cum28 = windowTotal(28,'duty'), ft28 = windowTotal(28,'block');
+  const t7 = pctTag(cum7, CUM_DUTY_LIMITS_MS[7]);
+  const t14 = pctTag(cum14, CUM_DUTY_LIMITS_MS[14]);
+  const t28 = pctTag(cum28, CUM_DUTY_LIMITS_MS[28]);
+  const tFt28 = pctTag(ft28, FLIGHT_TIME_LIMIT_28D_MS);
+
+  document.getElementById('ftlCumSummary').innerHTML = `
+    <div class="highlight-card"><div class="label">7-Day Duty <span class="tag ${t7.cls}">${t7.label}</span></div><div class="route" style="font-size:20px;">${fmtHM(cum7)} / 55h00m</div><div class="detail">${t7.pct}% of limit</div></div>
+    <div class="highlight-card"><div class="label">14-Day Duty <span class="tag ${t14.cls}">${t14.label}</span></div><div class="route" style="font-size:20px;">${fmtHM(cum14)} / 95h00m</div><div class="detail">${t14.pct}% of limit</div></div>
+    <div class="highlight-card"><div class="label">28-Day Duty <span class="tag ${t28.cls}">${t28.label}</span></div><div class="route" style="font-size:20px;">${fmtHM(cum28)} / 190h00m</div><div class="detail">${t28.pct}% of limit</div></div>
+    <div class="highlight-card"><div class="label">28-Day Flight Time <span class="tag ${tFt28.cls}">${tFt28.label}</span></div><div class="route" style="font-size:20px;">${fmtHM(ft28)} / 100h00m</div><div class="detail">${tFt28.pct}% of limit · 1000h/12mo not computable from this roster</div></div>
+  `;
+
+  document.getElementById('fdpTable').querySelector('tbody').innerHTML = rotation.length
+    ? rotation.map(l => {
+        const sectorsThatDay = legs.filter(x => x.dep_date === l.dep_date).length;
+        const reportMin = localMinutesOfDay(l.reportUTC, l.dep_airport);
+        const {bracket, limitMs} = getFDPLimitMs(reportMin, sectorsThatDay);
+        const tag = pctTag(l.duty, limitMs);
+        const style = l.dep_date === todayStr ? ' style="background:#eefcf3"' : (l.dep_date === tomorrowStr ? ' style="background:#f0f4ff"' : '');
+        return `<tr${style}><td>${l.dep_date.slice(5)}</td><td><b>${l.flight}</b></td><td>${fmtLocal(l.reportUTC,l.dep_airport)}</td><td>${bracket}</td><td>${sectorsThatDay}</td><td>${fmtHM(l.duty)}</td><td>${fmtHM(limitMs)}</td><td><span class="tag ${tag.cls}">${tag.label}</span> ${tag.pct}%</td></tr>`;
+      }).join('')
+    : `<tr><td colspan="8">No upcoming legs found in the loaded roster.</td></tr>`;
+
+  let relevantIcaos = [];
+  let relevantFirs = new Set();
+  if(rotation.length){
+    const stations = new Set();
+    rotation.forEach(l => { stations.add(l.dep_airport); stations.add(l.arr_airport); });
+    relevantIcaos = [...stations].map(s => IATA_TO_ICAO[s]).filter(Boolean);
+    relevantIcaos.forEach(icao => (ICAO_INFO[icao]?.firs || []).forEach(f => relevantFirs.add(f)));
+  } else {
+    document.getElementById('wxCards').innerHTML = '';
+    document.getElementById('sigmetSection').innerHTML = '';
+    document.getElementById('destForecast').innerHTML = '';
+    document.getElementById('destForecastFreshness').innerHTML = '';
+  }
+
+  function renderDestForecast(data){
+    const el = document.getElementById('destForecast');
+    const destIata = rotation[0].arr_airport;
+    const destIcao = IATA_TO_ICAO[destIata];
+    const destName = ICAO_INFO[destIcao]?.name;
+    document.getElementById('destForecastLabel').textContent =
+      `— ${destIcao || destIata}${destName ? ' · ' + destName : ''}`;
+
+    const fc = data.forecast && data.forecast[destIcao];
+    if(!fc || fc.error || !fc.hourly?.time || !fc.daily?.time){
+      el.innerHTML = `<div class="loading">No forecast data for ${destIcao || destIata} in data.json${fc?.error ? ` (${fc.error})` : ''}.</div>`;
+      return;
+    }
+
+    const hourly = fc.hourly, daily = fc.daily;
+    const tz = fc.timezone || 'UTC';
+    const nowStr = nowInTZ(tz);
+    const todayDate = nowStr.slice(0,10);
+
+    let idxs = [];
+    for(let i=0;i<hourly.time.length;i++){
+      const t = hourly.time[i];
+      if(t.slice(0,10) !== todayDate || t < nowStr) continue;
+      if(Number(t.slice(11,13)) % 3 !== 0) continue;
+      idxs.push(i);
+    }
+    if(!idxs.length){
+      for(let i=0;i<hourly.time.length && idxs.length<4;i++){
+        if(hourly.time[i] >= nowStr) idxs.push(i);
+      }
+    }
+    const hourCardsHTML = idxs.slice(0,6).map(i => {
+      const t = hourly.time[i];
+      const wx = wxInfo(hourly.weather_code?.[i]);
+      const temp = Math.round(hourly.temperature_2m?.[i]);
+      const pop = hourly.precipitation_probability?.[i];
+      return `<div class="fc-hour">
+        <div class="time">${t.slice(11,16)}</div>
+        <div class="icon">${wx.icon}</div>
+        <div class="temp">${temp}°C</div>
+        ${pop != null ? `<div class="pop">💧${pop}%</div>` : ''}
+      </div>`;
+    }).join('');
+
+    function dailyCard(idx, label){
+      if(idx >= daily.time.length) return '';
+      const wx = wxInfo(daily.weather_code?.[idx]);
+      const max = Math.round(daily.temperature_2m_max?.[idx]);
+      const min = Math.round(daily.temperature_2m_min?.[idx]);
+      const pop = daily.precipitation_probability_max?.[idx];
+      return `<div class="fc-day">
+        <div class="label">${label} · ${daily.time[idx].slice(5)}</div>
+        <div class="icon">${wx.icon}</div>
+        <div class="desc">${wx.label}</div>
+        <div class="temps">${max}° / ${min}°C</div>
+        ${pop != null ? `<div class="pop">💧 ${pop}% chance of rain</div>` : ''}
+      </div>`;
+    }
+
+    el.innerHTML = `
+      <div style="font-size:13px;color:#6b7280;margin-bottom:6px;">Today, from now</div>
+      <div class="fc-row">${hourCardsHTML || '<div class="loading">No more hourly forecast slots for today.</div>'}</div>
+      <div class="fc-daily-grid">${dailyCard(1,'Tomorrow')}${dailyCard(2,'Day After')}</div>
+    `;
+
     if(data.fetched_at){
       const fetched = new Date(data.fetched_at);
       const ageMin = Math.round((Date.now() - fetched.getTime())/60000);
-      document.getElementById('weatherFreshness').textContent =
-        `Source: aviationweather.gov · data.json last updated ${fetched.toLocaleString()} (${ageMin} min ago)`;
+      document.getElementById('destForecastFreshness').textContent =
+        `Source: open-meteo.com (${tz}) · data.json last updated ${fetched.toLocaleString()} (${ageMin} min ago)`;
     }
+  }
 
-    // Layman destination forecast (today/tomorrow/day-after)
-    renderDestForecast(data);
+  async function loadWeatherAndSigmets(){
+    if(!relevantIcaos.length) return;
+    try {
+      const res = await fetch('./data.json', {cache: 'no-store'});
+      if(!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
 
-    // METAR + TAF — one card per airport, in roster order (relevantIcaos is
-    // already ordered by the sequence airports appear in the current rotation,
-    // e.g. dep of leg1, arr of leg1 / dep of leg2, arr of leg2 ...).
-    const metars = data.metar || [];
-    const tafs = data.taf || [];
-    document.getElementById('wxCards').innerHTML = relevantIcaos.length
-      ? relevantIcaos.map(icao => {
-          const m = metars.find(x => x.icaoId === icao);
-          const t = tafs.find(x => x.icaoId === icao);
-          const name = ICAO_INFO[icao]?.name || m?.name || '';
+      if(data.fetched_at){
+        const fetched = new Date(data.fetched_at);
+        const ageMin = Math.round((Date.now() - fetched.getTime())/60000);
+        document.getElementById('weatherFreshness').textContent =
+          `Source: aviationweather.gov · data.json last updated ${fetched.toLocaleString()} (${ageMin} min ago)`;
+      }
 
-          const metarBlock = m
-            ? (() => {
-                const cls = classify(m.rawOb || '');
-                return `<div class="wx-line">METAR <span class="tag ${cls}">${tagLabel(cls)}</span></div>
-                <div class="raw">${m.rawOb}</div>`;
-              })()
-            : `<div class="wx-line">METAR</div><div class="raw">No METAR data for ${icao} in data.json.</div>`;
+      renderDestForecast(data);
 
-          const tafBlock = t
-            ? (() => {
-                const cls = classify(t.rawTAF || '');
-                return `<div class="wx-line">TAF <span class="tag ${cls}">${tagLabel(cls)}</span></div>
-                <div class="raw">${t.rawTAF}</div>`;
-              })()
-            : `<div class="wx-line">TAF</div><div class="raw">No TAF data for ${icao} in data.json.</div>`;
+      const metars = data.metar || [];
+      const tafs = data.taf || [];
+      document.getElementById('wxCards').innerHTML = relevantIcaos.length
+        ? relevantIcaos.map(icao => {
+            const m = metars.find(x => x.icaoId === icao);
+            const t = tafs.find(x => x.icaoId === icao);
+            const name = ICAO_INFO[icao]?.name || m?.name || '';
 
-          return `<div class="taf-card">
-            <span class="icao">${icao}</span><span class="name">${name}</span>
-            ${metarBlock}
-            ${tafBlock}
-          </div>`;
-        }).join('')
-      : '<div class="loading">No relevant airports for the current rotation.</div>';
+            const metarBlock = m
+              ? (() => {
+                  const cls = classify(m.rawOb || '');
+                  return `<div class="wx-line">METAR <span class="tag ${cls}">${tagLabel(cls)}</span></div>
+                  <div class="raw">${m.rawOb}</div>`;
+                })()
+              : `<div class="wx-line">METAR</div><div class="raw">No METAR data for ${icao} in data.json.</div>`;
 
-    // SIGMET
-    const sigmetData = data.sigmet;
-    if(Array.isArray(sigmetData)){
-      const now = new Date();
-      const relevant = sigmetData.filter(s => relevantFirs.has(s.firId) && (!s.validTimeTo || new Date(s.validTimeTo) > now));
-      if(relevant.length){
-        document.getElementById('sigmetSection').innerHTML = relevant.map(s => `
-          <div class="sigmet-item">
-            <b>${s.firId || ''}</b> — ${s.hazard || 'SIGMET'} ${s.validTimeFrom ? `(valid ${s.validTimeFrom} → ${s.validTimeTo || '?'})` : ''}
-            <div class="raw">${s.rawSigmet || ''}</div>
-          </div>`).join('');
+            const tafBlock = t
+              ? (() => {
+                  const cls = classify(t.rawTAF || '');
+                  return `<div class="wx-line">TAF <span class="tag ${cls}">${tagLabel(cls)}</span></div>
+                  <div class="raw">${t.rawTAF}</div>`;
+                })()
+              : `<div class="wx-line">TAF</div><div class="raw">No TAF data for ${icao} in data.json.</div>`;
 
-        // Map highlighting any SIGMETs that carry coordinate geometry
-        const geoSigmets = relevant
-          .map(s => ({...s, rings: normalizeSigmetCoords(s.coords)}))
-          .filter(s => s.rings.length);
-        if(geoSigmets.length && window.L){
-          document.getElementById('sigmetSection').insertAdjacentHTML('beforeend', '<div id="sigmetMap"></div>');
-          const map = L.map('sigmetMap', {scrollWheelZoom:false});
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors',
-            maxZoom: 10
-          }).addTo(map);
-          const allPts = [];
-          geoSigmets.forEach(s => {
-            s.rings.forEach(ring => {
-              allPts.push(...ring);
-              const layer = ring.length >= 3
-                ? L.polygon(ring, {color:'#f59e0b', weight:2, fillColor:'#f59e0b', fillOpacity:0.25})
-                : L.polyline(ring, {color:'#f59e0b', weight:3});
-              layer.addTo(map).bindPopup(
-                `<b>${s.firId || ''} — ${s.hazard || 'SIGMET'}</b><br>${(s.rawSigmet || '').replace(/\n/g,'<br>')}`
-              );
+            return `<div class="taf-card">
+              <span class="icao">${icao}</span><span class="name">${name}</span>
+              ${metarBlock}
+              ${tafBlock}
+            </div>`;
+          }).join('')
+        : '<div class="loading">No relevant airports for the current rotation.</div>';
+
+      const sigmetData = data.sigmet;
+      if(Array.isArray(sigmetData)){
+        const now = new Date();
+        const relevant = sigmetData.filter(s => relevantFirs.has(s.firId) && (!s.validTimeTo || new Date(s.validTimeTo) > now));
+        if(relevant.length){
+          document.getElementById('sigmetSection').innerHTML = relevant.map(s => `
+            <div class="sigmet-item">
+              <b>${s.firId || ''}</b> — ${s.hazard || 'SIGMET'} ${s.validTimeFrom ? `(valid ${s.validTimeFrom} → ${s.validTimeTo || '?'})` : ''}
+              <div class="raw">${s.rawSigmet || ''}</div>
+            </div>`).join('');
+
+          const geoSigmets = relevant
+            .map(s => ({...s, rings: normalizeSigmetCoords(s.coords)}))
+            .filter(s => s.rings.length);
+          if(geoSigmets.length && window.L){
+            document.getElementById('sigmetSection').insertAdjacentHTML('beforeend', '<div id="sigmetMap"></div>');
+            const map = L.map('sigmetMap', {scrollWheelZoom:false});
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; OpenStreetMap contributors',
+              maxZoom: 10
+            }).addTo(map);
+            const allPts = [];
+            geoSigmets.forEach(s => {
+              s.rings.forEach(ring => {
+                allPts.push(...ring);
+                const layer = ring.length >= 3
+                  ? L.polygon(ring, {color:'#f59e0b', weight:2, fillColor:'#f59e0b', fillOpacity:0.25})
+                  : L.polyline(ring, {color:'#f59e0b', weight:3});
+                layer.addTo(map).bindPopup(
+                  `<b>${s.firId || ''} — ${s.hazard || 'SIGMET'}</b><br>${(s.rawSigmet || '').replace(/\n/g,'<br>')}`
+                );
+              });
             });
-          });
-          if(allPts.length) map.fitBounds(allPts, {padding:[20,20]});
+            if(allPts.length) map.fitBounds(allPts, {padding:[20,20]});
+          }
+        } else {
+          document.getElementById('sigmetSection').innerHTML = `<div class="sigmet-item none">
+            No active SIGMETs for ${[...relevantFirs].join(', ')} as of the last data.json update.
+          </div>`;
         }
       } else {
-        document.getElementById('sigmetSection').innerHTML = `<div class="sigmet-item none">
-          No active SIGMETs for ${[...relevantFirs].join(', ')} as of the last data.json update.
-        </div>`;
+        document.getElementById('sigmetSection').innerHTML = `<div class="error-note">SIGMET feed had an issue on last update: ${sigmetData?.error || 'unknown'}.</div>`;
       }
-    } else {
-      document.getElementById('sigmetSection').innerHTML = `<div class="error-note">SIGMET feed had an issue on last update: ${sigmetData?.error || 'unknown'}.</div>`;
+    } catch(e) {
+      document.getElementById('wxCards').innerHTML = `<div class="error-note">Couldn't load data.json (${e.message}). If this is the first run, trigger the "Update weather data" workflow manually from the Actions tab.</div>`;
+      document.getElementById('sigmetSection').innerHTML = '';
+      document.getElementById('destForecast').innerHTML = '';
     }
-  } catch(e) {
-    document.getElementById('wxCards').innerHTML = `<div class="error-note">Couldn't load data.json (${e.message}). If this is the first run, trigger the "Update weather data" workflow manually from the Actions tab.</div>`;
-    document.getElementById('sigmetSection').innerHTML = '';
-    document.getElementById('destForecast').innerHTML = '';
+  }
+
+  if(rotation.length){
+    loadWeatherAndSigmets();
   }
 }
 
-if(rotation.length){
-  loadWeatherAndSigmets();
+const SUPABASE_FN = 'https://juohlwflvehlctiutrcu.supabase.co/functions/v1';
+
+async function init(){
+  try {
+    const res = await fetch(`${SUPABASE_FN}/active-roster`);
+    if(res.ok){
+      const data = await res.json();
+      if(data && Array.isArray(data.legs) && data.legs.length) ROSTER = data;
+    }
+  } catch(_){}
+
+  renderAll();
+
+  try {
+    const res = await fetch(`${SUPABASE_FN}/pending-roster`);
+    if(res.ok){
+      const p = await res.json();
+      if(p.pending){
+        document.getElementById('pendingBannerText').innerHTML =
+          `📋 New roster pending (${p.month}) — <a href="upload.html">tap to review &amp; approve</a>`;
+        document.getElementById('pendingBanner').style.display = 'flex';
+      }
+    }
+  } catch(_){}
 }
+
+init();
 </script>
 
 </body>
