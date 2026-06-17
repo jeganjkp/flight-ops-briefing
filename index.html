@@ -292,7 +292,8 @@ details.roster-details table { margin-top: 8px; }
 </div>
 
 <div class="section">
-  <h2>Weather — Current Rotation Airports <span class="live-badge" id="weatherBadge">auto-updates</span></h2>
+  <h2>Weather — Current Rotation Airports <span class="live-badge" id="weatherBadge">auto-updates</span> <button id="wxRefreshBtn" onclick="triggerWeatherUpdate()" style="font-size:12px;font-weight:600;padding:2px 10px;border:1px solid #d1d5db;border-radius:8px;background:#f9fafb;color:#374151;cursor:pointer;vertical-align:middle;margin-left:6px;">🔄 Refresh now</button></h2>
+  <div id="wxRefreshMsg"></div>
   <div id="wxCards"><div class="loading">Loading current conditions &amp; forecasts (METAR / TAF)…</div></div>
   <div class="footer-note" id="weatherFreshness">Source: aviationweather.gov, via data.json updated by a scheduled GitHub Action.</div>
 </div>
@@ -898,6 +899,47 @@ function renderAll(){
 }
 
 const SUPABASE_FN = 'https://juohlwflvehlctiutrcu.supabase.co/functions/v1';
+
+async function triggerWeatherUpdate() {
+  let pat = localStorage.getItem('gh_pat');
+  if (!pat) {
+    pat = prompt('Enter a GitHub Personal Access Token with Actions write permission (stored locally, never sent anywhere except api.github.com):');
+    if (!pat) return;
+    localStorage.setItem('gh_pat', pat.trim());
+    pat = pat.trim();
+  }
+  const btn = document.getElementById('wxRefreshBtn');
+  const msg = document.getElementById('wxRefreshMsg');
+  btn.disabled = true;
+  btn.textContent = '⏳ Triggering…';
+  msg.innerHTML = '';
+  try {
+    const res = await fetch(
+      'https://api.github.com/repos/jeganjkp/flight-ops-briefing/actions/workflows/update-weather.yml/dispatches',
+      {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${pat}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ref: 'main' }),
+      }
+    );
+    if (res.status === 204) {
+      msg.innerHTML = '<div style="font-size:13px;color:#065f46;background:#d1fae5;border-radius:6px;padding:6px 12px;margin-bottom:8px;">✓ Workflow triggered — weather will update in ~60 seconds. Reload the page then.</div>';
+      btn.textContent = '🔄 Refresh now';
+    } else if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem('gh_pat');
+      msg.innerHTML = '<div style="font-size:13px;color:#991b1b;background:#fee2e2;border-radius:6px;padding:6px 12px;margin-bottom:8px;">Token rejected — cleared. Try again with a valid PAT (needs Actions: write scope).</div>';
+      btn.textContent = '🔄 Refresh now';
+    } else {
+      const body = await res.text();
+      msg.innerHTML = `<div style="font-size:13px;color:#991b1b;background:#fee2e2;border-radius:6px;padding:6px 12px;margin-bottom:8px;">Error ${res.status}: ${body}</div>`;
+      btn.textContent = '🔄 Refresh now';
+    }
+  } catch (e) {
+    msg.innerHTML = `<div style="font-size:13px;color:#991b1b;background:#fee2e2;border-radius:6px;padding:6px 12px;margin-bottom:8px;">${e.message}</div>`;
+    btn.textContent = '🔄 Refresh now';
+  }
+  btn.disabled = false;
+}
 
 async function init(){
   try {
