@@ -559,6 +559,7 @@ function fmtLocal(dtUTC, station){
   const local = new Date(dtUTC.getTime() + TZ_OFFSETS[station]*3600000);
   return `${pad(local.getUTCDate())}-${MONTHS[local.getUTCMonth()]} ${pad(local.getUTCHours())}:${pad(local.getUTCMinutes())} ${station}`;
 }
+function fmtUTCTime(dt){ return `${pad(dt.getUTCHours())}:${pad(dt.getUTCMinutes())}Z`; }
 
 function computeLegs(){
   const legs = ROSTER.legs.map(leg => {
@@ -614,17 +615,22 @@ function daysBetween(d1, d2){
 function currentCardHTML(info, todayStr){
   let route='', detail='';
   if(info.kind === 'dep'){
+    const depZ = fmtUTCTime(info.leg.depUTC), arrZ = fmtUTCTime(info.leg.arrUTC);
     route = `${info.leg.flight} · ${info.leg.dep_airport} → ${info.leg.arr_airport}`;
-    detail = `Departing today · Dep ${info.leg.dep_airport} ${info.leg.dep_time} · Arr ${info.leg.arr_airport} ${info.leg.arr_time}${info.leg.arr_date!==info.leg.dep_date?' (+1)':''} local · ${info.leg.ac_type}`;
+    detail = `Departing today · Dep ${info.leg.dep_airport} ${info.leg.dep_time} / ${depZ} · Arr ${info.leg.arr_airport} ${info.leg.arr_time}${info.leg.arr_date!==info.leg.dep_date?' (+1)':''} local / ${arrZ} · ${info.leg.ac_type}`;
   } else if(info.kind === 'arr'){
+    const arrZ = fmtUTCTime(info.leg.arrUTC);
     route = `${info.leg.flight} · ${info.leg.dep_airport} → ${info.leg.arr_airport}`;
-    detail = `Arrived ${info.leg.arr_airport} ${info.leg.arr_time} local today · ${info.leg.ac_type}`;
+    detail = `Arrived ${info.leg.arr_airport} ${info.leg.arr_time} local / ${arrZ} today · ${info.leg.ac_type}`;
   } else if(info.kind === 'standby'){
+    const repZ = fmtUTCTime(toUTC(todayStr, info.sb.report, info.sb.location));
+    const relZ = fmtUTCTime(toUTC(todayStr, info.sb.release, info.sb.location));
     route = `Standby ${info.sb.code}`;
-    detail = `${info.sb.location} · Report ${info.sb.report} – Release ${info.sb.release}`;
+    detail = `${info.sb.location} · Report ${info.sb.report} / ${repZ} – Release ${info.sb.release} / ${relZ}`;
   } else if(info.kind === 'layover'){
+    const depZ = fmtUTCTime(info.nextLeg.depUTC);
     route = `On Layover · ${info.station}`;
-    detail = `Next sector: ${info.nextLeg.flight} ${info.nextLeg.dep_airport} → ${info.nextLeg.arr_airport} on ${info.nextLeg.dep_date}`;
+    detail = `Next sector: ${info.nextLeg.flight} ${info.nextLeg.dep_airport} → ${info.nextLeg.arr_airport} on ${info.nextLeg.dep_date}, dep ${info.nextLeg.dep_time} / ${depZ}`;
   } else if(info.kind === 'dayoff'){
     route = 'Day Off';
     detail = 'No duty scheduled';
@@ -641,7 +647,8 @@ function nextFlightCardHTML(leg, todayStr){
   }
   const days = daysBetween(todayStr, leg.dep_date);
   const when = days <= 0 ? 'Today' : days === 1 ? 'Tomorrow' : `in ${days} days`;
-  return `<div class="highlight-card"><div class="label">Next Flight · ${leg.dep_date} (${when})</div><div class="route">${leg.flight} · ${leg.dep_airport} → ${leg.arr_airport}</div><div class="detail">Dep ${leg.dep_airport} ${leg.dep_time} · Arr ${leg.arr_airport} ${leg.arr_time}${leg.arr_date!==leg.dep_date?' (+1)':''} local · ${leg.ac_type}</div></div>`;
+  const depZ = fmtUTCTime(leg.depUTC), arrZ = fmtUTCTime(leg.arrUTC);
+  return `<div class="highlight-card"><div class="label">Next Flight · ${leg.dep_date} (${when})</div><div class="route">${leg.flight} · ${leg.dep_airport} → ${leg.arr_airport}</div><div class="detail">Dep ${leg.dep_airport} ${leg.dep_time} / ${depZ} · Arr ${leg.arr_airport} ${leg.arr_time}${leg.arr_date!==leg.dep_date?' (+1)':''} local / ${arrZ} · ${leg.ac_type}</div></div>`;
 }
 
 function findRotation(legs, todayStr){
