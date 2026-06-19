@@ -305,7 +305,7 @@ details.roster-details table { margin-top: 8px; }
 <div class="section">
   <h2>SIGMET / En-Route Hazards <span class="live-badge">auto-updates</span></h2>
   <div id="sigmetSection"><div class="loading">Loading international SIGMETs…</div></div>
-  <div class="footer-note">Source: aviationweather.gov international SIGMET feed, filtered to FIRs relevant to the current rotation.</div>
+  <div class="footer-note">Source: aviationweather.gov international SIGMET feed. <span id="sigmetFirList"></span></div>
 </div>
 
 <div class="section">
@@ -421,6 +421,59 @@ const ICAO_INFO = {
   LSZH: {name:"Zurich", firs:["LSAS"]},
   EDDM: {name:"Munich", firs:["EDGG"]},
 };
+
+// Lat/lon for each ICAO — used by en-route FIR calculation
+const AIRPORT_COORDS = {
+  WMKK:{lat: 2.7456,lon:101.7099}, YSSY:{lat:-33.9461,lon:151.1772},
+  YMML:{lat:-37.6690,lon:144.8410}, YPPH:{lat:-31.9385,lon:115.9672},
+  RJBB:{lat:34.4347,lon:135.2441}, ZGGG:{lat:23.3924,lon:113.2988},
+  ZSPD:{lat:31.1443,lon:121.8083}, ZBAA:{lat:40.0799,lon:116.5846},
+  VHHH:{lat:22.3080,lon:113.9185}, RCTP:{lat:25.0777,lon:121.2327},
+  YPAD:{lat:-34.9450,lon:138.5310}, YBBN:{lat:-27.3842,lon:153.1175},
+  RJAA:{lat:35.7653,lon:140.3857}, RJTT:{lat:35.5494,lon:139.7798},
+  RJGG:{lat:34.8583,lon:136.8047}, RKSI:{lat:37.4602,lon:126.4407},
+  VTBS:{lat:13.6811,lon:100.7470}, WIII:{lat:-6.1256,lon:106.6559},
+  WADD:{lat:-8.7482,lon:115.1670}, VIDP:{lat:28.5665,lon:77.1031},
+  VABB:{lat:19.0896,lon:72.8656},  OMDB:{lat:25.2528,lon:55.3644},
+  OTHH:{lat:25.2731,lon:51.6080},  EGLL:{lat:51.4775,lon:-0.4614},
+  LFPG:{lat:49.0097,lon:2.5478},   EDDF:{lat:50.0379,lon:8.5622},
+  EHAM:{lat:52.3086,lon:4.7639},   LSZH:{lat:47.4647,lon:8.5492},
+  EDDM:{lat:48.3538,lon:11.7861},  ZUUU:{lat:30.5785,lon:103.9469},
+  ZLXY:{lat:34.4471,lon:108.7519},
+};
+
+// Approximate FIR bounding boxes [min_lat, max_lat, min_lon, max_lon]
+// Used to find en-route FIRs along a great-circle leg
+const FIR_BOXES = {
+  WMFC: [  1,  15,  98, 122],  // Kuala Lumpur
+  VTBB: [  7,  20,  97, 106],  // Bangkok/Thailand
+  VVTS: [  7,  22, 100, 117],  // Ho Chi Minh
+  WSJC: [ -8,   8,  94, 115],  // Singapore
+  WAAF: [-15,   2, 108, 141],  // Ujung Pandang (Indonesia east)
+  YBBB: [-32,  -5, 130, 170],  // Brisbane
+  YMMM: [-47, -10,  94, 157],  // Melbourne (incl. Timor Sea/Darwin)
+  RJJJ: [ 24,  40, 124, 151],  // Fukuoka
+  ZGZU: [ 18,  27, 107, 122],  // Guangzhou
+  ZSHA: [ 27,  38, 117, 131],  // Shanghai
+  ZBPE: [ 35,  56, 107, 126],  // Beijing
+  VHHK: [ 18,  26, 112, 124],  // Hong Kong
+  RCAA: [ 20,  31, 116, 128],  // Taipei
+  RPHI: [  4,  22, 114, 136],  // Manila
+  RKRR: [ 32,  45, 122, 136],  // Incheon
+  VECF: [ 18,  30,  74,  96],  // Kolkata
+  VOMF: [  5,  18,  72,  86],  // Chennai
+  VCCC: [ -2,  14,  72,  88],  // Colombo
+  OMAE: [ 20,  28,  48,  60],  // Emirates
+  OBBB: [ 22,  30,  46,  57],  // Bahrain
+  OOMM: [ 14,  27,  52,  68],  // Muscat
+  OPKR: [ 22,  38,  60,  78],  // Karachi
+  EGTT: [ 48,  62, -11,   2],  // London
+  LFFF: [ 42,  52,  -5,   9],  // Paris
+  EDGG: [ 47,  55,   6,  15],  // Langen
+  EHAA: [ 50,  57,   1,   8],  // Amsterdam
+  LSAS: [ 45,  50,   5,  12],  // Switzerland
+};
+
 const REPORT_BUFFER_MIN_HOME = 75;
 const REPORT_BUFFER_MIN_AWAY = 60;
 const DEBRIEF_BUFFER_MIN = 45;
@@ -612,6 +665,31 @@ function tagLabel(cls){
   return cls === 'alert' ? 'Alert' : (cls === 'watch' ? 'Watch' : 'OK');
 }
 
+function gcPoint(lat1, lon1, lat2, lon2, f){
+  const R2D = 180/Math.PI, D2R = Math.PI/180;
+  const φ1=lat1*D2R, λ1=lon1*D2R, φ2=lat2*D2R, λ2=lon2*D2R;
+  const d = 2*Math.asin(Math.sqrt(Math.sin((φ2-φ1)/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin((λ2-λ1)/2)**2));
+  if(d < 1e-10) return {lat:lat1, lon:lon1};
+  const a = Math.sin((1-f)*d)/Math.sin(d), b = Math.sin(f*d)/Math.sin(d);
+  const x = a*Math.cos(φ1)*Math.cos(λ1)+b*Math.cos(φ2)*Math.cos(λ2);
+  const y = a*Math.cos(φ1)*Math.sin(λ1)+b*Math.cos(φ2)*Math.sin(λ2);
+  const z = a*Math.sin(φ1)+b*Math.sin(φ2);
+  return {lat:R2D*Math.atan2(z,Math.sqrt(x*x+y*y)), lon:R2D*Math.atan2(y,x)};
+}
+
+function enRouteFirs(depIcao, arrIcao){
+  const dep = AIRPORT_COORDS[depIcao], arr = AIRPORT_COORDS[arrIcao];
+  if(!dep || !arr) return new Set();
+  const firs = new Set();
+  for(let i=0; i<=20; i++){
+    const pt = gcPoint(dep.lat, dep.lon, arr.lat, arr.lon, i/20);
+    for(const [fir,[minLat,maxLat,minLon,maxLon]] of Object.entries(FIR_BOXES)){
+      if(pt.lat>=minLat && pt.lat<=maxLat && pt.lon>=minLon && pt.lon<=maxLon) firs.add(fir);
+    }
+  }
+  return firs;
+}
+
 function renderAll(){
   const legs = computeLegs();
   const today = new Date();
@@ -719,6 +797,7 @@ function renderAll(){
     rotation.forEach(l => { stations.add(l.dep_airport); stations.add(l.arr_airport); });
     relevantIcaos = [...stations].map(s => IATA_TO_ICAO[s]).filter(Boolean);
     relevantIcaos.forEach(icao => (ICAO_INFO[icao]?.firs || []).forEach(f => relevantFirs.add(f)));
+    rotation.forEach(l => enRouteFirs(IATA_TO_ICAO[l.dep_airport], IATA_TO_ICAO[l.arr_airport]).forEach(f => relevantFirs.add(f)));
   } else {
     document.getElementById('wxCards').innerHTML = '';
     document.getElementById('sigmetSection').innerHTML = '';
@@ -801,6 +880,8 @@ function renderAll(){
 
   async function loadWeatherAndSigmets(){
     if(!relevantIcaos.length) return;
+    const firListEl = document.getElementById('sigmetFirList');
+    if(firListEl) firListEl.textContent = `Monitoring FIRs: ${[...relevantFirs].sort().join(', ')}`;
     try {
       const res = await fetch('./data.json', {cache: 'no-store'});
       if(!res.ok) throw new Error(`HTTP ${res.status}`);
