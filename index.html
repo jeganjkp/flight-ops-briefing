@@ -728,12 +728,18 @@ function renderAll(){
     }
     return total;
   }
-  let mtdTotal = 0;
+  let mtdTotal = 0, mtdDuty = 0, monthTotalDuty = 0;
+  const currentYYYYMM = todayStr.slice(0,7);
   for(const l of legs){
-    if(l.dep_date.slice(0,7) === todayStr.slice(0,7) && l.dep_date <= todayStr) mtdTotal += l.block;
+    if(l.dep_date.slice(0,7) === currentYYYYMM){
+      monthTotalDuty += l.duty;
+      if(l.dep_date <= todayStr){ mtdTotal += l.block; mtdDuty += l.duty; }
+    }
   }
   document.getElementById('dutySummary').innerHTML = `
     <div class="highlight-card"><div class="label">MTD Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(mtdTotal)}</div></div>
+    <div class="highlight-card"><div class="label">MTD Duty Hours</div><div class="route" style="font-size:20px;">${fmtHM(mtdDuty)}</div></div>
+    <div class="highlight-card" style="border-color:#b7e8c8;background:#eefcf3"><div class="label">Month Total Duty · ${ROSTER.month}</div><div class="route" style="font-size:20px;">${fmtHM(monthTotalDuty)}</div><div style="font-size:11px;color:#6b7280;margin-top:2px;">All legs in roster month (payroll ref)</div></div>
     <div class="highlight-card"><div class="label">Rolling 7-Day Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(7,'block'))}</div></div>
     <div class="highlight-card"><div class="label">Rolling 7-Day Duty Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(7,'duty'))}</div></div>
     <div class="highlight-card"><div class="label">Rolling 28-Day Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(28,'block'))}</div></div>
