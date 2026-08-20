@@ -1,47 +1,57 @@
 {
-  "fetched_at": "2026-08-20T00:39:12Z",
+  "fetched_at": "2026-08-20T02:10:58Z",
   "metar": [
     {
       "icaoId": "VHHH",
-      "receiptTime": "2026-08-20T00:36:03.982Z",
-      "obsTime": 1787185800,
-      "reportTime": "2026-08-20T00:30:00.000Z",
-      "temp": 29,
-      "dewp": 25,
-      "wdir": 70,
-      "wspd": 10,
-      "visib": "6+",
-      "altim": 1003,
+      "receiptTime": "2026-08-20T02:10:04.743Z",
+      "obsTime": 1787191200,
+      "reportTime": "2026-08-20T02:00:00.000Z",
+      "temp": 27,
+      "dewp": 26,
+      "wdir": 130,
+      "wspd": 12,
+      "visib": 1.43,
+      "altim": 1004,
       "qcField": 0,
+      "wxString": "+SHRA",
+      "maxT": 1.5,
       "metarType": "METAR",
-      "rawOb": "METAR VHHH 200030Z 07010KT 9999 FEW012 29/25 Q1003 TEMPO 2500 SHRA FEW010CB SCT020",
+      "rawOb": "METAR VHHH 200200Z 13012KT 2300 1100E R07R/P2000D R25L/P2000D R07L/P2000N R25R/P2000N +SHRA FEW008 FEW015CB SCT022 27/26 Q1004 TEMPO 10015G25KT 2000 TSRA SHRA FEW010CB SCT020",
       "lat": 22.309,
       "lon": 113.922,
       "elev": 9,
       "name": "Hong Kong Intl, HK, HK",
-      "cover": "FEW",
+      "cover": "SCT",
       "clouds": [
         {
           "cover": "FEW",
-          "base": 1200
+          "base": 800
+        },
+        {
+          "cover": "FEW",
+          "base": 1500
+        },
+        {
+          "cover": "SCT",
+          "base": 2200
         }
       ],
-      "fltCat": "VFR"
+      "fltCat": "IFR"
     },
     {
       "icaoId": "YSSY",
-      "receiptTime": "2026-08-20T00:36:15.771Z",
-      "obsTime": 1787185800,
-      "reportTime": "2026-08-20T00:30:00.000Z",
-      "temp": 18,
+      "receiptTime": "2026-08-20T02:06:10.215Z",
+      "obsTime": 1787191200,
+      "reportTime": "2026-08-20T02:00:00.000Z",
+      "temp": 21,
       "dewp": 11,
       "wdir": 310,
-      "wspd": 7,
+      "wspd": 9,
       "visib": "6+",
-      "altim": 1027,
+      "altim": 1025,
       "qcField": 0,
       "metarType": "METAR",
-      "rawOb": "METAR YSSY 200030Z 31007KT CAVOK 18/11 Q1027",
+      "rawOb": "METAR YSSY 200200Z 31009KT CAVOK 21/11 Q1025",
       "lat": -33.946,
       "lon": 151.173,
       "elev": 3,
@@ -52,18 +62,18 @@
     },
     {
       "icaoId": "YMML",
-      "receiptTime": "2026-08-20T00:38:21.492Z",
-      "obsTime": 1787185800,
-      "reportTime": "2026-08-20T00:30:00.000Z",
-      "temp": 13,
+      "receiptTime": "2026-08-20T02:08:08.601Z",
+      "obsTime": 1787191200,
+      "reportTime": "2026-08-20T02:00:00.000Z",
+      "temp": 14,
       "dewp": 8,
-      "wdir": 20,
-      "wspd": 5,
+      "wdir": 340,
+      "wspd": 13,
       "visib": "6+",
       "altim": 1021,
       "qcField": 2,
       "metarType": "METAR",
-      "rawOb": "METAR YMML 200030Z AUTO 02005KT 9999 // NCD 13/08 Q1021",
+      "rawOb": "METAR YMML 200200Z AUTO 34013KT 9999 // NCD 14/08 Q1021",
       "lat": -37.666,
       "lon": 144.832,
       "elev": 115,
@@ -74,18 +84,18 @@
     },
     {
       "icaoId": "WMKK",
-      "receiptTime": "2026-08-20T00:38:31.984Z",
-      "obsTime": 1787185800,
-      "reportTime": "2026-08-20T00:30:00.000Z",
-      "temp": 26,
-      "dewp": 24,
+      "receiptTime": "2026-08-20T02:08:31.923Z",
+      "obsTime": 1787191200,
+      "reportTime": "2026-08-20T02:00:00.000Z",
+      "temp": 29,
+      "dewp": 25,
       "wdir": "VRB",
       "wspd": 2,
       "visib": "6+",
-      "altim": 1011,
+      "altim": 1012,
       "qcField": 16,
       "metarType": "METAR",
-      "rawOb": "METAR WMKK 200030Z VRB02KT 9999 FEW018 26/24 Q1011 NOSIG",
+      "rawOb": "METAR WMKK 200200Z VRB02KT 9999 FEW018 29/25 Q1012 NOSIG",
       "lat": 2.747,
       "lon": 101.714,
       "elev": 21,
@@ -101,6 +111,184 @@
     }
   ],
   "taf": [
+    {
+      "icaoId": "VHHH",
+      "dbPopTime": "2026-08-20T02:01:38.686Z",
+      "bulletinTime": "2026-08-20T02:00:00.000Z",
+      "issueTime": "2026-08-20T02:00:00.000Z",
+      "validTimeFrom": 1787194800,
+      "validTimeTo": 1787302800,
+      "rawTAF": "TAF VHHH 200200Z 2003/2109 10015KT 9999 FEW015 SCT025 TX31/2006Z TX31/2106Z TN27/2022Z TEMPO 2003/2006 10015G25KT 2500 TSRA SHRA FEW008CB SCT015 TEMPO 2006/2012 3000 SHRA FEW010CB SCT020 BECMG 2010/2012 18010KT TEMPO 2021/2103 2500 TSRA SHRA FEW008CB SCT015",
+      "mostRecent": 1,
+      "remarks": "",
+      "lat": 22.309,
+      "lon": 113.922,
+      "elev": 9,
+      "prior": 0,
+      "name": "Hong Kong Intl",
+      "fcsts": [
+        {
+          "timeFrom": 1787194800,
+          "timeTo": 1787220000,
+          "timeBec": null,
+          "fcstChange": null,
+          "probability": null,
+          "wdir": 100,
+          "wspd": 15,
+          "wgst": null,
+          "wshearHgt": null,
+          "wshearDir": null,
+          "wshearSpd": null,
+          "visib": "6+",
+          "altim": null,
+          "vertVis": null,
+          "wxString": null,
+          "notDecoded": null,
+          "clouds": [
+            {
+              "cover": "FEW",
+              "base": 1500,
+              "type": null
+            },
+            {
+              "cover": "SCT",
+              "base": 2500,
+              "type": null
+            }
+          ],
+          "icgTurb": [],
+          "temp": []
+        },
+        {
+          "timeFrom": 1787194800,
+          "timeTo": 1787205600,
+          "timeBec": null,
+          "fcstChange": "TEMPO",
+          "probability": null,
+          "wdir": 100,
+          "wspd": 15,
+          "wgst": 25,
+          "wshearHgt": null,
+          "wshearDir": null,
+          "wshearSpd": null,
+          "visib": 1.55,
+          "altim": null,
+          "vertVis": null,
+          "wxString": "TSRA SHRA",
+          "notDecoded": null,
+          "clouds": [
+            {
+              "cover": "FEW",
+              "base": 800,
+              "type": "CB"
+            },
+            {
+              "cover": "SCT",
+              "base": 1500,
+              "type": null
+            }
+          ],
+          "icgTurb": [],
+          "temp": []
+        },
+        {
+          "timeFrom": 1787205600,
+          "timeTo": 1787227200,
+          "timeBec": null,
+          "fcstChange": "TEMPO",
+          "probability": null,
+          "wdir": null,
+          "wspd": null,
+          "wgst": null,
+          "wshearHgt": null,
+          "wshearDir": null,
+          "wshearSpd": null,
+          "visib": 1.86,
+          "altim": null,
+          "vertVis": null,
+          "wxString": "SHRA",
+          "notDecoded": null,
+          "clouds": [
+            {
+              "cover": "FEW",
+              "base": 1000,
+              "type": "CB"
+            },
+            {
+              "cover": "SCT",
+              "base": 2000,
+              "type": null
+            }
+          ],
+          "icgTurb": [],
+          "temp": []
+        },
+        {
+          "timeFrom": 1787220000,
+          "timeTo": 1787302800,
+          "timeBec": 1787227200,
+          "fcstChange": "BECMG",
+          "probability": null,
+          "wdir": 180,
+          "wspd": 10,
+          "wgst": null,
+          "wshearHgt": null,
+          "wshearDir": null,
+          "wshearSpd": null,
+          "visib": "6+",
+          "altim": null,
+          "vertVis": null,
+          "wxString": null,
+          "notDecoded": null,
+          "clouds": [
+            {
+              "cover": "FEW",
+              "base": 1500,
+              "type": null
+            },
+            {
+              "cover": "SCT",
+              "base": 2500,
+              "type": null
+            }
+          ],
+          "icgTurb": [],
+          "temp": []
+        },
+        {
+          "timeFrom": 1787259600,
+          "timeTo": 1787281200,
+          "timeBec": null,
+          "fcstChange": "TEMPO",
+          "probability": null,
+          "wdir": null,
+          "wspd": null,
+          "wgst": null,
+          "wshearHgt": null,
+          "wshearDir": null,
+          "wshearSpd": null,
+          "visib": 1.55,
+          "altim": null,
+          "vertVis": null,
+          "wxString": "TSRA SHRA",
+          "notDecoded": null,
+          "clouds": [
+            {
+              "cover": "FEW",
+              "base": 800,
+              "type": "CB"
+            },
+            {
+              "cover": "SCT",
+              "base": 1500,
+              "type": null
+            }
+          ],
+          "icgTurb": [],
+          "temp": []
+        }
+      ]
+    },
     {
       "icaoId": "YMML",
       "dbPopTime": "2026-08-19T23:50:12.767Z",
@@ -413,184 +601,6 @@
       ]
     },
     {
-      "icaoId": "VHHH",
-      "dbPopTime": "2026-08-19T23:00:26.936Z",
-      "bulletinTime": "2026-08-19T23:00:00.000Z",
-      "issueTime": "2026-08-19T23:00:00.000Z",
-      "validTimeFrom": 1787184000,
-      "validTimeTo": 1787292000,
-      "rawTAF": "TAF VHHH 192300Z 2000/2106 09015KT 9999 FEW015 SCT025 TX31/2006Z TX32/2106Z TN28/2022Z TEMPO 2000/2006 10015G25KT 2500 TSRA SHRA FEW010CB SCT020 TEMPO 2006/2012 3000 SHRA FEW010CB SCT020 BECMG 2010/2012 18010KT TEMPO 2021/2103 2500 TSRA SHRA FEW010CB SCT020",
-      "mostRecent": 1,
-      "remarks": "",
-      "lat": 22.309,
-      "lon": 113.922,
-      "elev": 9,
-      "prior": 0,
-      "name": "Hong Kong Intl",
-      "fcsts": [
-        {
-          "timeFrom": 1787184000,
-          "timeTo": 1787220000,
-          "timeBec": null,
-          "fcstChange": null,
-          "probability": null,
-          "wdir": 90,
-          "wspd": 15,
-          "wgst": null,
-          "wshearHgt": null,
-          "wshearDir": null,
-          "wshearSpd": null,
-          "visib": "6+",
-          "altim": null,
-          "vertVis": null,
-          "wxString": null,
-          "notDecoded": null,
-          "clouds": [
-            {
-              "cover": "FEW",
-              "base": 1500,
-              "type": null
-            },
-            {
-              "cover": "SCT",
-              "base": 2500,
-              "type": null
-            }
-          ],
-          "icgTurb": [],
-          "temp": []
-        },
-        {
-          "timeFrom": 1787184000,
-          "timeTo": 1787205600,
-          "timeBec": null,
-          "fcstChange": "TEMPO",
-          "probability": null,
-          "wdir": 100,
-          "wspd": 15,
-          "wgst": 25,
-          "wshearHgt": null,
-          "wshearDir": null,
-          "wshearSpd": null,
-          "visib": 1.55,
-          "altim": null,
-          "vertVis": null,
-          "wxString": "TSRA SHRA",
-          "notDecoded": null,
-          "clouds": [
-            {
-              "cover": "FEW",
-              "base": 1000,
-              "type": "CB"
-            },
-            {
-              "cover": "SCT",
-              "base": 2000,
-              "type": null
-            }
-          ],
-          "icgTurb": [],
-          "temp": []
-        },
-        {
-          "timeFrom": 1787205600,
-          "timeTo": 1787227200,
-          "timeBec": null,
-          "fcstChange": "TEMPO",
-          "probability": null,
-          "wdir": null,
-          "wspd": null,
-          "wgst": null,
-          "wshearHgt": null,
-          "wshearDir": null,
-          "wshearSpd": null,
-          "visib": 1.86,
-          "altim": null,
-          "vertVis": null,
-          "wxString": "SHRA",
-          "notDecoded": null,
-          "clouds": [
-            {
-              "cover": "FEW",
-              "base": 1000,
-              "type": "CB"
-            },
-            {
-              "cover": "SCT",
-              "base": 2000,
-              "type": null
-            }
-          ],
-          "icgTurb": [],
-          "temp": []
-        },
-        {
-          "timeFrom": 1787220000,
-          "timeTo": 1787292000,
-          "timeBec": 1787227200,
-          "fcstChange": "BECMG",
-          "probability": null,
-          "wdir": 180,
-          "wspd": 10,
-          "wgst": null,
-          "wshearHgt": null,
-          "wshearDir": null,
-          "wshearSpd": null,
-          "visib": "6+",
-          "altim": null,
-          "vertVis": null,
-          "wxString": null,
-          "notDecoded": null,
-          "clouds": [
-            {
-              "cover": "FEW",
-              "base": 1500,
-              "type": null
-            },
-            {
-              "cover": "SCT",
-              "base": 2500,
-              "type": null
-            }
-          ],
-          "icgTurb": [],
-          "temp": []
-        },
-        {
-          "timeFrom": 1787259600,
-          "timeTo": 1787281200,
-          "timeBec": null,
-          "fcstChange": "TEMPO",
-          "probability": null,
-          "wdir": null,
-          "wspd": null,
-          "wgst": null,
-          "wshearHgt": null,
-          "wshearDir": null,
-          "wshearSpd": null,
-          "visib": 1.55,
-          "altim": null,
-          "vertVis": null,
-          "wxString": "TSRA SHRA",
-          "notDecoded": null,
-          "clouds": [
-            {
-              "cover": "FEW",
-              "base": 1000,
-              "type": "CB"
-            },
-            {
-              "cover": "SCT",
-              "base": 2000,
-              "type": null
-            }
-          ],
-          "icgTurb": [],
-          "temp": []
-        }
-      ]
-    },
-    {
       "icaoId": "WMKK",
       "dbPopTime": "2026-08-19T23:35:25.602Z",
       "bulletinTime": "2026-08-19T23:00:00.000Z",
@@ -637,42 +647,6 @@
     }
   ],
   "sigmet": [
-    {
-      "icaoId": "YBRF",
-      "firId": "YMMM",
-      "firName": "YMMM MELBOURNE",
-      "receiptTime": "2026-08-19T20:38:39.922Z",
-      "validTimeFrom": 1787173200,
-      "validTimeTo": 1787187600,
-      "seriesId": "V02",
-      "hazard": "MTW",
-      "qualifier": "SEV",
-      "base": 4000,
-      "top": 30000,
-      "geom": "AREA",
-      "coords": [
-        {
-          "lon": 148,
-          "lat": -36.667
-        },
-        {
-          "lon": 148.5,
-          "lat": -35.833
-        },
-        {
-          "lon": 149,
-          "lat": -36
-        },
-        {
-          "lon": 148.5,
-          "lat": -36.833
-        }
-      ],
-      "dir": "-",
-      "spd": "0",
-      "chng": "NC",
-      "rawSigmet": "WSAU21 YBRF 192038\nYMMM SIGMET V02 VALID 192100/200100 YBRF-\nYMMM MELBOURNE FIR SEV MTW FCST WI S3640 E14800 - S3550 E14830 -\nS3600 E14900 - S3650 E14830 4000FT/FL300 STNR NC="
-    },
     {
       "icaoId": "YMMC",
       "firId": "YMMM",
@@ -764,46 +738,6 @@
       "spd": "15",
       "chng": "NC",
       "rawSigmet": "WSAU21 YMMC 192246\nYMMM SIGMET D11 VALID 192300/200300 YMMC-\nYMMM MELBOURNE FIR SEV ICE FCST WI S2750 E12610 - S2750 E12150 -\nS2630 E11750 - S2400 E10920 - S2200 E10850 - S2600 E12210 - S2620\nE12640 10000FT/FL210 MOV E 15KT NC="
-    },
-    {
-      "icaoId": "WMKK",
-      "firId": "WMFC",
-      "firName": "WMFC KUALA LUMPUR",
-      "receiptTime": "2026-08-19T22:53:24.481Z",
-      "validTimeFrom": 1787180400,
-      "validTimeTo": 1787188200,
-      "seriesId": "8",
-      "hazard": "TS",
-      "qualifier": "EMBD",
-      "base": null,
-      "top": 50000,
-      "geom": "AREA",
-      "coords": [
-        {
-          "lon": 94.417,
-          "lat": 9.017
-        },
-        {
-          "lon": 94.433,
-          "lat": 9.983
-        },
-        {
-          "lon": 96.5,
-          "lat": 10
-        },
-        {
-          "lon": 97.033,
-          "lat": 9.017
-        },
-        {
-          "lon": 94.417,
-          "lat": 9.017
-        }
-      ],
-      "dir": "S",
-      "spd": "15",
-      "chng": "NC",
-      "rawSigmet": "WSMS31 WMKK 192253\nWMFC SIGMET 8 VALID 192300/200110 WMKK-\nWMFC KUALA LUMPUR FIR EMBD TS\nOBS WI N0901 E09425 - N0959 E09426 - N1000 E09630 - N0901 E09702 - N0901 E09425 TOP FL500 MOV S 15KT NC="
     },
     {
       "icaoId": "YMMC",
@@ -1068,6 +1002,42 @@
       "spd": "30",
       "chng": "WKN",
       "rawSigmet": "WSAU21 YMMC 192359\nYMMM SIGMET Z13 VALID 200010/200410 YMMC-\nYMMM MELBOURNE FIR SEV TURB FCST WI S4110 E13700 - S4020 E13520 -\nS3910 E13540 - S3720 E13720 - S3800 E13900 - S3930 E13900 - S4030\nE13810 FL140/260 MOV E 30KT WKN="
+    },
+    {
+      "icaoId": "YBRF",
+      "firId": "YMMM",
+      "firName": "YMMM MELBOURNE",
+      "receiptTime": "2026-08-20T00:44:08.871Z",
+      "validTimeFrom": 1787187600,
+      "validTimeTo": 1787194800,
+      "seriesId": "V03",
+      "hazard": "MTW",
+      "qualifier": "SEV",
+      "base": 4000,
+      "top": 28000,
+      "geom": "AREA",
+      "coords": [
+        {
+          "lon": 147.833,
+          "lat": -36.833
+        },
+        {
+          "lon": 148.5,
+          "lat": -35.667
+        },
+        {
+          "lon": 149.167,
+          "lat": -35.833
+        },
+        {
+          "lon": 148.667,
+          "lat": -37.167
+        }
+      ],
+      "dir": "-",
+      "spd": "0",
+      "chng": "NC",
+      "rawSigmet": "WSAU21 YBRF 200044\nYMMM SIGMET V03 VALID 200100/200300 YBRF-\nYMMM MELBOURNE FIR SEV MTW OBS WI S3650 E14750 - S3540 E14830 -\nS3550 E14910 - S3710 E14840 4000FT/FL280 STNR NC="
     }
   ],
   "forecast": {
