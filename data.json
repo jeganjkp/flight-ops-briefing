@@ -1,20 +1,20 @@
 {
-  "fetched_at": "2026-08-25T14:12:13Z",
+  "fetched_at": "2026-08-25T15:11:23Z",
   "metar": [
     {
       "icaoId": "VHHH",
-      "receiptTime": "2026-08-25T14:01:47.219Z",
-      "obsTime": 1787666400,
-      "reportTime": "2026-08-25T14:00:00.000Z",
+      "receiptTime": "2026-08-25T15:01:46.671Z",
+      "obsTime": 1787670000,
+      "reportTime": "2026-08-25T15:00:00.000Z",
       "temp": 30,
-      "dewp": 27,
-      "wdir": 200,
-      "wspd": 8,
+      "dewp": 26,
+      "wdir": 180,
+      "wspd": 10,
       "visib": "6+",
-      "altim": 1004,
+      "altim": 1003,
       "qcField": 16,
       "metarType": "METAR",
-      "rawOb": "METAR VHHH 251400Z 20008KT 9999 FEW010 SCT025 30/27 Q1004 NOSIG",
+      "rawOb": "METAR VHHH 251500Z 18010KT 9999 FEW010 SCT025 30/26 Q1003 NOSIG",
       "lat": 22.309,
       "lon": 113.922,
       "elev": 9,
@@ -34,19 +34,19 @@
     },
     {
       "icaoId": "WMKK",
-      "receiptTime": "2026-08-25T14:08:25.392Z",
-      "obsTime": 1787666400,
-      "reportTime": "2026-08-25T14:00:00.000Z",
+      "receiptTime": "2026-08-25T15:08:20.003Z",
+      "obsTime": 1787670000,
+      "reportTime": "2026-08-25T15:00:00.000Z",
       "temp": 29,
       "dewp": 25,
-      "wdir": 30,
-      "wspd": 3,
+      "wdir": "VRB",
+      "wspd": 2,
       "visib": 3.11,
-      "altim": 1011,
+      "altim": 1012,
       "qcField": 16,
       "wxString": "HZ",
       "metarType": "METAR",
-      "rawOb": "METAR WMKK 251400Z 03003KT 350V070 5000 HZ FEW030 29/25 Q1011 NOSIG",
+      "rawOb": "METAR WMKK 251500Z VRB02KT 5000 HZ FEW030 29/25 Q1012 NOSIG",
       "lat": 2.747,
       "lon": 101.714,
       "elev": 21,
@@ -62,54 +62,52 @@
     },
     {
       "icaoId": "YMML",
-      "receiptTime": "2026-08-25T14:08:06.447Z",
-      "obsTime": 1787666400,
-      "reportTime": "2026-08-25T14:00:00.000Z",
-      "temp": 12,
+      "receiptTime": "2026-08-25T15:08:16.575Z",
+      "obsTime": 1787670000,
+      "reportTime": "2026-08-25T15:00:00.000Z",
+      "temp": 11,
       "dewp": 11,
-      "wdir": 210,
-      "wspd": 8,
+      "wdir": 230,
+      "wspd": 9,
       "visib": "6+",
       "altim": 1021,
       "qcField": 2,
       "metarType": "METAR",
-      "rawOb": "METAR YMML 251400Z AUTO 21008KT 9999 // BKN008 BKN013 OVC033 12/11 Q1021",
+      "rawOb": "METAR YMML 251500Z AUTO 23009KT 9999 // SCT009 BKN013 BKN020 11/11 Q1021",
       "lat": -37.666,
       "lon": 144.832,
       "elev": 115,
       "name": "Melbourne Intl, VI, AU",
-      "cover": "OVC",
+      "cover": "BKN",
       "clouds": [
         {
-          "cover": "BKN",
-          "base": 800
+          "cover": "SCT",
+          "base": 900
         },
         {
           "cover": "BKN",
           "base": 1300
         },
         {
-          "cover": "OVC",
-          "base": 3300
+          "cover": "BKN",
+          "base": 2000
         }
       ],
-      "fltCat": "IFR"
+      "fltCat": "MVFR"
     },
     {
       "icaoId": "YSSY",
-      "receiptTime": "2026-08-25T14:06:28.395Z",
-      "obsTime": 1787666400,
-      "reportTime": "2026-08-25T14:00:00.000Z",
+      "receiptTime": "2026-08-25T15:08:16.694Z",
+      "obsTime": 1787670000,
+      "reportTime": "2026-08-25T15:00:00.000Z",
       "temp": 16,
       "dewp": 15,
-      "wdir": 280,
+      "wdir": 290,
       "wspd": 5,
-      "visib": "6+",
-      "altim": 1017,
+      "altim": 1016,
       "qcField": 2,
-      "wxString": "-RA",
       "metarType": "METAR",
-      "rawOb": "METAR YSSY 251400Z AUTO 28005KT 9999 -RA OVC100 16/15 Q1017",
+      "rawOb": "METAR YSSY 251500Z AUTO 29005KT //// // OVC115 16/15 Q1016",
       "lat": -33.946,
       "lon": 151.173,
       "elev": 3,
@@ -118,10 +116,9 @@
       "clouds": [
         {
           "cover": "OVC",
-          "base": 10000
+          "base": 11500
         }
-      ],
-      "fltCat": "VFR"
+      ]
     }
   ],
   "taf": [
@@ -380,6 +377,164 @@
       ]
     },
     {
+      "icaoId": "YMML",
+      "dbPopTime": "2026-08-25T14:50:15.960Z",
+      "bulletinTime": "2026-08-25T14:00:00.000Z",
+      "issueTime": "2026-08-25T14:05:00.000Z",
+      "validTimeFrom": 1787670000,
+      "validTimeTo": 1787767200,
+      "rawTAF": "TAF YMML 251405Z 2515/2618 21005KT 9999 -SHRA BKN008 FM251600 22008KT 9999 -SHRA FEW014 SCT025 FM260000 18010KT 9999 NSW SCT030 FM261500 26005KT 9999 FEW030 TEMPO 2515/2516 3000 SHRA BKN005",
+      "mostRecent": 1,
+      "remarks": "",
+      "lat": -37.666,
+      "lon": 144.832,
+      "elev": 115,
+      "prior": 1,
+      "name": "Melbourne Intl",
+      "fcsts": [
+        {
+          "timeFrom": 1787670000,
+          "timeTo": 1787673600,
+          "timeBec": null,
+          "fcstChange": null,
+          "probability": null,
+          "wdir": 210,
+          "wspd": 5,
+          "wgst": null,
+          "wshearHgt": null,
+          "wshearDir": null,
+          "wshearSpd": null,
+          "visib": "6+",
+          "altim": null,
+          "vertVis": null,
+          "wxString": "-SHRA",
+          "notDecoded": null,
+          "clouds": [
+            {
+              "cover": "BKN",
+              "base": 800,
+              "type": null
+            }
+          ],
+          "icgTurb": [],
+          "temp": []
+        },
+        {
+          "timeFrom": 1787673600,
+          "timeTo": 1787702400,
+          "timeBec": null,
+          "fcstChange": "FM",
+          "probability": null,
+          "wdir": 220,
+          "wspd": 8,
+          "wgst": null,
+          "wshearHgt": null,
+          "wshearDir": null,
+          "wshearSpd": null,
+          "visib": "6+",
+          "altim": null,
+          "vertVis": null,
+          "wxString": "-SHRA",
+          "notDecoded": null,
+          "clouds": [
+            {
+              "cover": "FEW",
+              "base": 1400,
+              "type": null
+            },
+            {
+              "cover": "SCT",
+              "base": 2500,
+              "type": null
+            }
+          ],
+          "icgTurb": [],
+          "temp": []
+        },
+        {
+          "timeFrom": 1787702400,
+          "timeTo": 1787756400,
+          "timeBec": null,
+          "fcstChange": "FM",
+          "probability": null,
+          "wdir": 180,
+          "wspd": 10,
+          "wgst": null,
+          "wshearHgt": null,
+          "wshearDir": null,
+          "wshearSpd": null,
+          "visib": "6+",
+          "altim": null,
+          "vertVis": null,
+          "wxString": "NSW",
+          "notDecoded": null,
+          "clouds": [
+            {
+              "cover": "SCT",
+              "base": 3000,
+              "type": null
+            }
+          ],
+          "icgTurb": [],
+          "temp": []
+        },
+        {
+          "timeFrom": 1787756400,
+          "timeTo": 1787767200,
+          "timeBec": null,
+          "fcstChange": "FM",
+          "probability": null,
+          "wdir": 260,
+          "wspd": 5,
+          "wgst": null,
+          "wshearHgt": null,
+          "wshearDir": null,
+          "wshearSpd": null,
+          "visib": "6+",
+          "altim": null,
+          "vertVis": null,
+          "wxString": null,
+          "notDecoded": null,
+          "clouds": [
+            {
+              "cover": "FEW",
+              "base": 3000,
+              "type": null
+            }
+          ],
+          "icgTurb": [],
+          "temp": []
+        },
+        {
+          "timeFrom": 1787670000,
+          "timeTo": 1787673600,
+          "timeBec": null,
+          "fcstChange": "TEMPO",
+          "probability": null,
+          "wdir": null,
+          "wspd": null,
+          "wgst": null,
+          "wshearHgt": null,
+          "wshearDir": null,
+          "wshearSpd": null,
+          "visib": 1.86,
+          "altim": null,
+          "vertVis": null,
+          "wxString": "SHRA",
+          "notDecoded": null,
+          "clouds": [
+            {
+              "cover": "BKN",
+              "base": 500,
+              "type": null
+            }
+          ],
+          "icgTurb": [],
+          "temp": []
+        }
+      ]
+    },
+    {
       "icaoId": "VHHH",
       "dbPopTime": "2026-08-25T14:02:37.804Z",
       "bulletinTime": "2026-08-25T14:00:00.000Z",
@@ -558,164 +713,6 @@
       ]
     },
     {
-      "icaoId": "YMML",
-      "dbPopTime": "2026-08-25T11:58:42.928Z",
-      "bulletinTime": "2026-08-25T11:00:00.000Z",
-      "issueTime": "2026-08-25T11:14:00.000Z",
-      "validTimeFrom": 1787659200,
-      "validTimeTo": 1787767200,
-      "rawTAF": "TAF YMML 251114Z 2512/2618 21005KT 9999 -SHRA BKN008 FM251600 22008KT 9999 -SHRA FEW014 SCT025 FM260000 18010KT 9999 NSW SCT030 FM261500 26005KT 9999 FEW030 TEMPO 2512/2516 3000 SHRA BKN005",
-      "mostRecent": 1,
-      "remarks": "",
-      "lat": -37.666,
-      "lon": 144.832,
-      "elev": 115,
-      "prior": 1,
-      "name": "Melbourne Intl",
-      "fcsts": [
-        {
-          "timeFrom": 1787659200,
-          "timeTo": 1787673600,
-          "timeBec": null,
-          "fcstChange": null,
-          "probability": null,
-          "wdir": 210,
-          "wspd": 5,
-          "wgst": null,
-          "wshearHgt": null,
-          "wshearDir": null,
-          "wshearSpd": null,
-          "visib": "6+",
-          "altim": null,
-          "vertVis": null,
-          "wxString": "-SHRA",
-          "notDecoded": null,
-          "clouds": [
-            {
-              "cover": "BKN",
-              "base": 800,
-              "type": null
-            }
-          ],
-          "icgTurb": [],
-          "temp": []
-        },
-        {
-          "timeFrom": 1787673600,
-          "timeTo": 1787702400,
-          "timeBec": null,
-          "fcstChange": "FM",
-          "probability": null,
-          "wdir": 220,
-          "wspd": 8,
-          "wgst": null,
-          "wshearHgt": null,
-          "wshearDir": null,
-          "wshearSpd": null,
-          "visib": "6+",
-          "altim": null,
-          "vertVis": null,
-          "wxString": "-SHRA",
-          "notDecoded": null,
-          "clouds": [
-            {
-              "cover": "FEW",
-              "base": 1400,
-              "type": null
-            },
-            {
-              "cover": "SCT",
-              "base": 2500,
-              "type": null
-            }
-          ],
-          "icgTurb": [],
-          "temp": []
-        },
-        {
-          "timeFrom": 1787702400,
-          "timeTo": 1787756400,
-          "timeBec": null,
-          "fcstChange": "FM",
-          "probability": null,
-          "wdir": 180,
-          "wspd": 10,
-          "wgst": null,
-          "wshearHgt": null,
-          "wshearDir": null,
-          "wshearSpd": null,
-          "visib": "6+",
-          "altim": null,
-          "vertVis": null,
-          "wxString": "NSW",
-          "notDecoded": null,
-          "clouds": [
-            {
-              "cover": "SCT",
-              "base": 3000,
-              "type": null
-            }
-          ],
-          "icgTurb": [],
-          "temp": []
-        },
-        {
-          "timeFrom": 1787756400,
-          "timeTo": 1787767200,
-          "timeBec": null,
-          "fcstChange": "FM",
-          "probability": null,
-          "wdir": 260,
-          "wspd": 5,
-          "wgst": null,
-          "wshearHgt": null,
-          "wshearDir": null,
-          "wshearSpd": null,
-          "visib": "6+",
-          "altim": null,
-          "vertVis": null,
-          "wxString": null,
-          "notDecoded": null,
-          "clouds": [
-            {
-              "cover": "FEW",
-              "base": 3000,
-              "type": null
-            }
-          ],
-          "icgTurb": [],
-          "temp": []
-        },
-        {
-          "timeFrom": 1787659200,
-          "timeTo": 1787673600,
-          "timeBec": null,
-          "fcstChange": "TEMPO",
-          "probability": null,
-          "wdir": null,
-          "wspd": null,
-          "wgst": null,
-          "wshearHgt": null,
-          "wshearDir": null,
-          "wshearSpd": null,
-          "visib": 1.86,
-          "altim": null,
-          "vertVis": null,
-          "wxString": "SHRA",
-          "notDecoded": null,
-          "clouds": [
-            {
-              "cover": "BKN",
-              "base": 500,
-              "type": null
-            }
-          ],
-          "icgTurb": [],
-          "temp": []
-        }
-      ]
-    },
-    {
       "icaoId": "WMKK",
       "dbPopTime": "2026-08-25T11:36:02.916Z",
       "bulletinTime": "2026-08-25T11:36:00.000Z",
@@ -798,46 +795,6 @@
       "icaoId": "YMMC",
       "firId": "YMMM",
       "firName": "YMMM MELBOURNE",
-      "receiptTime": "2026-08-25T10:36:27.971Z",
-      "validTimeFrom": 1787656200,
-      "validTimeTo": 1787670600,
-      "seriesId": "U07",
-      "hazard": "TURB",
-      "qualifier": "SEV",
-      "base": 16000,
-      "top": 32000,
-      "geom": "AREA",
-      "coords": [
-        {
-          "lon": 95.667,
-          "lat": -32.333
-        },
-        {
-          "lon": 98.167,
-          "lat": -36.667
-        },
-        {
-          "lon": 99.667,
-          "lat": -47.333
-        },
-        {
-          "lon": 96.167,
-          "lat": -47.5
-        },
-        {
-          "lon": 91.167,
-          "lat": -33.667
-        }
-      ],
-      "dir": "NNE",
-      "spd": "35",
-      "chng": "WKN",
-      "rawSigmet": "WSAU21 YMMC 251035\nYMMM SIGMET U07 VALID 251110/251510 YMMC-\nYMMM MELBOURNE FIR SEV TURB FCST WI S3220 E09540 - S3640 E09810 -\nS4720 E09940 - S4730 E09610 - S3340 E09110 FL160/320 MOV NNE 35KT\nWKN="
-    },
-    {
-      "icaoId": "YMMC",
-      "firId": "YMMM",
-      "firName": "YMMM MELBOURNE",
       "receiptTime": "2026-08-25T10:40:40.403Z",
       "validTimeFrom": 1787656680,
       "validTimeTo": 1787671080,
@@ -880,154 +837,6 @@
     },
     {
       "icaoId": "YMMC",
-      "firId": "YMMM",
-      "firName": "YMMM MELBOURNE",
-      "receiptTime": "2026-08-25T10:43:26.735Z",
-      "validTimeFrom": 1787657040,
-      "validTimeTo": 1787667840,
-      "seriesId": "B05",
-      "hazard": "TURB",
-      "qualifier": "SEV",
-      "base": 25000,
-      "top": 35000,
-      "geom": "AREA",
-      "coords": [
-        {
-          "lon": 86,
-          "lat": -29.167
-        },
-        {
-          "lon": 96.667,
-          "lat": -29
-        },
-        {
-          "lon": 94.333,
-          "lat": -32
-        },
-        {
-          "lon": 81.5,
-          "lat": -34.667
-        },
-        {
-          "lon": 75,
-          "lat": -34.167
-        },
-        {
-          "lon": 75,
-          "lat": -30.833
-        }
-      ],
-      "dir": "-",
-      "spd": "0",
-      "chng": "NC",
-      "rawSigmet": "WSAU21 YMMC 251042\nYMMM SIGMET B05 VALID 251124/251424 YMMC-\nYMMM MELBOURNE FIR SEV TURB FCST WI S2910 E08600 - S2900 E09640 -\nS3200 E09420 - S3440 E08130 - S3410 E07500 - S3050 E07500 FL250/350\nSTNR NC="
-    },
-    {
-      "icaoId": "WMKK",
-      "firId": "WMFC",
-      "firName": "WMFC KUALA LUMPUR",
-      "receiptTime": "2026-08-25T11:44:47.321Z",
-      "validTimeFrom": 1787658240,
-      "validTimeTo": 1787668200,
-      "seriesId": "18",
-      "hazard": "TS",
-      "qualifier": "EMBD",
-      "base": null,
-      "top": 51000,
-      "geom": "AREA",
-      "coords": [
-        {
-          "lon": 100.592,
-          "lat": 3.221
-        },
-        {
-          "lon": 100.612,
-          "lat": 3.203
-        },
-        {
-          "lon": 103.367,
-          "lat": 3.917
-        },
-        {
-          "lon": 102.567,
-          "lat": 6.65
-        },
-        {
-          "lon": 102.567,
-          "lat": 6.653
-        },
-        {
-          "lon": 102.084,
-          "lat": 6.231
-        },
-        {
-          "lon": 101.863,
-          "lat": 5.757
-        },
-        {
-          "lon": 101.579,
-          "lat": 5.908
-        },
-        {
-          "lon": 101.159,
-          "lat": 5.608
-        },
-        {
-          "lon": 100.985,
-          "lat": 5.775
-        },
-        {
-          "lon": 101.118,
-          "lat": 6.219
-        },
-        {
-          "lon": 100.844,
-          "lat": 6.259
-        },
-        {
-          "lon": 100.818,
-          "lat": 6.436
-        },
-        {
-          "lon": 100.407,
-          "lat": 6.536
-        },
-        {
-          "lon": 100.205,
-          "lat": 6.708
-        },
-        {
-          "lon": 100.133,
-          "lat": 6.437
-        },
-        {
-          "lon": 99.966,
-          "lat": 6.476
-        },
-        {
-          "lon": 99.845,
-          "lat": 6.565
-        },
-        {
-          "lon": 99.531,
-          "lat": 6.471
-        },
-        {
-          "lon": 99.34,
-          "lat": 6.565
-        },
-        {
-          "lon": 100.592,
-          "lat": 3.221
-        }
-      ],
-      "dir": "WSW",
-      "spd": "10",
-      "chng": "INTSF",
-      "rawSigmet": "WSMS31 WMKK 251144\nWMFC SIGMET 18 VALID 251144/251430 WMKK-\nWMFC KUALA LUMPUR FIR EMBD TS\nOBS N OF LINE N0635 E09920 - N0312 E10036 - N0355 E10322 - N0639\nE10234 TOP FL510 MOV WSW 10KT INTSF="
-    },
-    {
-      "icaoId": "YMMC",
       "firId": "YBBB",
       "firName": "YBBB BRISBANE",
       "receiptTime": "2026-08-25T11:50:32.308Z",
@@ -1065,54 +874,6 @@
       "spd": "0",
       "chng": "NC",
       "rawSigmet": "WSAU21 YMMC 251149\nYBBB SIGMET H02 VALID 251227/251627 YMMC-\nYBBB BRISBANE FIR SEV TURB FCST WI S3210 E16300 - S3330 E15420 -\nS3000 E14950 - S2800 E15150 - S2820 E16300 FL300/360 STNR NC="
-    },
-    {
-      "icaoId": "YMMC",
-      "firId": "YMMM",
-      "firName": "YMMM MELBOURNE",
-      "receiptTime": "2026-08-25T12:00:34.881Z",
-      "validTimeFrom": 1787661660,
-      "validTimeTo": 1787668860,
-      "seriesId": "D03",
-      "hazard": "ICE",
-      "qualifier": "SEV",
-      "base": 5500,
-      "top": 14000,
-      "geom": "AREA",
-      "coords": [
-        {
-          "lon": 149,
-          "lat": -45.333
-        },
-        {
-          "lon": 146.55,
-          "lat": -45.017
-        },
-        {
-          "lon": 146.167,
-          "lat": -44
-        },
-        {
-          "lon": 148.35,
-          "lat": -43.333
-        },
-        {
-          "lon": 148.667,
-          "lat": -43.833
-        },
-        {
-          "lon": 149.667,
-          "lat": -42.333
-        },
-        {
-          "lon": 150.333,
-          "lat": -44
-        }
-      ],
-      "dir": "E",
-      "spd": "40",
-      "chng": "NC",
-      "rawSigmet": "WSAU21 YMMC 251200\nYMMM SIGMET D03 VALID 251241/251441 YMMC-\nYMMM MELBOURNE FIR SEV ICE FCST WI S4520 E14900 - S4501 E14633 -\nS4400 E14610 - S4320 E14821 - S4350 E14840 - S4220 E14940 - S4400\nE15020 5500FT/FL140 MOV E 40KT NC="
     },
     {
       "icaoId": "VHHH",
@@ -1245,6 +1006,242 @@
       "spd": "25",
       "chng": "NC",
       "rawSigmet": "WSAU21 YMMC 251329\nYMMM SIGMET C04 VALID 251405/251605 YMMC-\nYMMM MELBOURNE FIR SEV ICE FCST WI S3940 E15400 - S3520 E14810 -\nS3340 E14950 - S2320 E14720 - S2320 E14850 - S3701 E15740\n8000FT/FL200 MOV ESE 25KT NC="
+    },
+    {
+      "icaoId": "YMMC",
+      "firId": "YMMM",
+      "firName": "YMMM MELBOURNE",
+      "receiptTime": "2026-08-25T13:48:53.344Z",
+      "validTimeFrom": 1787667840,
+      "validTimeTo": 1787682240,
+      "seriesId": "B06",
+      "hazard": "TURB",
+      "qualifier": "SEV",
+      "base": 25000,
+      "top": 35000,
+      "geom": "AREA",
+      "coords": [
+        {
+          "lon": 75,
+          "lat": -29.833
+        },
+        {
+          "lon": 84.667,
+          "lat": -29.833
+        },
+        {
+          "lon": 100.667,
+          "lat": -26.667
+        },
+        {
+          "lon": 99.667,
+          "lat": -30.667
+        },
+        {
+          "lon": 82.667,
+          "lat": -34.333
+        },
+        {
+          "lon": 75,
+          "lat": -34.167
+        }
+      ],
+      "dir": "-",
+      "spd": "0",
+      "chng": "NC",
+      "rawSigmet": "WSAU21 YMMC 251348\nYMMM SIGMET B06 VALID 251424/251824 YMMC-\nYMMM MELBOURNE FIR SEV TURB FCST WI S2950 E07500 - S2950 E08440 -\nS2640 E10040 - S3040 E09940 - S3420 E08240 - S3410 E07500 FL250/350\nSTNR NC="
+    },
+    {
+      "icaoId": "YMMC",
+      "firId": "YMMM",
+      "firName": "YMMM MELBOURNE",
+      "receiptTime": "2026-08-25T13:59:55.076Z",
+      "validTimeFrom": 1787668860,
+      "validTimeTo": 1787676060,
+      "seriesId": "D04",
+      "hazard": "ICE",
+      "qualifier": "SEV",
+      "base": 4000,
+      "top": 14000,
+      "geom": "AREA",
+      "coords": [
+        {
+          "lon": 148.667,
+          "lat": -45.5
+        },
+        {
+          "lon": 145.833,
+          "lat": -45.167
+        },
+        {
+          "lon": 144.333,
+          "lat": -43.667
+        },
+        {
+          "lon": 146.5,
+          "lat": -43
+        },
+        {
+          "lon": 147.667,
+          "lat": -44.167
+        },
+        {
+          "lon": 149.167,
+          "lat": -43.333
+        },
+        {
+          "lon": 149.667,
+          "lat": -44.167
+        }
+      ],
+      "dir": "E",
+      "spd": "25",
+      "chng": "NC",
+      "rawSigmet": "WSAU21 YMMC 251359\nYMMM SIGMET D04 VALID 251441/251641 YMMC-\nYMMM MELBOURNE FIR SEV ICE FCST WI S4530 E14840 - S4510 E14550 -\nS4340 E14420 - S4300 E14630 - S4410 E14740 - S4320 E14910 - S4410\nE14940 4000FT/FL140 MOV E 25KT NC="
+    },
+    {
+      "icaoId": "WMKK",
+      "firId": "WMFC",
+      "firName": "WMFC KUALA LUMPUR",
+      "receiptTime": "2026-08-25T14:27:05.382Z",
+      "validTimeFrom": 1787668200,
+      "validTimeTo": 1787677200,
+      "seriesId": "21",
+      "hazard": "TS",
+      "qualifier": "EMBD",
+      "base": null,
+      "top": 49000,
+      "geom": "AREA",
+      "coords": [
+        {
+          "lon": 94.437,
+          "lat": 6.483
+        },
+        {
+          "lon": 94.445,
+          "lat": 5.988
+        },
+        {
+          "lon": 97.485,
+          "lat": 6.022
+        },
+        {
+          "lon": 99.335,
+          "lat": 4.374
+        },
+        {
+          "lon": 101.16,
+          "lat": 2.7
+        },
+        {
+          "lon": 102.343,
+          "lat": 1.629
+        },
+        {
+          "lon": 103.526,
+          "lat": 1.221
+        },
+        {
+          "lon": 103.709,
+          "lat": 1.467
+        },
+        {
+          "lon": 104.059,
+          "lat": 1.438
+        },
+        {
+          "lon": 104.11,
+          "lat": 1.349
+        },
+        {
+          "lon": 104.345,
+          "lat": 1.378
+        },
+        {
+          "lon": 104.705,
+          "lat": 2.587
+        },
+        {
+          "lon": 103.85,
+          "lat": 3.483
+        },
+        {
+          "lon": 103.85,
+          "lat": 3.483
+        },
+        {
+          "lon": 101.017,
+          "lat": 3.367
+        },
+        {
+          "lon": 99.8,
+          "lat": 6.483
+        },
+        {
+          "lon": 99.571,
+          "lat": 6.483
+        },
+        {
+          "lon": 99.531,
+          "lat": 6.471
+        },
+        {
+          "lon": 99.507,
+          "lat": 6.483
+        },
+        {
+          "lon": 94.437,
+          "lat": 6.483
+        }
+      ],
+      "dir": "WSW",
+      "spd": "10",
+      "chng": "WKN",
+      "rawSigmet": "WSMS31 WMKK 251426\nWMFC SIGMET 21 VALID 251430/251700 WMKK-\nWMFC KUALA LUMPUR FIR EMBD TS\nOBS NE OF LINE N0329 E10351 - N0322 E10101 - N0629 E09948 TOP FL490\nMOV WSW 10KT WKN="
+    },
+    {
+      "icaoId": "YMMC",
+      "firId": "YMMM",
+      "firName": "YMMM MELBOURNE",
+      "receiptTime": "2026-08-25T14:34:13.761Z",
+      "validTimeFrom": 1787670600,
+      "validTimeTo": 1787685000,
+      "seriesId": "U08",
+      "hazard": "TURB",
+      "qualifier": "SEV",
+      "base": 16000,
+      "top": 32000,
+      "geom": "AREA",
+      "coords": [
+        {
+          "lon": 97.667,
+          "lat": -32.167
+        },
+        {
+          "lon": 101.333,
+          "lat": -36.667
+        },
+        {
+          "lon": 102.5,
+          "lat": -46.167
+        },
+        {
+          "lon": 98.833,
+          "lat": -46.167
+        },
+        {
+          "lon": 97.333,
+          "lat": -38
+        },
+        {
+          "lon": 92.833,
+          "lat": -32.833
+        }
+      ],
+      "dir": "E",
+      "spd": "40",
+      "chng": "WKN",
+      "rawSigmet": "WSAU21 YMMC 251433\nYMMM SIGMET U08 VALID 251510/251910 YMMC-\nYMMM MELBOURNE FIR SEV TURB FCST WI S3210 E09740 - S3640 E10120 -\nS4610 E10230 - S4610 E09850 - S3800 E09720 - S3250 E09250 FL160/320\nMOV E 40KT WKN="
     }
   ],
   "forecast": {
