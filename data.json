@@ -1,20 +1,20 @@
 {
-  "fetched_at": "2026-09-19T15:29:57Z",
+  "fetched_at": "2026-09-19T18:09:59Z",
   "metar": [
     {
       "icaoId": "VHHH",
-      "receiptTime": "2026-09-19T15:02:17.787Z",
-      "obsTime": 1789830000,
-      "reportTime": "2026-09-19T15:00:00.000Z",
-      "temp": 30,
+      "receiptTime": "2026-09-19T18:01:37.881Z",
+      "obsTime": 1789840800,
+      "reportTime": "2026-09-19T18:00:00.000Z",
+      "temp": 29,
       "dewp": 21,
-      "wdir": 80,
+      "wdir": 90,
       "wspd": 9,
       "visib": "6+",
-      "altim": 1016,
+      "altim": 1015,
       "qcField": 16,
       "metarType": "METAR",
-      "rawOb": "METAR VHHH 191500Z 08009KT CAVOK 30/21 Q1016 NOSIG",
+      "rawOb": "METAR VHHH 191800Z 09009KT CAVOK 29/21 Q1015 NOSIG",
       "lat": 22.309,
       "lon": 113.922,
       "elev": 9,
@@ -25,18 +25,18 @@
     },
     {
       "icaoId": "WMKK",
-      "receiptTime": "2026-09-19T15:08:26.693Z",
-      "obsTime": 1789830000,
-      "reportTime": "2026-09-19T15:00:00.000Z",
+      "receiptTime": "2026-09-19T18:08:23.438Z",
+      "obsTime": 1789840800,
+      "reportTime": "2026-09-19T18:00:00.000Z",
       "temp": 28,
       "dewp": 25,
       "wdir": "VRB",
-      "wspd": 3,
-      "visib": 4.35,
-      "altim": 1012,
+      "wspd": 2,
+      "visib": 4.97,
+      "altim": 1011,
       "qcField": 16,
       "metarType": "METAR",
-      "rawOb": "METAR WMKK 191500Z VRB03KT 7000 FEW030 28/25 Q1012 NOSIG",
+      "rawOb": "METAR WMKK 191800Z VRB02KT 8000 FEW030 28/25 Q1011 NOSIG",
       "lat": 2.747,
       "lon": 101.714,
       "elev": 21,
@@ -52,18 +52,18 @@
     },
     {
       "icaoId": "YMML",
-      "receiptTime": "2026-09-19T15:08:15.509Z",
-      "obsTime": 1789830000,
-      "reportTime": "2026-09-19T15:00:00.000Z",
-      "temp": 16,
-      "dewp": 7,
-      "wdir": 10,
-      "wspd": 15,
+      "receiptTime": "2026-09-19T18:08:13.734Z",
+      "obsTime": 1789840800,
+      "reportTime": "2026-09-19T18:00:00.000Z",
+      "temp": 15,
+      "dewp": 5,
+      "wdir": 20,
+      "wspd": 17,
       "visib": "6+",
-      "altim": 1019,
+      "altim": 1017,
       "qcField": 2,
       "metarType": "METAR",
-      "rawOb": "METAR YMML 191500Z AUTO 01015KT 9999 // NCD 16/07 Q1019",
+      "rawOb": "METAR YMML 191800Z AUTO 02017KT 9999 // NCD 15/05 Q1017",
       "lat": -37.666,
       "lon": 144.832,
       "elev": 115,
@@ -74,18 +74,18 @@
     },
     {
       "icaoId": "YSSY",
-      "receiptTime": "2026-09-19T15:08:15.624Z",
-      "obsTime": 1789830000,
-      "reportTime": "2026-09-19T15:00:00.000Z",
-      "temp": 20,
-      "dewp": 1,
-      "wdir": 290,
-      "wspd": 8,
+      "receiptTime": "2026-09-19T18:08:13.880Z",
+      "obsTime": 1789840800,
+      "reportTime": "2026-09-19T18:00:00.000Z",
+      "temp": 17,
+      "dewp": 8,
+      "wdir": 0,
+      "wspd": 0,
       "visib": "6+",
-      "altim": 1021,
+      "altim": 1020,
       "qcField": 2,
       "metarType": "METAR",
-      "rawOb": "METAR YSSY 191500Z AUTO 29008KT 9999 // NCD 20/01 Q1021",
+      "rawOb": "METAR YSSY 191800Z AUTO 00000KT 9999 // NCD 17/08 Q1020",
       "lat": -33.946,
       "lon": 151.173,
       "elev": 3,
@@ -98,12 +98,12 @@
   "taf": [
     {
       "icaoId": "VHHH",
-      "dbPopTime": "2026-09-19T14:02:02.899Z",
-      "bulletinTime": "2026-09-19T14:00:00.000Z",
-      "issueTime": "2026-09-19T14:00:00.000Z",
-      "validTimeFrom": 1789830000,
-      "validTimeTo": 1789938000,
-      "rawTAF": "TAF VHHH 191400Z 1915/2021 09010KT CAVOK TX33/2006Z TN27/1922Z BECMG 2003/2005 29010KT BECMG 2009/2011 09010KT",
+      "dbPopTime": "2026-09-19T17:01:28.678Z",
+      "bulletinTime": "2026-09-19T17:00:00.000Z",
+      "issueTime": "2026-09-19T17:00:00.000Z",
+      "validTimeFrom": 1789840800,
+      "validTimeTo": 1789948800,
+      "rawTAF": "TAF VHHH 191700Z 1918/2024 09010KT 9999 FEW040 TX33/2006Z TN27/1922Z TN27/2022Z BECMG 2003/2005 29010KT BECMG 2009/2011 09010KT TEMPO 2021/2024 4000 SHRA FEW010CB SCT020",
       "mostRecent": 1,
       "remarks": "",
       "lat": 22.309,
@@ -113,7 +113,7 @@
       "name": "Hong Kong Intl",
       "fcsts": [
         {
-          "timeFrom": 1789830000,
+          "timeFrom": 1789840800,
           "timeTo": 1789873200,
           "timeBec": null,
           "fcstChange": null,
@@ -131,8 +131,8 @@
           "notDecoded": null,
           "clouds": [
             {
-              "cover": "NSC",
-              "base": null,
+              "cover": "FEW",
+              "base": 4000,
               "type": null
             }
           ],
@@ -158,8 +158,8 @@
           "notDecoded": null,
           "clouds": [
             {
-              "cover": "NSC",
-              "base": null,
+              "cover": "FEW",
+              "base": 4000,
               "type": null
             }
           ],
@@ -168,7 +168,7 @@
         },
         {
           "timeFrom": 1789894800,
-          "timeTo": 1789938000,
+          "timeTo": 1789948800,
           "timeBec": 1789902000,
           "fcstChange": "BECMG",
           "probability": null,
@@ -185,8 +185,40 @@
           "notDecoded": null,
           "clouds": [
             {
-              "cover": "NSC",
-              "base": null,
+              "cover": "FEW",
+              "base": 4000,
+              "type": null
+            }
+          ],
+          "icgTurb": [],
+          "temp": []
+        },
+        {
+          "timeFrom": 1789938000,
+          "timeTo": 1789948800,
+          "timeBec": null,
+          "fcstChange": "TEMPO",
+          "probability": null,
+          "wdir": null,
+          "wspd": null,
+          "wgst": null,
+          "wshearHgt": null,
+          "wshearDir": null,
+          "wshearSpd": null,
+          "visib": 2.49,
+          "altim": null,
+          "vertVis": null,
+          "wxString": "SHRA",
+          "notDecoded": null,
+          "clouds": [
+            {
+              "cover": "FEW",
+              "base": 1000,
+              "type": "CB"
+            },
+            {
+              "cover": "SCT",
+              "base": 2000,
               "type": null
             }
           ],
@@ -197,12 +229,12 @@
     },
     {
       "icaoId": "WMKK",
-      "dbPopTime": "2026-09-19T11:35:30.638Z",
-      "bulletinTime": "2026-09-19T11:00:00.000Z",
-      "issueTime": "2026-09-19T11:00:00.000Z",
-      "validTimeFrom": 1789819200,
-      "validTimeTo": 1789927200,
-      "rawTAF": "TAF WMKK 191100Z 1912/2018 VRB03KT 8000 FEW018",
+      "dbPopTime": "2026-09-19T17:35:30.695Z",
+      "bulletinTime": "2026-09-19T17:00:00.000Z",
+      "issueTime": "2026-09-19T17:00:00.000Z",
+      "validTimeFrom": 1789840800,
+      "validTimeTo": 1789948800,
+      "rawTAF": "TAF WMKK 191700Z 1918/2100 VRB03KT 8000 FEW018",
       "mostRecent": 1,
       "remarks": "",
       "lat": 2.747,
@@ -212,8 +244,8 @@
       "name": "Kuala Lumpur Intl",
       "fcsts": [
         {
-          "timeFrom": 1789819200,
-          "timeTo": 1789927200,
+          "timeFrom": 1789840800,
+          "timeTo": 1789948800,
           "timeBec": null,
           "fcstChange": null,
           "probability": null,
@@ -242,12 +274,12 @@
     },
     {
       "icaoId": "YMML",
-      "dbPopTime": "2026-09-19T14:50:15.596Z",
-      "bulletinTime": "2026-09-19T14:00:00.000Z",
-      "issueTime": "2026-09-19T14:00:00.000Z",
-      "validTimeFrom": 1789830000,
-      "validTimeTo": 1789927200,
-      "rawTAF": "TAF YMML 191400Z 1915/2018 01010KT CAVOK BECMG 1916/1918 01018G30KT CAVOK FM200000 01022G42KT CAVOK FM200500 33018G35KT CAVOK BECMG 2007/2008 30012KT CAVOK FM201000 26012KT 9999 SCT040 FM201500 23014KT 9999 -SHRA SCT020 BKN030 FM201700 23012KT 9999 NSW FEW030 BKN040 INTER 2015/2017 23015G25KT 5000 SHRA SCT015 BKN020",
+      "dbPopTime": "2026-09-19T17:50:19.451Z",
+      "bulletinTime": "2026-09-19T17:00:00.000Z",
+      "issueTime": "2026-09-19T17:24:00.000Z",
+      "validTimeFrom": 1789840800,
+      "validTimeTo": 1789948800,
+      "rawTAF": "TAF YMML 191724Z 1918/2100 01018G30KT CAVOK FM200000 01022G42KT CAVOK FM200500 33018G35KT CAVOK BECMG 2007/2008 30012KT CAVOK FM201000 26012KT 9999 SCT040 FM201500 23014KT 9999 -SHRA SCT020 BKN030 FM201700 23012KT 9999 NSW FEW030 BKN040 INTER 2015/2017 23015G25KT 5000 SHRA SCT015 BKN020",
       "mostRecent": 1,
       "remarks": "",
       "lat": -37.666,
@@ -257,37 +289,10 @@
       "name": "Melbourne Intl",
       "fcsts": [
         {
-          "timeFrom": 1789830000,
-          "timeTo": 1789833600,
+          "timeFrom": 1789840800,
+          "timeTo": 1789862400,
           "timeBec": null,
           "fcstChange": null,
-          "probability": null,
-          "wdir": 10,
-          "wspd": 10,
-          "wgst": null,
-          "wshearHgt": null,
-          "wshearDir": null,
-          "wshearSpd": null,
-          "visib": "6+",
-          "altim": null,
-          "vertVis": null,
-          "wxString": "NSW",
-          "notDecoded": null,
-          "clouds": [
-            {
-              "cover": "NSC",
-              "base": null,
-              "type": null
-            }
-          ],
-          "icgTurb": [],
-          "temp": []
-        },
-        {
-          "timeFrom": 1789833600,
-          "timeTo": 1789862400,
-          "timeBec": 1789840800,
-          "fcstChange": "BECMG",
           "probability": null,
           "wdir": 10,
           "wspd": 18,
@@ -452,7 +457,7 @@
         },
         {
           "timeFrom": 1789923600,
-          "timeTo": 1789927200,
+          "timeTo": 1789948800,
           "timeBec": null,
           "fcstChange": "FM",
           "probability": null,
@@ -518,12 +523,12 @@
     },
     {
       "icaoId": "YSSY",
-      "dbPopTime": "2026-09-19T14:50:14.975Z",
-      "bulletinTime": "2026-09-19T14:00:00.000Z",
-      "issueTime": "2026-09-19T14:19:00.000Z",
-      "validTimeFrom": 1789830000,
-      "validTimeTo": 1789927200,
-      "rawTAF": "TAF YSSY 191419Z 1915/2018 31008KT CAVOK FM200200 03012KT CAVOK FM200800 28007KT CAVOK FM201100 31012KT CAVOK",
+      "dbPopTime": "2026-09-19T17:50:19.627Z",
+      "bulletinTime": "2026-09-19T17:00:00.000Z",
+      "issueTime": "2026-09-19T17:23:00.000Z",
+      "validTimeFrom": 1789840800,
+      "validTimeTo": 1789948800,
+      "rawTAF": "TAF YSSY 191723Z 1918/2100 30007KT CAVOK FM200200 03012KT CAVOK FM200800 28007KT CAVOK FM201100 31012KT CAVOK BECMG 2023/2100 21012KT 9999 SCT025",
       "mostRecent": 1,
       "remarks": "",
       "lat": -33.946,
@@ -533,13 +538,13 @@
       "name": "Sydney Intl",
       "fcsts": [
         {
-          "timeFrom": 1789830000,
+          "timeFrom": 1789840800,
           "timeTo": 1789869600,
           "timeBec": null,
           "fcstChange": null,
           "probability": null,
-          "wdir": 310,
-          "wspd": 8,
+          "wdir": 300,
+          "wspd": 7,
           "wgst": null,
           "wshearHgt": null,
           "wshearDir": null,
@@ -615,7 +620,7 @@
         },
         {
           "timeFrom": 1789902000,
-          "timeTo": 1789927200,
+          "timeTo": 1789945200,
           "timeBec": null,
           "fcstChange": "FM",
           "probability": null,
@@ -639,251 +644,38 @@
           ],
           "icgTurb": [],
           "temp": []
+        },
+        {
+          "timeFrom": 1789945200,
+          "timeTo": 1789948800,
+          "timeBec": 1789948800,
+          "fcstChange": "BECMG",
+          "probability": null,
+          "wdir": 210,
+          "wspd": 12,
+          "wgst": null,
+          "wshearHgt": null,
+          "wshearDir": null,
+          "wshearSpd": null,
+          "visib": "6+",
+          "altim": null,
+          "vertVis": null,
+          "wxString": "NSW",
+          "notDecoded": null,
+          "clouds": [
+            {
+              "cover": "SCT",
+              "base": 2500,
+              "type": null
+            }
+          ],
+          "icgTurb": [],
+          "temp": []
         }
       ]
     }
   ],
   "sigmet": [
-    {
-      "icaoId": "YMMC",
-      "firId": "YMMM",
-      "firName": "YMMM MELBOURNE",
-      "receiptTime": "2026-09-19T11:51:55.555Z",
-      "validTimeFrom": 1789820760,
-      "validTimeTo": 1789835160,
-      "seriesId": "Z14",
-      "hazard": "TURB",
-      "qualifier": "SEV",
-      "base": 20000,
-      "top": 35000,
-      "geom": "AREA",
-      "coords": [
-        {
-          "lon": 122.667,
-          "lat": -42.5
-        },
-        {
-          "lon": 124.5,
-          "lat": -34.667
-        },
-        {
-          "lon": 129.5,
-          "lat": -33
-        },
-        {
-          "lon": 128.5,
-          "lat": -42.667
-        },
-        {
-          "lon": 132,
-          "lat": -50
-        },
-        {
-          "lon": 125.5,
-          "lat": -50
-        }
-      ],
-      "dir": "ESE",
-      "spd": "25",
-      "chng": "NC",
-      "rawSigmet": "WSAU21 YMMC 191151\nYMMM SIGMET Z14 VALID 191226/191626 YMMC-\nYMMM MELBOURNE FIR SEV TURB FCST WI S4230 E12240 - S3440 E12430 -\nS3300 E12930 - S4240 E12830 - S5000 E13200 - S5000 E12530 FL200/350\nMOV ESE 25KT NC="
-    },
-    {
-      "icaoId": "YMMC",
-      "firId": "YBBB",
-      "firName": "YBBB BRISBANE",
-      "receiptTime": "2026-09-19T12:03:18.998Z",
-      "validTimeFrom": 1789821900,
-      "validTimeTo": 1789836300,
-      "seriesId": "M19",
-      "hazard": "TURB",
-      "qualifier": "SEV",
-      "base": 20000,
-      "top": 40000,
-      "geom": "AREA",
-      "coords": [
-        {
-          "lon": 155,
-          "lat": -14
-        },
-        {
-          "lon": 161.167,
-          "lat": -14
-        },
-        {
-          "lon": 163,
-          "lat": -17.667
-        },
-        {
-          "lon": 163,
-          "lat": -22
-        },
-        {
-          "lon": 152.333,
-          "lat": -14.667
-        },
-        {
-          "lon": 152.333,
-          "lat": -13.833
-        },
-        {
-          "lon": 155,
-          "lat": -13
-        }
-      ],
-      "dir": "-",
-      "spd": "0",
-      "chng": "NC",
-      "rawSigmet": "WSAU21 YMMC 191202\nYBBB SIGMET M19 VALID 191245/191645 YMMC-\nYBBB BRISBANE FIR SEV TURB FCST WI S1400 E15500 - S1400 E16110 -\nS1740 E16300 - S2200 E16300 - S1440 E15220 - S1350 E15220 - S1300\nE15500 FL200/400 STNR NC="
-    },
-    {
-      "icaoId": "WMKK",
-      "firId": "WMFC",
-      "firName": "WMFC KUALA LUMPUR",
-      "receiptTime": "2026-09-19T12:29:40.628Z",
-      "validTimeFrom": 1789821000,
-      "validTimeTo": 1789831800,
-      "seriesId": "9",
-      "hazard": "TS",
-      "qualifier": "EMBD",
-      "base": null,
-      "top": null,
-      "geom": "AREA",
-      "coords": [
-        {
-          "lon": 100.108,
-          "lat": 3.665
-        },
-        {
-          "lon": 100.288,
-          "lat": 3.5
-        },
-        {
-          "lon": 103.834,
-          "lat": 3.5
-        },
-        {
-          "lon": 103.674,
-          "lat": 3.668
-        },
-        {
-          "lon": 103.714,
-          "lat": 4.832
-        },
-        {
-          "lon": 102.816,
-          "lat": 6.45
-        },
-        {
-          "lon": 102.335,
-          "lat": 6.45
-        },
-        {
-          "lon": 102.084,
-          "lat": 6.231
-        },
-        {
-          "lon": 101.863,
-          "lat": 5.757
-        },
-        {
-          "lon": 101.579,
-          "lat": 5.908
-        },
-        {
-          "lon": 101.159,
-          "lat": 5.608
-        },
-        {
-          "lon": 100.985,
-          "lat": 5.775
-        },
-        {
-          "lon": 101.118,
-          "lat": 6.219
-        },
-        {
-          "lon": 100.844,
-          "lat": 6.259
-        },
-        {
-          "lon": 100.818,
-          "lat": 6.436
-        },
-        {
-          "lon": 100.76,
-          "lat": 6.45
-        },
-        {
-          "lon": 100.136,
-          "lat": 6.45
-        },
-        {
-          "lon": 100.133,
-          "lat": 6.437
-        },
-        {
-          "lon": 100.077,
-          "lat": 6.45
-        },
-        {
-          "lon": 99.983,
-          "lat": 6.45
-        },
-        {
-          "lon": 99.633,
-          "lat": 5
-        },
-        {
-          "lon": 100.108,
-          "lat": 3.665
-        }
-      ],
-      "dir": null,
-      "spd": null,
-      "chng": null,
-      "rawSigmet": "WSMS31 WMKK 191229\nWMFC SIGMET 9 VALID 191230/191530 WMKK-\nWMFC KUALA LUMPUR FIR EMBD TS\nOBS E OF LINE N0627 E09959 - N0500 E09938 - N0330 E10010 AND NW OF\nLINE N0320 E10022 - N0224 E10128 - N0528 E10319 - N0621 E10213 TOP \nFL530 MOV WSW 10KT NC="
-    },
-    {
-      "icaoId": "WMKK",
-      "firId": "WMFC",
-      "firName": "WMFC KUALA LUMPUR",
-      "receiptTime": "2026-09-19T13:23:30.883Z",
-      "validTimeFrom": 1789824180,
-      "validTimeTo": 1789837200,
-      "seriesId": "10",
-      "hazard": "TS",
-      "qualifier": "EMBD",
-      "base": null,
-      "top": 49000,
-      "geom": "AREA",
-      "coords": [
-        {
-          "lon": 96.467,
-          "lat": 7.35
-        },
-        {
-          "lon": 94.417,
-          "lat": 5.983
-        },
-        {
-          "lon": 94.417,
-          "lat": 8.633
-        },
-        {
-          "lon": 95.633,
-          "lat": 8.883
-        },
-        {
-          "lon": 96.467,
-          "lat": 7.35
-        }
-      ],
-      "dir": "SW",
-      "spd": "UNK",
-      "chng": "NC",
-      "rawSigmet": "WSMS31 WMKK 191323\nWMFC SIGMET 10 VALID 191323/191700 WMKK-\nWMFC KUALA LUMPUR FIR EMBD TS\nOBS WI N0721 E09628 - N0559 E09425 - N0838 E09425 - N0853 E09538 -\nN0721 E09628 TOP FL490 MOV SW NC="
-    },
     {
       "icaoId": "YMRF",
       "firId": "YMMM",
@@ -924,10 +716,70 @@
       "icaoId": "YMRF",
       "firId": "YMMM",
       "firName": "YMMM MELBOURNE",
-      "receiptTime": "2026-09-19T14:01:29.288Z",
-      "validTimeFrom": 1789830000,
-      "validTimeTo": 1789837200,
-      "seriesId": "E01",
+      "receiptTime": "2026-09-19T14:56:56.028Z",
+      "validTimeFrom": 1789837200,
+      "validTimeTo": 1789851600,
+      "seriesId": "F01",
+      "hazard": "TURB",
+      "qualifier": "SEV",
+      "base": 0,
+      "top": 6000,
+      "geom": "AREA",
+      "coords": [
+        {
+          "lon": 148.333,
+          "lat": -43.5
+        },
+        {
+          "lon": 146.5,
+          "lat": -43.667
+        },
+        {
+          "lon": 145.833,
+          "lat": -41.333
+        },
+        {
+          "lon": 146.833,
+          "lat": -41.333
+        },
+        {
+          "lon": 147.333,
+          "lat": -42
+        },
+        {
+          "lon": 147.5,
+          "lat": -41.833
+        },
+        {
+          "lon": 147.333,
+          "lat": -41.167
+        },
+        {
+          "lon": 148,
+          "lat": -41
+        },
+        {
+          "lon": 148,
+          "lat": -39.667
+        },
+        {
+          "lon": 148.5,
+          "lat": -39.667
+        }
+      ],
+      "dir": "-",
+      "spd": "0",
+      "chng": "NC",
+      "rawSigmet": "WSAU21 YMRF 191456\nYMMM SIGMET F01 VALID 191700/192100 YMRF-\nYMMM MELBOURNE FIR SEV TURB FCST WI S4330 E14820 - S4340 E14630 -\nS4120 E14550 - S4120 E14650 - S4200 E14720 - S4150 E14730 - S4110\nE14720 - S4100 E14800 - S3940 E14800 - S3940 E14830 SFC/6000FT STNR\nNC="
+    },
+    {
+      "icaoId": "YMRF",
+      "firId": "YMMM",
+      "firName": "YMMM MELBOURNE",
+      "receiptTime": "2026-09-19T15:06:59.395Z",
+      "validTimeFrom": 1789837200,
+      "validTimeTo": 1789844400,
+      "seriesId": "E02",
       "hazard": "TURB",
       "qualifier": "SEV",
       "base": 0,
@@ -935,8 +787,8 @@
       "geom": "AREA",
       "coords": [
         {
-          "lon": 138,
-          "lat": -36
+          "lon": 139,
+          "lat": -35.5
         },
         {
           "lon": 136.833,
@@ -947,23 +799,23 @@
           "lat": -35.667
         },
         {
-          "lon": 137.667,
-          "lat": -35.667
+          "lon": 137.833,
+          "lat": -33.167
         }
       ],
       "dir": "-",
       "spd": "0",
       "chng": "NC",
-      "rawSigmet": "WSAU21 YMRF 191401\nYMMM SIGMET E01 VALID 191500/191700 YMRF-\nYMMM MELBOURNE FIR SEV TURB FCST WI S3600 E13800 - S3610 E13650 -\nS3540 E13640 - S3540 E13740 SFC/3000FT STNR NC="
+      "rawSigmet": "WSAU21 YMRF 191506\nYMMM SIGMET E02 VALID 191700/191900 YMRF-\nYMMM MELBOURNE FIR SEV TURB FCST WI S3530 E13900 - S3610 E13650 -\nS3540 E13640 - S3310 E13750 SFC/3000FT STNR NC="
     },
     {
       "icaoId": "WMKK",
       "firId": "WMFC",
       "firName": "WMFC KUALA LUMPUR",
-      "receiptTime": "2026-09-19T14:33:01.763Z",
-      "validTimeFrom": 1789828380,
+      "receiptTime": "2026-09-19T15:18:40.991Z",
+      "validTimeFrom": 1789831800,
       "validTimeTo": 1789842600,
-      "seriesId": "11",
+      "seriesId": "12",
       "hazard": "TS",
       "qualifier": "EMBD",
       "base": null,
@@ -971,66 +823,206 @@
       "geom": "AREA",
       "coords": [
         {
-          "lon": 97.333,
-          "lat": 6.95
+          "lon": 99.283,
+          "lat": 4.333
         },
         {
-          "lon": 97.467,
-          "lat": 6
+          "lon": 99.9,
+          "lat": 6.517
         },
         {
-          "lon": 94.433,
-          "lat": 6
+          "lon": 101.633,
+          "lat": 2.15
         },
         {
-          "lon": 95.917,
-          "lat": 6.983
-        },
-        {
-          "lon": 97.333,
-          "lat": 6.95
+          "lon": 103.583,
+          "lat": 5.1
         }
       ],
-      "dir": "SSW",
-      "spd": "UNK",
+      "dir": "WSW",
+      "spd": "10",
       "chng": "NC",
-      "rawSigmet": "WSMS31 WMKK 191433\nWMFC SIGMET 11 VALID 191433/191830 WMKK-\nWMFC KUALA LUMPUR FIR EMBD TS\nOBS WI N0657 E09720 - N0600 E09728 - N0600 E09426 - N0659 E09555 -\nN0657 E09720 TOP FL520 MOV SSW NC="
+      "rawSigmet": "WSMS31 WMKK 191518\nWMFC SIGMET 12 VALID 191530/191830 WMKK-\nWMFC KUALA LUMPUR FIR EMBD TS\nOBS E OF LINE N0420 E09917 - N0631 E09954 AND NW OF LINE N0209 E10138\n- N0506 E10335 TOP FL520 MOV WSW 10KT NC="
     },
     {
       "icaoId": "YMMC",
       "firId": "YMMM",
       "firName": "YMMM MELBOURNE",
-      "receiptTime": "2026-09-19T14:36:15.177Z",
-      "validTimeFrom": 1789830000,
-      "validTimeTo": 1789833600,
-      "seriesId": "C02",
-      "hazard": "TS",
-      "qualifier": "FRQ",
-      "base": null,
+      "receiptTime": "2026-09-19T15:55:39.599Z",
+      "validTimeFrom": 1789835160,
+      "validTimeTo": 1789849560,
+      "seriesId": "Z15",
+      "hazard": "TURB",
+      "qualifier": "SEV",
+      "base": 20000,
       "top": 35000,
       "geom": "AREA",
       "coords": [
         {
-          "lon": 128.167,
+          "lon": 128,
+          "lat": -42.167
+        },
+        {
+          "lon": 129.5,
+          "lat": -35.333
+        },
+        {
+          "lon": 134,
           "lat": -34.5
         },
         {
-          "lon": 130.167,
-          "lat": -34.5
+          "lon": 132.667,
+          "lat": -42
         },
         {
-          "lon": 131.833,
-          "lat": -37.167
+          "lon": 136.167,
+          "lat": -50
         },
         {
-          "lon": 129.333,
-          "lat": -37
+          "lon": 131,
+          "lat": -50
         }
       ],
-      "dir": "E",
+      "dir": "ESE",
       "spd": "35",
-      "chng": "WKN",
-      "rawSigmet": "WSAU21 YMMC 191435\nYMMM SIGMET C02 VALID 191500/191600 YMMC-\nYMMM MELBOURNE FIR FRQ TS OBS WI S3430 E12810 - S3430 E13010 - S3710\nE13150 - S3700 E12920 TOP FL350 MOV E 35KT WKN="
+      "chng": "NC",
+      "rawSigmet": "WSAU21 YMMC 191555\nYMMM SIGMET Z15 VALID 191626/192026 YMMC-\nYMMM MELBOURNE FIR SEV TURB FCST WI S4210 E12800 - S3520 E12930 -\nS3430 E13400 - S4200 E13240 - S5000 E13610 - S5000 E13100 FL200/350\nMOV ESE 35KT NC="
+    },
+    {
+      "icaoId": "YMMC",
+      "firId": "YBBB",
+      "firName": "YBBB BRISBANE",
+      "receiptTime": "2026-09-19T16:00:47.327Z",
+      "validTimeFrom": 1789836300,
+      "validTimeTo": 1789850700,
+      "seriesId": "M20",
+      "hazard": "TURB",
+      "qualifier": "SEV",
+      "base": 20000,
+      "top": 40000,
+      "geom": "AREA",
+      "coords": [
+        {
+          "lon": 161.167,
+          "lat": -14
+        },
+        {
+          "lon": 163,
+          "lat": -17.667
+        },
+        {
+          "lon": 163,
+          "lat": -18.5
+        },
+        {
+          "lon": 151.833,
+          "lat": -13.167
+        },
+        {
+          "lon": 155,
+          "lat": -13
+        },
+        {
+          "lon": 155,
+          "lat": -14
+        }
+      ],
+      "dir": "-",
+      "spd": "0",
+      "chng": "NC",
+      "rawSigmet": "WSAU21 YMMC 191600\nYBBB SIGMET M20 VALID 191645/192045 YMMC-\nYBBB BRISBANE FIR SEV TURB FCST WI S1400 E16110 - S1740 E16300 -\nS1830 E16300 - S1310 E15150 - S1300 E15500 - S1400 E15500 FL200/400\nSTNR NC="
+    },
+    {
+      "icaoId": "WMKK",
+      "firId": "WMFC",
+      "firName": "WMFC KUALA LUMPUR",
+      "receiptTime": "2026-09-19T16:58:21.351Z",
+      "validTimeFrom": 1789837200,
+      "validTimeTo": 1789851600,
+      "seriesId": "13",
+      "hazard": "TS",
+      "qualifier": "EMBD",
+      "base": null,
+      "top": 50000,
+      "geom": "AREA",
+      "coords": [
+        {
+          "lon": 96.517,
+          "lat": 7.383
+        },
+        {
+          "lon": 94.45,
+          "lat": 6
+        },
+        {
+          "lon": 94.417,
+          "lat": 6
+        },
+        {
+          "lon": 94.417,
+          "lat": 8.567
+        },
+        {
+          "lon": 96.133,
+          "lat": 8.783
+        },
+        {
+          "lon": 96.517,
+          "lat": 7.383
+        }
+      ],
+      "dir": "SW",
+      "spd": "05",
+      "chng": "NC",
+      "rawSigmet": "WSMS31 WMKK 191658\nWMFC SIGMET 13 VALID 191700/192100 WMKK-\nWMFC KUALA LUMPUR FIR EMBD TS\nOBS WI N0723 E09631 - N0600 E09427 - N0600 E09425 - N0834 E09425 -\nN0847 E09608 - N0723 E09631 TOP FL500 MOV SW 05KT NC="
+    },
+    {
+      "icaoId": "WMKK",
+      "firId": "WMFC",
+      "firName": "WMFC KUALA LUMPUR",
+      "receiptTime": "2026-09-19T17:24:55.680Z",
+      "validTimeFrom": 1789838640,
+      "validTimeTo": 1789851600,
+      "seriesId": "14",
+      "hazard": "TS",
+      "qualifier": "EMBD",
+      "base": null,
+      "top": 52000,
+      "geom": "AREA",
+      "coords": [
+        {
+          "lon": 97.5,
+          "lat": 7.233
+        },
+        {
+          "lon": 98.7,
+          "lat": 5.817
+        },
+        {
+          "lon": 98.633,
+          "lat": 4.933
+        },
+        {
+          "lon": 97.5,
+          "lat": 6
+        },
+        {
+          "lon": 94.45,
+          "lat": 6
+        },
+        {
+          "lon": 96.233,
+          "lat": 7.2
+        },
+        {
+          "lon": 97.5,
+          "lat": 7.233
+        }
+      ],
+      "dir": "SW",
+      "spd": "05",
+      "chng": "NC",
+      "rawSigmet": "WSMS31 WMKK 191724\nWMFC SIGMET 14 VALID 191724/192100 WMKK-\nWMFC KUALA LUMPUR FIR EMBD TS\nOBS WI N0714 E09730 - N0549 E09842 - N0456 E09838 - N0600 E09730 -\nN0600 E09427 - N0712 E09614 - N0714 E09730 TOP FL520 MOV SW 05KT NC="
     }
   ],
   "forecast": {
@@ -1372,372 +1364,10 @@
         ]
       }
     },
-    "WMKK": {
-      "timezone": "Asia/Kuala_Lumpur",
-      "hourly": {
-        "time": [
-          "2026-09-19T00:00",
-          "2026-09-19T01:00",
-          "2026-09-19T02:00",
-          "2026-09-19T03:00",
-          "2026-09-19T04:00",
-          "2026-09-19T05:00",
-          "2026-09-19T06:00",
-          "2026-09-19T07:00",
-          "2026-09-19T08:00",
-          "2026-09-19T09:00",
-          "2026-09-19T10:00",
-          "2026-09-19T11:00",
-          "2026-09-19T12:00",
-          "2026-09-19T13:00",
-          "2026-09-19T14:00",
-          "2026-09-19T15:00",
-          "2026-09-19T16:00",
-          "2026-09-19T17:00",
-          "2026-09-19T18:00",
-          "2026-09-19T19:00",
-          "2026-09-19T20:00",
-          "2026-09-19T21:00",
-          "2026-09-19T22:00",
-          "2026-09-19T23:00",
-          "2026-09-20T00:00",
-          "2026-09-20T01:00",
-          "2026-09-20T02:00",
-          "2026-09-20T03:00",
-          "2026-09-20T04:00",
-          "2026-09-20T05:00",
-          "2026-09-20T06:00",
-          "2026-09-20T07:00",
-          "2026-09-20T08:00",
-          "2026-09-20T09:00",
-          "2026-09-20T10:00",
-          "2026-09-20T11:00",
-          "2026-09-20T12:00",
-          "2026-09-20T13:00",
-          "2026-09-20T14:00",
-          "2026-09-20T15:00",
-          "2026-09-20T16:00",
-          "2026-09-20T17:00",
-          "2026-09-20T18:00",
-          "2026-09-20T19:00",
-          "2026-09-20T20:00",
-          "2026-09-20T21:00",
-          "2026-09-20T22:00",
-          "2026-09-20T23:00",
-          "2026-09-21T00:00",
-          "2026-09-21T01:00",
-          "2026-09-21T02:00",
-          "2026-09-21T03:00",
-          "2026-09-21T04:00",
-          "2026-09-21T05:00",
-          "2026-09-21T06:00",
-          "2026-09-21T07:00",
-          "2026-09-21T08:00",
-          "2026-09-21T09:00",
-          "2026-09-21T10:00",
-          "2026-09-21T11:00",
-          "2026-09-21T12:00",
-          "2026-09-21T13:00",
-          "2026-09-21T14:00",
-          "2026-09-21T15:00",
-          "2026-09-21T16:00",
-          "2026-09-21T17:00",
-          "2026-09-21T18:00",
-          "2026-09-21T19:00",
-          "2026-09-21T20:00",
-          "2026-09-21T21:00",
-          "2026-09-21T22:00",
-          "2026-09-21T23:00"
-        ],
-        "temperature_2m": [
-          26.8,
-          25.4,
-          25.0,
-          25.0,
-          24.1,
-          24.0,
-          24.2,
-          24.4,
-          25.9,
-          27.3,
-          27.2,
-          26.3,
-          27.5,
-          29.9,
-          31.8,
-          31.7,
-          31.4,
-          30.5,
-          30.0,
-          28.5,
-          26.8,
-          26.3,
-          25.9,
-          25.3,
-          25.1,
-          25.2,
-          25.2,
-          25.1,
-          25.2,
-          25.4,
-          25.2,
-          25.1,
-          26.0,
-          28.1,
-          29.6,
-          30.3,
-          30.7,
-          31.2,
-          30.8,
-          31.1,
-          31.5,
-          31.4,
-          30.5,
-          29.1,
-          27.8,
-          27.3,
-          26.9,
-          26.7,
-          25.1,
-          24.9,
-          24.5,
-          24.3,
-          24.2,
-          23.8,
-          23.6,
-          23.6,
-          23.4,
-          24.1,
-          25.6,
-          26.9,
-          29.2,
-          29.0,
-          29.2,
-          30.5,
-          30.7,
-          30.8,
-          30.2,
-          28.8,
-          27.4,
-          26.8,
-          26.4,
-          26.1
-        ],
-        "weather_code": [
-          3,
-          53,
-          80,
-          51,
-          80,
-          51,
-          3,
-          3,
-          1,
-          1,
-          53,
-          81,
-          53,
-          51,
-          51,
-          3,
-          3,
-          3,
-          2,
-          3,
-          51,
-          3,
-          2,
-          3,
-          3,
-          2,
-          3,
-          3,
-          3,
-          2,
-          2,
-          1,
-          0,
-          0,
-          51,
-          51,
-          51,
-          51,
-          51,
-          51,
-          51,
-          51,
-          2,
-          3,
-          3,
-          2,
-          3,
-          3,
-          81,
-          55,
-          80,
-          51,
-          51,
-          55,
-          55,
-          80,
-          81,
-          80,
-          55,
-          51,
-          51,
-          3,
-          3,
-          3,
-          51,
-          0,
-          0,
-          1,
-          3,
-          3,
-          3,
-          2
-        ],
-        "precipitation_probability": [
-          24,
-          30,
-          37,
-          47,
-          60,
-          67,
-          63,
-          55,
-          51,
-          58,
-          70,
-          80,
-          88,
-          93,
-          94,
-          86,
-          74,
-          61,
-          50,
-          40,
-          31,
-          23,
-          17,
-          12,
-          8,
-          5,
-          4,
-          7,
-          11,
-          16,
-          19,
-          22,
-          25,
-          25,
-          25,
-          29,
-          40,
-          55,
-          67,
-          74,
-          79,
-          76,
-          62,
-          41,
-          24,
-          15,
-          10,
-          8,
-          11,
-          17,
-          25,
-          34,
-          45,
-          53,
-          57,
-          59,
-          57,
-          50,
-          39,
-          33,
-          34,
-          38,
-          45,
-          56,
-          69,
-          75,
-          69,
-          57,
-          45,
-          34,
-          23,
-          16
-        ]
-      },
-      "daily": {
-        "time": [
-          "2026-09-19",
-          "2026-09-20",
-          "2026-09-21"
-        ],
-        "weather_code": [
-          81,
-          51,
-          81
-        ],
-        "temperature_2m_max": [
-          31.8,
-          31.5,
-          30.8
-        ],
-        "temperature_2m_min": [
-          24.0,
-          25.1,
-          23.4
-        ],
-        "precipitation_probability_max": [
-          94,
-          79,
-          75
-        ],
-        "sunrise": [
-          "2026-09-19T07:03",
-          "2026-09-20T07:03",
-          "2026-09-21T07:02"
-        ],
-        "sunset": [
-          "2026-09-19T19:10",
-          "2026-09-20T19:10",
-          "2026-09-21T19:09"
-        ]
-      }
-    },
     "VHHH": {
       "timezone": "Asia/Hong_Kong",
       "hourly": {
         "time": [
-          "2026-09-19T00:00",
-          "2026-09-19T01:00",
-          "2026-09-19T02:00",
-          "2026-09-19T03:00",
-          "2026-09-19T04:00",
-          "2026-09-19T05:00",
-          "2026-09-19T06:00",
-          "2026-09-19T07:00",
-          "2026-09-19T08:00",
-          "2026-09-19T09:00",
-          "2026-09-19T10:00",
-          "2026-09-19T11:00",
-          "2026-09-19T12:00",
-          "2026-09-19T13:00",
-          "2026-09-19T14:00",
-          "2026-09-19T15:00",
-          "2026-09-19T16:00",
-          "2026-09-19T17:00",
-          "2026-09-19T18:00",
-          "2026-09-19T19:00",
-          "2026-09-19T20:00",
-          "2026-09-19T21:00",
-          "2026-09-19T22:00",
-          "2026-09-19T23:00",
           "2026-09-20T00:00",
           "2026-09-20T01:00",
           "2026-09-20T02:00",
@@ -1785,33 +1415,33 @@
           "2026-09-21T20:00",
           "2026-09-21T21:00",
           "2026-09-21T22:00",
-          "2026-09-21T23:00"
+          "2026-09-21T23:00",
+          "2026-09-22T00:00",
+          "2026-09-22T01:00",
+          "2026-09-22T02:00",
+          "2026-09-22T03:00",
+          "2026-09-22T04:00",
+          "2026-09-22T05:00",
+          "2026-09-22T06:00",
+          "2026-09-22T07:00",
+          "2026-09-22T08:00",
+          "2026-09-22T09:00",
+          "2026-09-22T10:00",
+          "2026-09-22T11:00",
+          "2026-09-22T12:00",
+          "2026-09-22T13:00",
+          "2026-09-22T14:00",
+          "2026-09-22T15:00",
+          "2026-09-22T16:00",
+          "2026-09-22T17:00",
+          "2026-09-22T18:00",
+          "2026-09-22T19:00",
+          "2026-09-22T20:00",
+          "2026-09-22T21:00",
+          "2026-09-22T22:00",
+          "2026-09-22T23:00"
         ],
         "temperature_2m": [
-          26.3,
-          26.2,
-          26.2,
-          26.1,
-          25.9,
-          25.8,
-          25.7,
-          26.3,
-          27.1,
-          28.1,
-          29.1,
-          30.0,
-          30.2,
-          30.5,
-          30.2,
-          29.9,
-          29.3,
-          28.5,
-          27.6,
-          26.9,
-          26.7,
-          26.7,
-          26.7,
-          26.8,
           26.7,
           26.6,
           26.6,
@@ -1859,33 +1489,33 @@
           27.0,
           27.0,
           26.8,
+          26.7,
+          26.6,
+          26.6,
+          26.6,
+          26.7,
+          26.6,
+          26.6,
+          25.2,
+          25.7,
+          25.3,
+          25.2,
+          26.3,
+          27.6,
+          27.8,
+          27.7,
+          27.5,
+          27.4,
+          27.9,
+          28.3,
+          27.9,
+          27.2,
+          26.9,
+          26.8,
+          26.8,
           26.7
         ],
         "weather_code": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
           0,
           0,
           0,
@@ -1933,33 +1563,33 @@
           2,
           1,
           0,
-          0
+          0,
+          0,
+          2,
+          1,
+          2,
+          1,
+          51,
+          80,
+          53,
+          55,
+          53,
+          51,
+          2,
+          51,
+          55,
+          55,
+          51,
+          2,
+          3,
+          2,
+          3,
+          2,
+          1,
+          2,
+          3
         ],
         "precipitation_probability": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
           0,
           0,
           0,
@@ -2007,44 +1637,406 @@
           0,
           0,
           0,
-          2
+          2,
+          4,
+          7,
+          14,
+          28,
+          46,
+          61,
+          70,
+          75,
+          78,
+          78,
+          77,
+          75,
+          76,
+          78,
+          73,
+          57,
+          34,
+          16,
+          7,
+          3,
+          0,
+          0,
+          0,
+          0
         ]
       },
       "daily": {
         "time": [
-          "2026-09-19",
           "2026-09-20",
-          "2026-09-21"
+          "2026-09-21",
+          "2026-09-22"
         ],
         "weather_code": [
-          0,
           3,
-          95
+          95,
+          80
         ],
         "temperature_2m_max": [
-          30.5,
           30.4,
-          29.2
+          29.2,
+          28.3
         ],
         "temperature_2m_min": [
-          25.7,
           26.5,
-          25.1
+          25.1,
+          25.2
         ],
         "precipitation_probability_max": [
-          0,
           10,
-          65
+          65,
+          78
         ],
         "sunrise": [
-          "2026-09-19T06:12",
           "2026-09-20T06:12",
-          "2026-09-21T06:12"
+          "2026-09-21T06:12",
+          "2026-09-22T06:12"
         ],
         "sunset": [
-          "2026-09-19T18:24",
           "2026-09-20T18:23",
-          "2026-09-21T18:22"
+          "2026-09-21T18:22",
+          "2026-09-22T18:21"
+        ]
+      }
+    },
+    "WMKK": {
+      "timezone": "Asia/Kuala_Lumpur",
+      "hourly": {
+        "time": [
+          "2026-09-20T00:00",
+          "2026-09-20T01:00",
+          "2026-09-20T02:00",
+          "2026-09-20T03:00",
+          "2026-09-20T04:00",
+          "2026-09-20T05:00",
+          "2026-09-20T06:00",
+          "2026-09-20T07:00",
+          "2026-09-20T08:00",
+          "2026-09-20T09:00",
+          "2026-09-20T10:00",
+          "2026-09-20T11:00",
+          "2026-09-20T12:00",
+          "2026-09-20T13:00",
+          "2026-09-20T14:00",
+          "2026-09-20T15:00",
+          "2026-09-20T16:00",
+          "2026-09-20T17:00",
+          "2026-09-20T18:00",
+          "2026-09-20T19:00",
+          "2026-09-20T20:00",
+          "2026-09-20T21:00",
+          "2026-09-20T22:00",
+          "2026-09-20T23:00",
+          "2026-09-21T00:00",
+          "2026-09-21T01:00",
+          "2026-09-21T02:00",
+          "2026-09-21T03:00",
+          "2026-09-21T04:00",
+          "2026-09-21T05:00",
+          "2026-09-21T06:00",
+          "2026-09-21T07:00",
+          "2026-09-21T08:00",
+          "2026-09-21T09:00",
+          "2026-09-21T10:00",
+          "2026-09-21T11:00",
+          "2026-09-21T12:00",
+          "2026-09-21T13:00",
+          "2026-09-21T14:00",
+          "2026-09-21T15:00",
+          "2026-09-21T16:00",
+          "2026-09-21T17:00",
+          "2026-09-21T18:00",
+          "2026-09-21T19:00",
+          "2026-09-21T20:00",
+          "2026-09-21T21:00",
+          "2026-09-21T22:00",
+          "2026-09-21T23:00",
+          "2026-09-22T00:00",
+          "2026-09-22T01:00",
+          "2026-09-22T02:00",
+          "2026-09-22T03:00",
+          "2026-09-22T04:00",
+          "2026-09-22T05:00",
+          "2026-09-22T06:00",
+          "2026-09-22T07:00",
+          "2026-09-22T08:00",
+          "2026-09-22T09:00",
+          "2026-09-22T10:00",
+          "2026-09-22T11:00",
+          "2026-09-22T12:00",
+          "2026-09-22T13:00",
+          "2026-09-22T14:00",
+          "2026-09-22T15:00",
+          "2026-09-22T16:00",
+          "2026-09-22T17:00",
+          "2026-09-22T18:00",
+          "2026-09-22T19:00",
+          "2026-09-22T20:00",
+          "2026-09-22T21:00",
+          "2026-09-22T22:00",
+          "2026-09-22T23:00"
+        ],
+        "temperature_2m": [
+          25.1,
+          25.2,
+          25.2,
+          25.1,
+          25.2,
+          25.4,
+          25.2,
+          25.1,
+          26.0,
+          28.1,
+          29.6,
+          30.3,
+          30.7,
+          31.2,
+          30.8,
+          31.1,
+          31.5,
+          31.4,
+          30.5,
+          29.1,
+          27.8,
+          27.3,
+          26.9,
+          26.7,
+          25.1,
+          24.9,
+          24.5,
+          24.3,
+          24.2,
+          23.8,
+          23.6,
+          23.6,
+          23.4,
+          24.1,
+          25.6,
+          26.9,
+          29.2,
+          29.0,
+          29.2,
+          30.5,
+          30.7,
+          30.8,
+          30.2,
+          28.8,
+          27.4,
+          26.8,
+          26.4,
+          26.1,
+          25.8,
+          25.4,
+          25.0,
+          24.3,
+          23.8,
+          23.9,
+          23.8,
+          23.6,
+          23.8,
+          24.8,
+          26.4,
+          28.3,
+          29.7,
+          27.5,
+          29.6,
+          30.4,
+          29.9,
+          27.2,
+          26.6,
+          26.1,
+          25.8,
+          25.7,
+          25.6,
+          25.6
+        ],
+        "weather_code": [
+          3,
+          2,
+          3,
+          3,
+          3,
+          2,
+          2,
+          1,
+          0,
+          0,
+          51,
+          51,
+          51,
+          51,
+          51,
+          51,
+          51,
+          51,
+          2,
+          3,
+          3,
+          2,
+          3,
+          3,
+          81,
+          55,
+          80,
+          51,
+          51,
+          55,
+          55,
+          80,
+          81,
+          80,
+          55,
+          51,
+          51,
+          3,
+          3,
+          3,
+          51,
+          0,
+          0,
+          1,
+          3,
+          3,
+          3,
+          2,
+          0,
+          0,
+          0,
+          53,
+          80,
+          53,
+          51,
+          51,
+          53,
+          51,
+          3,
+          3,
+          51,
+          55,
+          51,
+          51,
+          51,
+          80,
+          51,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "precipitation_probability": [
+          8,
+          5,
+          4,
+          7,
+          11,
+          16,
+          19,
+          22,
+          25,
+          25,
+          25,
+          29,
+          40,
+          55,
+          67,
+          74,
+          79,
+          76,
+          62,
+          41,
+          24,
+          15,
+          10,
+          8,
+          11,
+          17,
+          25,
+          34,
+          45,
+          53,
+          57,
+          59,
+          57,
+          50,
+          39,
+          33,
+          34,
+          38,
+          45,
+          56,
+          69,
+          75,
+          69,
+          57,
+          45,
+          34,
+          23,
+          16,
+          14,
+          16,
+          20,
+          26,
+          34,
+          41,
+          47,
+          52,
+          55,
+          53,
+          49,
+          49,
+          59,
+          73,
+          84,
+          90,
+          94,
+          92,
+          82,
+          66,
+          53,
+          44,
+          38,
+          35
+        ]
+      },
+      "daily": {
+        "time": [
+          "2026-09-20",
+          "2026-09-21",
+          "2026-09-22"
+        ],
+        "weather_code": [
+          51,
+          81,
+          80
+        ],
+        "temperature_2m_max": [
+          31.5,
+          30.8,
+          30.4
+        ],
+        "temperature_2m_min": [
+          25.1,
+          23.4,
+          23.6
+        ],
+        "precipitation_probability_max": [
+          79,
+          75,
+          94
+        ],
+        "sunrise": [
+          "2026-09-20T07:03",
+          "2026-09-21T07:02",
+          "2026-09-22T07:02"
+        ],
+        "sunset": [
+          "2026-09-20T19:10",
+          "2026-09-21T19:09",
+          "2026-09-22T19:09"
         ]
       }
     },
