@@ -22,6 +22,7 @@ SUPABASE_ACTIVE_ROSTER_URL = (
 AIRPORT_DB = {
     # Malaysia
     "KUL": ("WMKK",  2.7456,  101.7099, ["WMFC"]),
+    "KCH": ("WBGG",  1.4847,  110.3470, ["WBFC"]),
     # Australia
     "SYD": ("YSSY", -33.9461, 151.1772, ["YBBB", "YMMM"]),
     "MEL": ("YMML", -37.6690, 144.8410, ["YMMM"]),
@@ -39,6 +40,7 @@ AIRPORT_DB = {
     "CAN": ("ZGGG",  23.3924, 113.2988, ["ZGZU"]),
     "PVG": ("ZSPD",  31.1443, 121.8083, ["ZSHA"]),
     "PEK": ("ZBAA",  40.0799, 116.5846, ["ZBPE"]),
+    "PKX": ("ZBAD",  39.5098, 116.4105, ["ZBPE"]),
     "CTU": ("ZUUU",  30.5785, 103.9469, ["ZGZU"]),
     "XIY": ("ZLXY",  34.4471, 108.7519, ["ZBPE"]),
     # Hong Kong
