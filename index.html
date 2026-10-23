@@ -274,7 +274,7 @@ details.roster-details table { margin-top: 8px; }
     <tbody><tr><td colspan="8" class="loading">Calculating…</td></tr></tbody>
   </table>
   <div class="footer-note" style="text-align:left; margin-top:8px;">
-    Reference figures only — assumes report time 75min before departure at KUL (home base), 60min ex-station, and 45min post-flight release; single-sector duty days; computed from local station times (UTC offsets: KUL/CAN/PER +8, KIX +9, SYD/MEL +10 for June/AEST). Not an FTL/legality check — verify actuals against MAB's CAAM-approved duty-time system.
+    Reference figures only — assumes report time 75min before departure at KUL (home base), 60min ex-station, and 45min post-flight release; single-sector duty days; computed from local station times (UTC offsets: KUL/CAN/PER +8, KIX +9, SYD/MEL +10, +11 during AU daylight saving). Not an FTL/legality check — verify actuals against MAB's CAAM-approved duty-time system.
   </div>
 </div>
 
@@ -363,11 +363,10 @@ let ROSTER = {
   "days_off": ["2026-06-04","2026-06-05","2026-06-12","2026-06-13","2026-06-17","2026-06-18","2026-06-23","2026-06-24"]
 };
 
-// NOTE: TZ offsets assume June, AEST (no AU daylight saving). If the roster
-// is updated for Oct-Apr, SYD/MEL should be +11 (AEDT).
-// Standard (non-DST) offsets. SYD/MEL/ADL flip +1 Oct-Apr; LHR/CDG/FRA/AMS/ZRH/MUC flip +1 Mar-Oct.
+// Standard (non-DST) offsets. tzOffset() adds +1 for daylight saving:
+// SYD/MEL/ADL first Sun Oct - first Sun Apr; LHR/CDG/FRA/AMS/ZRH/MUC last Sun Mar - last Sun Oct.
 const TZ_OFFSETS = {
-  KUL:8, CAN:8, PVG:8, PEK:8, CTU:8, XIY:8, HKG:8, TPE:8, PER:8,
+  KUL:8, KCH:8, CAN:8, PVG:8, PEK:8, PKX:8, CTU:8, XIY:8, HKG:8, TPE:8, PER:8,
   SYD:10, MEL:10, BNE:10,
   ADL:9.5,
   KIX:9, NRT:9, HND:9, NGO:9, ICN:9,
@@ -377,11 +376,31 @@ const TZ_OFFSETS = {
   DXB:4, DOH:3,
   LHR:0, CDG:1, FRA:1, AMS:1, ZRH:1, MUC:1,
 };
+const AU_DST = new Set(['SYD','MEL','ADL']);
+const EU_DST = new Set(['LHR','CDG','FRA','AMS','ZRH','MUC']);
+// Day of month of the first (n=1) or last (n=-1) Sunday of a 0-based month.
+function sundayOf(y, m, n){
+  if(n > 0) return 1 + (7 - new Date(Date.UTC(y,m,1)).getUTCDay()) % 7;
+  const last = new Date(Date.UTC(y,m+1,0));
+  return last.getUTCDate() - last.getUTCDay();
+}
+// UTC offset in hours for a station at a given instant (ms). Transition-hour precision is not needed.
+function tzOffset(station, ms){
+  const base = TZ_OFFSETS[station];
+  const y = new Date(ms).getUTCFullYear();
+  if(AU_DST.has(station)){
+    return base + ((ms >= Date.UTC(y,9,sundayOf(y,9,1)) || ms < Date.UTC(y,3,sundayOf(y,3,1))) ? 1 : 0);
+  }
+  if(EU_DST.has(station)){
+    return base + ((ms >= Date.UTC(y,2,sundayOf(y,2,-1),1) && ms < Date.UTC(y,9,sundayOf(y,9,-1),1)) ? 1 : 0);
+  }
+  return base;
+}
 const IATA_TO_ICAO = {
-  KUL:"WMKK", SYD:"YSSY", MEL:"YMML", PER:"YPPH", ADL:"YPAD", BNE:"YBBN",
+  KUL:"WMKK", KCH:"WBGG", SYD:"YSSY", MEL:"YMML", PER:"YPPH", ADL:"YPAD", BNE:"YBBN",
   KIX:"RJBB", NRT:"RJAA", HND:"RJTT", NGO:"RJGG",
   ICN:"RKSI",
-  CAN:"ZGGG", PVG:"ZSPD", PEK:"ZBAA", CTU:"ZUUU", XIY:"ZLXY",
+  CAN:"ZGGG", PVG:"ZSPD", PEK:"ZBAA", PKX:"ZBAD", CTU:"ZUUU", XIY:"ZLXY",
   HKG:"VHHH", TPE:"RCTP",
   BKK:"VTBS", CGK:"WIII", DPS:"WADD",
   DEL:"VIDP", BOM:"VABB",
@@ -397,6 +416,8 @@ const ICAO_INFO = {
   ZGGG: {name:"Guangzhou Baiyun", firs:["ZGZU"]},
   ZSPD: {name:"Shanghai Pudong", firs:["ZSHA"]},
   ZBAA: {name:"Beijing Capital", firs:["ZBPE"]},
+  ZBAD: {name:"Beijing Daxing", firs:["ZBPE"]},
+  WBGG: {name:"Kuching", firs:["WBFC"]},
   ZUUU: {name:"Chengdu Tianfu", firs:["ZGZU"]},
   ZLXY: {name:"Xi'an Xianyang", firs:["ZBPE"]},
   VHHH: {name:"Hong Kong", firs:["VHHK"]},
@@ -439,13 +460,15 @@ const AIRPORT_COORDS = {
   LFPG:{lat:49.0097,lon:2.5478},   EDDF:{lat:50.0379,lon:8.5622},
   EHAM:{lat:52.3086,lon:4.7639},   LSZH:{lat:47.4647,lon:8.5492},
   EDDM:{lat:48.3538,lon:11.7861},  ZUUU:{lat:30.5785,lon:103.9469},
-  ZLXY:{lat:34.4471,lon:108.7519},
+  ZLXY:{lat:34.4471,lon:108.7519}, ZBAD:{lat:39.5098,lon:116.4105},
+  WBGG:{lat: 1.4847,lon:110.3470},
 };
 
 // Approximate FIR bounding boxes [min_lat, max_lat, min_lon, max_lon]
 // Used to find en-route FIRs along a great-circle leg
 const FIR_BOXES = {
   WMFC: [  1,  15,  98, 122],  // Kuala Lumpur
+  WBFC: [  0,   8, 109, 120],  // Kota Kinabalu (Sarawak/Sabah)
   VTBB: [  7,  20,  97, 106],  // Bangkok/Thailand
   VVTS: [  7,  22, 100, 117],  // Ho Chi Minh
   WSJC: [ -8,   8,  94, 115],  // Singapore
@@ -547,7 +570,8 @@ function addDays(dateStr, n){
 function toUTC(dateStr, timeStr, station){
   const [y,m,d] = dateStr.split('-').map(Number);
   const [hh,mi] = timeStr.split(':').map(Number);
-  return new Date(Date.UTC(y,m-1,d,hh,mi) - TZ_OFFSETS[station]*3600000);
+  const localMs = Date.UTC(y,m-1,d,hh,mi);
+  return new Date(localMs - tzOffset(station, localMs)*3600000);
 }
 function fmtHM(ms){
   const sign = ms < 0 ? '-' : '';
@@ -556,7 +580,7 @@ function fmtHM(ms){
   return `${sign}${Math.floor(totalMin/60)}h${pad(totalMin%60)}m`;
 }
 function fmtLocal(dtUTC, station){
-  const local = new Date(dtUTC.getTime() + TZ_OFFSETS[station]*3600000);
+  const local = new Date(dtUTC.getTime() + tzOffset(station, dtUTC.getTime())*3600000);
   return `${pad(local.getUTCDate())}-${MONTHS[local.getUTCMonth()]} ${pad(local.getUTCHours())}:${pad(local.getUTCMinutes())} ${station}`;
 }
 function fmtUTCTime(dt){ return `${pad(dt.getUTCHours())}:${pad(dt.getUTCMinutes())}Z`; }
@@ -762,7 +786,7 @@ function renderAll(){
     {label:'2200-0559', test:m=> m>=1320 || m<360,  limits:[11,10.25,9.5,9,9,9,9,9]},
   ];
   function localMinutesOfDay(dtUTC, station){
-    const local = new Date(dtUTC.getTime() + TZ_OFFSETS[station]*3600000);
+    const local = new Date(dtUTC.getTime() + tzOffset(station, dtUTC.getTime())*3600000);
     return local.getUTCHours()*60 + local.getUTCMinutes();
   }
   function getFDPLimitMs(reportLocalMin, sectors){
