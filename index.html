@@ -80,6 +80,18 @@ table { width: 100%; border-collapse: collapse; font-size: 13px; }
 th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eee; }
 th { background: #f3f4f6; color: #374151; font-weight: 600; }
 tr:hover td { background: #fafafa; }
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-scroll td:first-child { white-space: nowrap; }
+/* Phones: each row becomes a two-column grid of labelled cells (labels set by labelCells()). */
+@media (max-width: 600px) {
+  .table-scroll thead { display: none; }
+  .table-scroll tr { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; padding: 10px; border-bottom: 1px solid #eee; }
+  .table-scroll td { border: 0; padding: 0; white-space: normal; }
+  .table-scroll td::before { content: attr(data-label); display: block; font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #6b7280; }
+  .table-scroll td[colspan] { grid-column: 1 / -1; }
+  .table-scroll td[colspan]::before { content: none; }
+}
+.report-line { margin-top: 4px; font-weight: 600; color: #1e3a8a; }
 .dest-cell { font-weight: 600; }
 
 .taf-card {
@@ -267,12 +279,12 @@ details.roster-details table { margin-top: 8px; }
   <div class="highlight-grid" style="margin-bottom:12px;" id="dutySummary">
     <div class="highlight-card muted"><div class="loading">Calculating…</div></div>
   </div>
-  <table id="dutyTable">
+  <div class="table-scroll"><table id="dutyTable">
     <thead>
       <tr><th>Date</th><th>Flight</th><th>Route</th><th>Report</th><th>Release</th><th>Block</th><th>Duty</th><th>Rest After</th></tr>
     </thead>
     <tbody><tr><td colspan="8" class="loading">Calculating…</td></tr></tbody>
-  </table>
+  </table></div>
   <div class="footer-note" style="text-align:left; margin-top:8px;">
     Reference figures only — assumes report time 75min before departure at KUL (home base), 60min ex-station, and 45min post-flight release; legs with ≤6h ground time form one duty period; DH (positioning) legs count as duty but not flight time; computed from local station times (UTC offsets: KUL/CAN/PER +8, KIX +9, SYD/MEL +10, +11 during AU daylight saving). Not an FTL/legality check — verify actuals against MAB's CAAM-approved duty-time system.
   </div>
@@ -283,12 +295,12 @@ details.roster-details table { margin-top: 8px; }
   <div class="highlight-grid" style="margin-bottom:12px;" id="ftlCumSummary">
     <div class="highlight-card muted"><div class="loading">Calculating…</div></div>
   </div>
-  <table id="fdpTable">
+  <div class="table-scroll"><table id="fdpTable">
     <thead>
       <tr><th>Date</th><th>Flight</th><th>Report (local)</th><th>FDP Table A Bracket</th><th>Sectors</th><th>FDP</th><th>Max FDP</th><th>Status</th></tr>
     </thead>
     <tbody><tr><td colspan="8" class="loading">Calculating…</td></tr></tbody>
-  </table>
+  </table></div>
   <div class="footer-note" style="text-align:left; margin-top:8px;">
     Max FDP per CAAM MCAR Part 1, Fig 7.5.8(1) Table A (2 flight crew, acclimatized) — banded by report local time and sector count. Report time assumed 75min before departure at KUL (home base), 60min ex-station. Sectors exclude DH legs, and positioning after the last operating sector is duty but not FDP. Cumulative duty limits per Table 7.5.17(1), flight crew: 55h/7 days, 95h/14 days, 190h/28 days. Flight time limit per 7.5.16.1(a): 100h/28 days. The 1000h/12-month flying limit (7.5.16.1(b)) requires a full rolling 12-month history and is <b>not computed here</b> — track that separately. Table A assumes acclimatized status; if not acclimatized at the report station, Table B (generally lower limits) applies instead — verify against MAB's CAAM-approved duty-time system.
   </div>
@@ -670,9 +682,28 @@ function daysBetween(d1, d2){
   return Math.round((Date.UTC(y2,m2-1,dd2) - Date.UTC(y1,m1-1,dd1)) / 86400000);
 }
 
-function currentCardHTML(info, todayStr){
-  let route='', detail='';
+function localHM(dtUTC, station){
+  const local = new Date(dtUTC.getTime() + tzOffset(station, dtUTC.getTime())*3600000);
+  return `${pad(local.getUTCHours())}:${pad(local.getUTCMinutes())}`;
+}
+// Report time for the duty period a leg belongs to; later sectors of a duty share its report.
+function reportLineHTML(leg, duties){
+  const d = duties.find(x => x.legs.includes(leg));
+  if(!d) return '';
+  const rep = `${localHM(d.reportUTC, d.report_airport)} ${d.report_airport} / ${fmtUTCTime(d.reportUTC)}`;
+  const text = d.legs[0] === leg ? `Report ${rep}` : `Same duty as ${d.legs[0].flight} · reported ${rep}`;
+  return `<div class="detail report-line">${text}</div>`;
+}
+
+function labelCells(table){
+  const heads = [...table.querySelectorAll('thead th')].map(th => th.textContent);
+  table.querySelectorAll('tbody tr').forEach(tr => [...tr.cells].forEach((td,i) => { td.dataset.label = heads[i] || ''; }));
+}
+
+function currentCardHTML(info, todayStr, duties){
+  let route='', detail='', extra='';
   if(info.kind === 'dep'){
+    extra = reportLineHTML(info.leg, duties);
     const depZ = fmtUTCTime(info.leg.depUTC), arrZ = fmtUTCTime(info.leg.arrUTC);
     route = `${info.leg.flight} · ${info.leg.dep_airport} → ${info.leg.arr_airport}`;
     detail = `Departing today · Dep ${info.leg.dep_airport} ${info.leg.dep_time} / ${depZ} · Arr ${info.leg.arr_airport} ${info.leg.arr_time}${info.leg.arr_date!==info.leg.dep_date?' (+1)':''} local / ${arrZ} · ${info.leg.ac_type}`;
@@ -686,6 +717,7 @@ function currentCardHTML(info, todayStr){
     route = `Standby ${info.sb.code}`;
     detail = `${info.sb.location} · Report ${info.sb.report} / ${repZ} – Release ${info.sb.release} / ${relZ}`;
   } else if(info.kind === 'layover'){
+    extra = reportLineHTML(info.nextLeg, duties);
     const depZ = fmtUTCTime(info.nextLeg.depUTC);
     route = `On Layover · ${info.station}`;
     detail = `Next sector: ${info.nextLeg.flight} ${info.nextLeg.dep_airport} → ${info.nextLeg.arr_airport} on ${info.nextLeg.dep_date}, dep ${info.nextLeg.dep_time} / ${depZ}`;
@@ -696,17 +728,17 @@ function currentCardHTML(info, todayStr){
     route = 'No roster data';
     detail = 'Not covered by current roster — upload a new roster via upload.html';
   }
-  return `<div class="highlight-card today"><div class="label">Current · ${todayStr}</div><div class="route">${route}</div><div class="detail">${detail}</div></div>`;
+  return `<div class="highlight-card today"><div class="label">Current · ${todayStr}</div><div class="route">${route}</div><div class="detail">${detail}</div>${extra}</div>`;
 }
 
-function nextFlightCardHTML(leg, todayStr){
+function nextFlightCardHTML(leg, todayStr, duties){
   if(!leg){
     return `<div class="highlight-card"><div class="label">Next Flight</div><div class="route">No upcoming flights in roster</div><div class="detail">Upload a new roster via <a href="upload.html">upload.html</a></div></div>`;
   }
   const days = daysBetween(todayStr, leg.dep_date);
   const when = days <= 0 ? 'Today' : days === 1 ? 'Tomorrow' : `in ${days} days`;
   const depZ = fmtUTCTime(leg.depUTC), arrZ = fmtUTCTime(leg.arrUTC);
-  return `<div class="highlight-card"><div class="label">Next Flight · ${leg.dep_date} (${when})</div><div class="route">${leg.flight} · ${leg.dep_airport} → ${leg.arr_airport}</div><div class="detail">Dep ${leg.dep_airport} ${leg.dep_time} / ${depZ} · Arr ${leg.arr_airport} ${leg.arr_time}${leg.arr_date!==leg.dep_date?' (+1)':''} local / ${arrZ} · ${leg.ac_type}</div></div>`;
+  return `<div class="highlight-card"><div class="label">Next Flight · ${leg.dep_date} (${when})</div><div class="route">${leg.flight} · ${leg.dep_airport} → ${leg.arr_airport}</div><div class="detail">Dep ${leg.dep_airport} ${leg.dep_time} / ${depZ} · Arr ${leg.arr_airport} ${leg.arr_time}${leg.arr_date!==leg.dep_date?' (+1)':''} local / ${arrZ} · ${leg.ac_type}</div>${reportLineHTML(leg, duties)}</div>`;
 }
 
 function findRotation(legs, todayStr){
@@ -771,8 +803,8 @@ function renderAll(){
   const currentInfo = describeToday(todayStr, legs);
   const nextLeg = findNextLeg(legs, todayStr, currentInfo);
   document.getElementById('rotationStatus').innerHTML =
-    currentCardHTML(currentInfo, todayStr) +
-    nextFlightCardHTML(nextLeg, todayStr);
+    currentCardHTML(currentInfo, todayStr, duties) +
+    nextFlightCardHTML(nextLeg, todayStr, duties);
 
   document.getElementById('fullRosterBody').innerHTML = legs.map(l => {
     const style = l.dep_date === todayStr ? ' style="background:#eefcf3"' : (l.dep_date === tomorrowStr ? ' style="background:#f0f4ff"' : '');
@@ -865,6 +897,8 @@ function renderAll(){
         return `<tr${style}><td>${d.dep_date.slice(5)}</td><td><b>${d.flight}</b></td><td>${fmtLocal(d.reportUTC,d.report_airport)}</td><td>${bracket}</td><td>${d.sectors}</td><td>${fmtHM(d.fdp)}</td><td>${fmtHM(limitMs)}</td><td><span class="tag ${tag.cls}">${tag.label}</span> ${tag.pct}%</td></tr>`;
       }).join('')
     : `<tr><td colspan="8">No upcoming legs found in the loaded roster.</td></tr>`;
+  labelCells(document.getElementById('dutyTable'));
+  labelCells(document.getElementById('fdpTable'));
 
   let relevantIcaos = [];
   let relevantFirs = new Set();
