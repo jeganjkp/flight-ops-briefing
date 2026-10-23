@@ -13,8 +13,9 @@ import json
 import urllib.request
 from datetime import datetime, timezone
 
-SUPABASE_ACTIVE_ROSTER_URL = (
-    "https://juohlwflvehlctiutrcu.supabase.co/functions/v1/active-roster"
+# Airport codes only; the full roster endpoint requires a passcode.
+SUPABASE_ROSTER_AIRPORTS_URL = (
+    "https://juohlwflvehlctiutrcu.supabase.co/functions/v1/roster-airports"
 )
 
 # Master airport database — add any new destination here once ever.
@@ -79,12 +80,8 @@ def fetch_json(url, headers=None):
 def get_roster_iatas():
     """Return the set of IATA airport codes from the active Supabase roster."""
     try:
-        roster = fetch_json(SUPABASE_ACTIVE_ROSTER_URL)
-        iatas = set()
-        for leg in roster.get("legs", []):
-            iatas.add(leg.get("dep_airport", "").upper())
-            iatas.add(leg.get("arr_airport", "").upper())
-        iatas.discard("")
+        data = fetch_json(SUPABASE_ROSTER_AIRPORTS_URL)
+        iatas = {a.upper() for a in data.get("airports", []) if a}
         if iatas:
             print(f"Loaded active roster airports: {sorted(iatas)}")
             return iatas

@@ -252,12 +252,22 @@ details.roster-details table { margin-top: 8px; }
 <div class="header">
   <div>
     <h1>Flight Ops Briefing</h1>
-    <div class="meta">Jegan Kumar Pillay Gopal · FO · A330 Fleet · Base KUL · Staff #2112499</div>
+    <div class="meta" id="pilotMeta"></div>
   </div>
   <div style="text-align:right">
     <div id="utcClock" style="font-size:15px;font-weight:700;color:#2a3f5f;letter-spacing:0.05em;font-family:'SF Mono',Consolas,monospace;margin-bottom:4px;"></div>
     <div class="updated" id="reloadedAt">Loading…</div>
   </div>
+</div>
+
+<div class="section" id="lockCard" style="display:none">
+  <h2>Passcode Required</h2>
+  <p class="detail" style="font-size:13px;color:#4b5563;margin:0 0 10px;">This briefing is private. Enter the passcode to view it. It is remembered on this device.</p>
+  <form onsubmit="unlock(event)" style="display:flex;gap:8px;flex-wrap:wrap;">
+    <input id="passcodeInput" type="password" autocomplete="current-password" placeholder="Passcode" style="flex:1;min-width:0;padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:15px;">
+    <button type="submit" style="padding:8px 16px;border:0;border-radius:8px;background:#2a3f5f;color:#fff;font-weight:600;font-size:15px;">Unlock</button>
+  </form>
+  <div id="lockMsg" style="font-size:13px;color:#991b1b;margin-top:8px;"></div>
 </div>
 
 <div class="section">
@@ -352,28 +362,8 @@ details.roster-details table { margin-top: 8px; }
 </div>
 
 <script>
-// Fallback roster — used when Supabase is unreachable
-let ROSTER = {
-  "pilot": {"name": "JEGAN KUMAR PILLAY GOPAL", "staff_number": "2112499", "rank": "FO", "base": "KUL", "fleet": "330"},
-  "month": "Jun-2026",
-  "legs": [
-    {"flight": "MH251", "dep_date": "2026-06-01", "dep_airport": "KUL", "dep_time": "20:00", "arr_airport": "SYD", "arr_date": "2026-06-02", "arr_time": "06:53", "ac_type": "339"},
-    {"flight": "MH122", "dep_date": "2026-06-03", "dep_airport": "SYD", "dep_time": "12:59", "arr_airport": "KUL", "arr_date": "2026-06-03", "arr_time": "20:52", "ac_type": "339"},
-    {"flight": "MH52", "dep_date": "2026-06-06", "dep_airport": "KUL", "dep_time": "22:26", "arr_airport": "KIX", "arr_date": "2026-06-07", "arr_time": "06:51", "ac_type": "333"},
-    {"flight": "MH53", "dep_date": "2026-06-08", "dep_airport": "KIX", "dep_time": "09:41", "arr_airport": "KUL", "arr_date": "2026-06-08", "arr_time": "16:14", "ac_type": "333"},
-    {"flight": "MH6178", "dep_date": "2026-06-09", "dep_airport": "KUL", "dep_time": "22:07", "arr_airport": "CAN", "arr_date": "2026-06-10", "arr_time": "03:19", "ac_type": "33X"},
-    {"flight": "MH377", "dep_date": "2026-06-11", "dep_airport": "CAN", "dep_time": "14:25", "arr_airport": "KUL", "arr_date": "2026-06-11", "arr_time": "19:15", "ac_type": "333"},
-    {"flight": "MH129", "dep_date": "2026-06-14", "dep_airport": "KUL", "dep_time": "09:20", "arr_airport": "MEL", "arr_date": "2026-06-14", "arr_time": "20:00", "ac_type": "339"},
-    {"flight": "MH128", "dep_date": "2026-06-15", "dep_airport": "MEL", "dep_time": "23:30", "arr_airport": "KUL", "arr_date": "2026-06-16", "arr_time": "06:45", "ac_type": "339"},
-    {"flight": "MH127", "dep_date": "2026-06-25", "dep_airport": "KUL", "dep_time": "19:30", "arr_airport": "PER", "arr_date": "2026-06-26", "arr_time": "01:55", "ac_type": "339"},
-    {"flight": "MH126", "dep_date": "2026-06-27", "dep_airport": "PER", "dep_time": "02:10", "arr_airport": "KUL", "arr_date": "2026-06-27", "arr_time": "08:45", "ac_type": "339"}
-  ],
-  "standby": [
-    {"code": "S4-330", "dates": ["2026-06-19","2026-06-20","2026-06-21","2026-06-22"], "location": "KUL", "report": "17:00", "release": "23:59"},
-    {"code": "S3-330", "dates": ["2026-06-28","2026-06-29","2026-06-30"], "location": "KUL", "report": "12:00", "release": "22:00"}
-  ],
-  "days_off": ["2026-06-04","2026-06-05","2026-06-12","2026-06-13","2026-06-17","2026-06-18","2026-06-23","2026-06-24"]
-};
+// Filled from Supabase after the passcode check; empty until then.
+let ROSTER = {pilot: null, month: "", legs: [], standby: [], days_off: []};
 
 // Standard (non-DST) offsets. tzOffset() adds +1 for daylight saving:
 // SYD/MEL/ADL first Sun Oct - first Sun Apr; LHR/CDG/FRA/AMS/ZRH/MUC last Sun Mar - last Sun Oct.
@@ -794,6 +784,11 @@ function renderAll(){
   const todayStr = localDateStr(today);
   const tomorrowStr = addDays(todayStr, 1);
 
+  const pilot = ROSTER.pilot;
+  document.getElementById('pilotMeta').textContent = pilot
+    ? `${pilot.name.replace(/\w\S*/g, w => w[0] + w.slice(1).toLowerCase())} · ${pilot.rank} · A${pilot.fleet} Fleet · Base ${pilot.base} · Staff #${pilot.staff_number}`
+    : '';
+
   document.getElementById('reloadedAt').innerHTML =
     `Page loaded: ${today.toLocaleString('en-GB',{hour12:false})}<br>Roster: ${ROSTER.month}`;
 
@@ -1136,9 +1131,38 @@ async function triggerWeatherUpdate() {
   btn.disabled = false;
 }
 
+// Passcode: a view-only one entered here, or the upload secret saved by upload.html (same origin).
+function getPasscode(){
+  try { return localStorage.getItem('ftl_view_secret') || localStorage.getItem('ftl_upload_secret') || ''; }
+  catch(_) { return ''; }
+}
+function authHeaders(){
+  const passcode = getPasscode();
+  return passcode ? {'Authorization': `Bearer ${passcode}`} : {};
+}
+function showLock(message){
+  document.querySelectorAll('.section').forEach(s => { s.style.display = s.id === 'lockCard' ? '' : 'none'; });
+  document.getElementById('reloadedAt').textContent = 'Locked';
+  document.getElementById('lockMsg').textContent = message;
+  document.getElementById('passcodeInput').focus();
+}
+function unlock(e){
+  e.preventDefault();
+  const v = document.getElementById('passcodeInput').value.trim();
+  if(!v) return;
+  try { localStorage.setItem('ftl_view_secret', v); } catch(_) {}
+  location.reload();
+}
+
 async function init(){
   try {
-    const res = await fetch(`${SUPABASE_FN}/active-roster`);
+    const res = await fetch(`${SUPABASE_FN}/active-roster`, {headers: authHeaders()});
+    if(res.status === 401){
+      const hadPasscode = !!getPasscode();
+      try { localStorage.removeItem('ftl_view_secret'); } catch(_) {}
+      showLock(hadPasscode ? 'Passcode not accepted — try again.' : '');
+      return;
+    }
     if(res.ok){
       const data = await res.json();
       if(data && Array.isArray(data.legs) && data.legs.length) ROSTER = data;
@@ -1148,7 +1172,7 @@ async function init(){
   renderAll();
 
   try {
-    const res = await fetch(`${SUPABASE_FN}/pending-roster`);
+    const res = await fetch(`${SUPABASE_FN}/pending-roster`, {headers: authHeaders()});
     if(res.ok){
       const p = await res.json();
       if(p.pending){
