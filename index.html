@@ -163,12 +163,15 @@ tr:hover td { background: #fafafa; }
   border-radius: 6px; padding: 8px 10px;
 }
 
-details.roster-details { font-size: 13px; }
-details.roster-details summary {
-  cursor: pointer; font-size: 13px; font-weight: 600; color: #2a3f5f;
-  padding: 4px 0;
+.roster-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.roster-tabs button {
+  padding: 4px 12px; border: 1px solid #d1d5db; border-radius: 999px;
+  background: #f9fafb; color: #374151; font-size: 13px; font-weight: 600; cursor: pointer;
 }
-details.roster-details table { margin-top: 8px; }
+.roster-tabs button.active { background: #2a3f5f; border-color: #2a3f5f; color: #fff; }
+table.roster-view td:first-child { white-space: nowrap; width: 1%; color: #374151; }
+table.roster-view tr.rv-today td { background: #eefcf3; }
+.rv-muted { color: #9ca3af; }
 
 .footer-note {
   font-size: 12px;
@@ -346,19 +349,16 @@ details.roster-details table { margin-top: 8px; }
 </div>
 
 <div class="section">
-  <details class="roster-details">
-    <summary id="rosterDetailsSummary">Full Roster — Jun-2026 (reference, all legs)</summary>
-    <table>
-      <thead>
-        <tr><th>Date</th><th>Flight</th><th>Route</th><th>Dep (local)</th><th>Arr (local)</th><th>A/C</th></tr>
-      </thead>
-      <tbody id="fullRosterBody"></tbody>
-    </table>
-  </details>
+  <h2>Roster Viewer</h2>
+  <div class="roster-tabs" id="rosterTabs"></div>
+  <table class="roster-view">
+    <thead><tr><th>Date</th><th>Duty (local times)</th></tr></thead>
+    <tbody id="rosterViewBody"><tr><td colspan="2" class="loading">Loading…</td></tr></tbody>
+  </table>
 </div>
 
 <div class="footer-note">
-  Today/Tomorrow, current rotation and duty/flight time recompute every time this page loads. Weather/SIGMET come from data.json, refreshed every ~30min by a GitHub Action. Roster is fetched live from Supabase — <a href="upload.html" style="color:#9ca3af">upload a new roster</a> when a new month is published.
+  Today/Tomorrow, current rotation and duty/flight time recompute every time this page loads. Weather/SIGMET come from data.json, refreshed every ~30min by a GitHub Action. Roster is fetched live from Supabase — <a href="upload.html" style="color:#9ca3af">upload a new roster</a> when a new month is published; other months stay live.
 </div>
 
 <script>
@@ -777,6 +777,63 @@ function enRouteFirs(depIcao, arrIcao){
   return firs;
 }
 
+// Roster viewer: one row per day of the selected month, across all loaded months.
+let viewerMonth = null;   // "YYYY-MM"
+let viewerState = null;   // {legs, duties, todayStr} from the last renderAll()
+const WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function monthKeyLabel(key){ return `${MONTHS[Number(key.slice(5,7))-1]}-${key.slice(0,4)}`; }
+function rosterMonthKeys(){
+  const keys = new Set();
+  for(const label of (ROSTER.months || [ROSTER.month])){
+    const m = /^([A-Za-z]{3})-(\d{4})$/.exec(label || '');
+    if(m && MONTHS.includes(m[1])) keys.add(`${m[2]}-${pad(MONTHS.indexOf(m[1])+1)}`);
+  }
+  if(!keys.size) ROSTER.legs.forEach(l => keys.add(l.dep_date.slice(0,7)));
+  return [...keys].sort();
+}
+function rosterDayHTML(dateStr, legs, duties){
+  const deps = legs.filter(l => l.dep_date === dateStr);
+  if(deps.length) return deps.map(l => {
+    const d = duties.find(x => x.legs[0] === l);
+    const rpt = d ? ` · Rpt ${localHM(d.reportUTC, d.report_airport)}` : '';
+    return `<b>${l.flight}</b> ${l.dep_airport} → ${l.arr_airport} · ${l.dep_time}–${l.arr_time}${l.arr_date!==l.dep_date?' (+1)':''}${rpt}`;
+  }).join('<br>');
+  const arr = legs.find(l => l.arr_date === dateStr && l.dep_date < dateStr);
+  if(arr) return `Arrive ${arr.arr_airport} ${arr.arr_time} · ${arr.flight}`;
+  const sb = ROSTER.standby.find(s => s.dates.includes(dateStr));
+  if(sb) return `Standby ${sb.code} · ${sb.location} ${sb.report}–${sb.release}`;
+  if(ROSTER.days_off.includes(dateStr)) return '<span class="rv-muted">Day off</span>';
+  const info = describeToday(dateStr, legs);
+  if(info.kind === 'layover' && info.station !== (ROSTER.pilot?.base || 'KUL')) return `<span class="rv-muted">Layover ${info.station}</span>`;
+  return '<span class="rv-muted">—</span>';
+}
+function selectViewerMonth(key){ viewerMonth = key; renderRosterViewer(); }
+function renderRosterViewer(){
+  const {legs, duties, todayStr} = viewerState;
+  const keys = rosterMonthKeys();
+  const body = document.getElementById('rosterViewBody');
+  if(!keys.length){
+    document.getElementById('rosterTabs').innerHTML = '';
+    body.innerHTML = '<tr><td colspan="2">No roster loaded — <a href="upload.html">upload a roster</a>.</td></tr>';
+    return;
+  }
+  const thisMonth = todayStr.slice(0,7);
+  if(!keys.includes(viewerMonth)){
+    viewerMonth = keys.includes(thisMonth) ? thisMonth : (keys.find(k => k > thisMonth) || keys[keys.length-1]);
+  }
+  document.getElementById('rosterTabs').innerHTML = keys.map(k =>
+    `<button type="button" class="${k===viewerMonth?'active':''}" onclick="selectViewerMonth('${k}')">${monthKeyLabel(k)}</button>`).join('');
+  const [y, m] = viewerMonth.split('-').map(Number);
+  const days = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const rows = [];
+  for(let day = 1; day <= days; day++){
+    const dateStr = `${viewerMonth}-${pad(day)}`;
+    const dow = WEEKDAYS[new Date(Date.UTC(y, m-1, day)).getUTCDay()];
+    rows.push(`<tr${dateStr===todayStr?' class="rv-today"':''}><td>${pad(day)} ${dow}</td><td>${rosterDayHTML(dateStr, legs, duties)}</td></tr>`);
+  }
+  body.innerHTML = rows.join('');
+}
+
 function renderAll(){
   const legs = computeLegs();
   const duties = computeDuties(legs);
@@ -792,19 +849,14 @@ function renderAll(){
   document.getElementById('reloadedAt').innerHTML =
     `Page loaded: ${today.toLocaleString('en-GB',{hour12:false})}<br>Roster: ${ROSTER.month}`;
 
-  document.getElementById('rosterDetailsSummary').textContent =
-    `Full Roster — ${ROSTER.month} (reference, all legs)`;
-
   const currentInfo = describeToday(todayStr, legs);
   const nextLeg = findNextLeg(legs, todayStr, currentInfo);
   document.getElementById('rotationStatus').innerHTML =
     currentCardHTML(currentInfo, todayStr, duties) +
     nextFlightCardHTML(nextLeg, todayStr, duties);
 
-  document.getElementById('fullRosterBody').innerHTML = legs.map(l => {
-    const style = l.dep_date === todayStr ? ' style="background:#eefcf3"' : (l.dep_date === tomorrowStr ? ' style="background:#f0f4ff"' : '');
-    return `<tr${style}><td>${l.dep_date.slice(5)}</td><td>${l.flight}</td><td class="dest-cell">${l.dep_airport} → ${l.arr_airport}</td><td>${l.dep_time}</td><td>${l.arr_time}${l.arr_date!==l.dep_date?' (+1)':''}</td><td>${l.ac_type}</td></tr>`;
-  }).join('');
+  viewerState = {legs, duties, todayStr};
+  renderRosterViewer();
 
   function windowTotal(days, field){
     const start = addDays(todayStr, -(days-1));
@@ -825,7 +877,7 @@ function renderAll(){
   document.getElementById('dutySummary').innerHTML = `
     <div class="highlight-card"><div class="label">MTD Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(mtdTotal)}</div></div>
     <div class="highlight-card"><div class="label">MTD Duty Hours</div><div class="route" style="font-size:20px;">${fmtHM(mtdDuty)}</div></div>
-    <div class="highlight-card" style="border-color:#b7e8c8;background:#eefcf3"><div class="label">Month Total Duty · ${ROSTER.month}</div><div class="route" style="font-size:20px;">${fmtHM(monthTotalDuty)}</div><div style="font-size:11px;color:#6b7280;margin-top:2px;">All legs in roster month (payroll ref)</div></div>
+    <div class="highlight-card" style="border-color:#b7e8c8;background:#eefcf3"><div class="label">Month Total Duty · ${monthKeyLabel(currentYYYYMM)}</div><div class="route" style="font-size:20px;">${fmtHM(monthTotalDuty)}</div><div style="font-size:11px;color:#6b7280;margin-top:2px;">All legs in roster month (payroll ref)</div></div>
     <div class="highlight-card"><div class="label">Rolling 7-Day Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(7,'block'))}</div></div>
     <div class="highlight-card"><div class="label">Rolling 7-Day Duty Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(7,'duty'))}</div></div>
     <div class="highlight-card"><div class="label">Rolling 28-Day Flight Hours</div><div class="route" style="font-size:20px;">${fmtHM(windowTotal(28,'block'))}</div></div>
