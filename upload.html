@@ -171,6 +171,7 @@ const PARSE_URL  = `${SUPABASE_URL}/functions/v1/parse-roster`;
 const APPLY_URL  = `${SUPABASE_URL}/functions/v1/apply-roster`;
 
 let pendingId = null;
+let pendingMonth = '';
 let selectedFile = null;
 
 // --- Secret management ---
@@ -246,6 +247,7 @@ async function parseRoster() {
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
     pendingId = data.id;
+    pendingMonth = data.month;
     document.getElementById('resultRows').innerHTML = `
       <div class="result-row"><span class="lbl">Month</span><span class="val">${data.month}</span></div>
       <div class="result-row"><span class="lbl">Flights</span><span class="val">${data.leg_count}</span></div>
@@ -278,7 +280,7 @@ async function applyRoster() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
-    setNotice('Roster is now live! The briefing page will use it on next load.', 'ok');
+    setNotice(`${pendingMonth} roster is now live — it replaces any earlier ${pendingMonth} upload; other months are unchanged.`, 'ok');
     document.getElementById('resultCard').style.display = 'none';
     pendingId = null;
     applyBtn.innerHTML = 'Go Live';
