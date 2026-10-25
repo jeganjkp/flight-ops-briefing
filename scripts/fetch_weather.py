@@ -59,6 +59,7 @@ AIRPORT_DB = {
     # Middle East
     "DXB": ("OMDB",  25.2528,  55.3644, ["OMAE"]),
     "DOH": ("OTHH",  25.2731,  51.6080, ["OBBB"]),
+    "JED": ("OEJN",  21.6796,  39.1565, ["OEJD"]),
     # Europe
     "LHR": ("EGLL",  51.4775,  -0.4614, ["EGTT"]),
     "CDG": ("LFPG",  49.0097,   2.5478, ["LFFF"]),

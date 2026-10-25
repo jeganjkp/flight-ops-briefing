@@ -123,7 +123,7 @@ a.back { display: inline-block; margin-top: 16px; font-size: 13px; color: #2563e
 <body>
 
 <h1>Roster Upload</h1>
-<p class="sub">Photo or screenshot of the MAB roster portal — Claude will extract it automatically.</p>
+<p class="sub">PDF, photo or screenshot of the MAB roster portal — Claude will extract it automatically. A PDF reads most accurately.</p>
 
 <!-- Step 1: Secret -->
 <div class="card" id="secretCard">
@@ -136,11 +136,11 @@ a.back { display: inline-block; margin-top: 16px; font-size: 13px; color: #2563e
 
 <!-- Step 2: File -->
 <div class="card">
-  <label>Roster image</label>
+  <label>Roster file</label>
   <div class="drop-zone" id="dropZone">
-    <input type="file" id="fileInput" accept="image/*,image/heic,.heic" onchange="onFile(this.files[0])">
+    <input type="file" id="fileInput" accept="application/pdf,.pdf,image/*,image/heic,.heic" onchange="onFile(this.files[0])">
     <div class="icon">📷</div>
-    <div class="hint">Tap to choose photo<br><b>JPEG / PNG / HEIC</b></div>
+    <div class="hint">Tap to choose a file<br><b>PDF / JPEG / PNG / HEIC</b></div>
   </div>
   <div id="previewWrap">
     <img id="previewImg" alt="preview">
@@ -194,11 +194,11 @@ function onFile(file) {
   if (!file) return;
   selectedFile = file;
   document.getElementById('fileName').textContent = file.name + ' · ' + (file.size / 1024).toFixed(0) + ' KB';
+  const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  document.getElementById('previewImg').style.display = isPdf ? 'none' : '';
+  document.getElementById('previewWrap').style.display = 'block';
   const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('previewImg').src = e.target.result;
-    document.getElementById('previewWrap').style.display = 'block';
-  };
+  reader.onload = e => { if (!isPdf) document.getElementById('previewImg').src = e.target.result; };
   reader.readAsDataURL(file);
   document.getElementById('parseBtn').disabled = false;
   setNotice('');
@@ -254,6 +254,12 @@ async function parseRoster() {
       <div class="result-row"><span class="lbl">Standby blocks</span><span class="val">${data.standby_count}</span></div>
       <div class="result-row"><span class="lbl">Days off</span><span class="val">${data.days_off_count}</span></div>
     `;
+    const warnings = data.warnings || [];
+    if (warnings.length) {
+      const items = warnings.map(w => `<li>${w.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))}</li>`).join('');
+      document.getElementById('resultRows').innerHTML +=
+        `<div class="notice err" style="margin-top:12px;"><b>Check before going live:</b><ul style="margin:6px 0 0 18px;padding:0;">${items}</ul>Compare these legs with the roster. If they are wrong, re-upload (a PDF reads best) instead of going live.</div>`;
+    }
     document.getElementById('resultCard').style.display = 'block';
     btn.innerHTML = 'Parse Roster';
   } catch (err) {
