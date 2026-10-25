@@ -103,7 +103,9 @@ Tabular "Roster Report" layout (columns Date, Pairing/Activity, Duty Report, Ite
 - The flight number is the Item column, copied digit for digit (e.g. MH6178, MH366, MH6075, MH251 — 3 or 4 digits; do not drop or add digits). Do not take it from the Pairing/Activity column.
 - work_type is the Work Type column, copied as printed (OP, PS, SFP, ...). OP is operating at the controls. PS is positioning (deadheading): add "deadhead": true. SFP is safety pilot: a working flight duty, but not at the controls — do NOT mark it deadhead.
 - If a row's Flying Hrs is 0:00 (PS, SFP, or any other work type), add "logs_flight_time": false to that leg.
-- Rows whose Item is a day-off code (D, DO2, ...) are days off, not legs.`
+- Rows whose Item is a day-off code (D, DO2, ...) are days off, not legs.
+
+Dates must be read, never inferred: do not work out a row's date from neighbouring rows, pairing codes or typical trip lengths. If the Date column (or any row's date) is cut off or not legible, return ONLY {"error": "Date column not readable — save the roster in landscape or fit to page width"} instead of a roster.`
 
     const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -137,6 +139,8 @@ Tabular "Roster Report" layout (columns Date, Pairing/Activity, Duty Report, Ite
       if (!match) throw new Error("Claude returned non-JSON: " + text.slice(0, 300))
       roster = JSON.parse(match[0])
     }
+
+    if (roster.error) throw new Error(roster.error)
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
     const { data, error } = await supabase
