@@ -375,7 +375,7 @@ const TZ_OFFSETS = {
   BKK:7, CGK:7,
   DPS:8,
   DEL:5.5, BOM:5.5,
-  DXB:4, DOH:3,
+  DXB:4, DOH:3, JED:3,
   LHR:0, CDG:1, FRA:1, AMS:1, ZRH:1, MUC:1,
 };
 const AU_DST = new Set(['SYD','MEL','ADL']);
@@ -406,7 +406,7 @@ const IATA_TO_ICAO = {
   HKG:"VHHH", TPE:"RCTP",
   BKK:"VTBS", CGK:"WIII", DPS:"WADD",
   DEL:"VIDP", BOM:"VABB",
-  DXB:"OMDB", DOH:"OTHH",
+  DXB:"OMDB", DOH:"OTHH", JED:"OEJN",
   LHR:"EGLL", CDG:"LFPG", FRA:"EDDF", AMS:"EHAM", ZRH:"LSZH", MUC:"EDDM",
 };
 const ICAO_INFO = {
@@ -437,6 +437,7 @@ const ICAO_INFO = {
   VABB: {name:"Mumbai Chhatrapati Shivaji", firs:["VECF"]},
   OMDB: {name:"Dubai", firs:["OMAE"]},
   OTHH: {name:"Doha Hamad", firs:["OBBB"]},
+  OEJN: {name:"Jeddah King Abdulaziz", firs:["OEJD"]},
   EGLL: {name:"London Heathrow", firs:["EGTT"]},
   LFPG: {name:"Paris Charles de Gaulle", firs:["LFFF"]},
   EDDF: {name:"Frankfurt", firs:["EDGG"]},
@@ -458,7 +459,7 @@ const AIRPORT_COORDS = {
   VTBS:{lat:13.6811,lon:100.7470}, WIII:{lat:-6.1256,lon:106.6559},
   WADD:{lat:-8.7482,lon:115.1670}, VIDP:{lat:28.5665,lon:77.1031},
   VABB:{lat:19.0896,lon:72.8656},  OMDB:{lat:25.2528,lon:55.3644},
-  OTHH:{lat:25.2731,lon:51.6080},  EGLL:{lat:51.4775,lon:-0.4614},
+  OTHH:{lat:25.2731,lon:51.6080},  OEJN:{lat:21.6796,lon:39.1565},  EGLL:{lat:51.4775,lon:-0.4614},
   LFPG:{lat:49.0097,lon:2.5478},   EDDF:{lat:50.0379,lon:8.5622},
   EHAM:{lat:52.3086,lon:4.7639},   LSZH:{lat:47.4647,lon:8.5492},
   EDDM:{lat:48.3538,lon:11.7861},  ZUUU:{lat:30.5785,lon:103.9469},
@@ -490,6 +491,7 @@ const FIR_BOXES = {
   VCCC: [ -2,  14,  72,  88],  // Colombo
   OMAE: [ 20,  28,  48,  60],  // Emirates
   OBBB: [ 22,  30,  46,  57],  // Bahrain
+  OEJD: [ 16,  32,  34,  56],  // Jeddah
   OOMM: [ 14,  27,  52,  68],  // Muscat
   OPKR: [ 22,  38,  60,  78],  // Karachi
   EGTT: [ 48,  62, -11,   2],  // London
@@ -846,8 +848,11 @@ function renderAll(){
     ? `${pilot.name.replace(/\w\S*/g, w => w[0] + w.slice(1).toLowerCase())} · ${pilot.rank} · A${pilot.fleet} Fleet · Base ${pilot.base} · Staff #${pilot.staff_number}`
     : '';
 
+  // Airports without a UTC offset would silently produce NaN times.
+  const unknownAirports = [...new Set(ROSTER.legs.flatMap(l => [l.dep_airport, l.arr_airport]))].filter(a => !(a in TZ_OFFSETS));
   document.getElementById('reloadedAt').innerHTML =
-    `Page loaded: ${today.toLocaleString('en-GB',{hour12:false})}<br>Roster: ${ROSTER.month}`;
+    `Page loaded: ${today.toLocaleString('en-GB',{hour12:false})}<br>Roster: ${ROSTER.month}` +
+    (unknownAirports.length ? `<br><span style="color:#991b1b;font-weight:600;">⚠ Unknown airport: ${unknownAirports.join(', ')} — times for these legs are wrong</span>` : '');
 
   const currentInfo = describeToday(todayStr, legs);
   const nextLeg = findNextLeg(legs, todayStr, currentInfo);
