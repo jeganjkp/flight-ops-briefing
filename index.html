@@ -299,7 +299,7 @@ table.roster-view tr.rv-today td { background: #eefcf3; }
     <tbody><tr><td colspan="8" class="loading">Calculating…</td></tr></tbody>
   </table></div>
   <div class="footer-note" style="text-align:left; margin-top:8px;">
-    Reference figures only — assumes report time 75min before departure at KUL (home base), 60min ex-station, and 45min post-flight release; legs with ≤6h ground time form one duty period; DH (positioning) legs count as duty but not flight time; computed from local station times (UTC offsets: KUL/CAN/PER +8, KIX +9, SYD/MEL +10, +11 during AU daylight saving). Not an FTL/legality check — verify actuals against MAB's CAAM-approved duty-time system.
+    Reference figures only — assumes report time 75min before departure at KUL (home base), 60min ex-station, and 45min post-flight release; legs with ≤6h ground time form one duty period; DH/PS (positioning) legs count as duty but not flight time; SFP (safety pilot) legs count as duty and an FDP sector but not flight time; computed from local station times (UTC offsets: KUL/CAN/PER +8, KIX +9, SYD/MEL +10, +11 during AU daylight saving). Not an FTL/legality check — verify actuals against MAB's CAAM-approved duty-time system.
   </div>
 </div>
 
@@ -315,7 +315,7 @@ table.roster-view tr.rv-today td { background: #eefcf3; }
     <tbody><tr><td colspan="8" class="loading">Calculating…</td></tr></tbody>
   </table></div>
   <div class="footer-note" style="text-align:left; margin-top:8px;">
-    Max FDP per CAAM MCAR Part 1, Fig 7.5.8(1) Table A (2 flight crew, acclimatized) — banded by report local time and sector count. Report time assumed 75min before departure at KUL (home base), 60min ex-station. Sectors exclude DH legs, and positioning after the last operating sector is duty but not FDP. Cumulative duty limits per Table 7.5.17(1), flight crew: 55h/7 days, 95h/14 days, 190h/28 days. Flight time limit per 7.5.16.1(a): 100h/28 days. The 1000h/12-month flying limit (7.5.16.1(b)) requires a full rolling 12-month history and is <b>not computed here</b> — track that separately. Table A assumes acclimatized status; if not acclimatized at the report station, Table B (generally lower limits) applies instead — verify against MAB's CAAM-approved duty-time system.
+    Max FDP per CAAM MCAR Part 1, Fig 7.5.8(1) Table A (2 flight crew, acclimatized) — banded by report local time and sector count. Report time assumed 75min before departure at KUL (home base), 60min ex-station. Sectors exclude DH/PS positioning legs (SFP safety-pilot legs count), and positioning after the last working sector is duty but not FDP. Cumulative duty limits per Table 7.5.17(1), flight crew: 55h/7 days, 95h/14 days, 190h/28 days. Flight time limit per 7.5.16.1(a): 100h/28 days. The 1000h/12-month flying limit (7.5.16.1(b)) requires a full rolling 12-month history and is <b>not computed here</b> — track that separately. Table A assumes acclimatized status; if not acclimatized at the report station, Table B (generally lower limits) applies instead — verify against MAB's CAAM-approved duty-time system.
   </div>
 </div>
 
@@ -597,13 +597,16 @@ function computeLegs(){
     const reportUTC = new Date(depUTC.getTime() - reportBufferMin(leg.dep_airport)*60000);
     const releaseUTC = new Date(arrUTC.getTime() + DEBRIEF_BUFFER_MIN*60000);
     const duty = releaseUTC - reportUTC;
-    return {...leg, depUTC, arrUTC, block, reportUTC, releaseUTC, duty, deadhead: isDeadhead(leg)};
+    return {...leg, depUTC, arrUTC, block, reportUTC, releaseUTC, duty, deadhead: isDeadhead(leg), logsFT: logsFlightTime(leg)};
   });
   return legs;
 }
 
-// Positioning (deadhead) legs: duty time, but not flight time or an FDP sector.
-function isDeadhead(leg){ return leg.deadhead === true || /^DH\s?\d/i.test(leg.flight || ''); }
+// Positioning (deadhead, work type PS): duty time, but not flight time or an FDP sector.
+function isDeadhead(leg){ return leg.deadhead === true || leg.work_type === 'PS' || /^DH\s?\d/i.test(leg.flight || ''); }
+// Flight time is logged only at the controls: not when positioning, and not as
+// safety pilot (work type SFP), which is still a working FDP sector.
+function logsFlightTime(leg){ return !isDeadhead(leg) && leg.work_type !== 'SFP' && leg.logs_flight_time !== false; }
 
 // Legs separated by less than this ground time belong to one duty period (turnarounds,
 // multi-sector days). Any genuine rest period is far longer.
@@ -628,8 +631,9 @@ function computeDuties(legs){
     d.report_airport = first.dep_airport;
     d.release_airport = last.arr_airport;
     d.duty = d.releaseUTC - d.reportUTC;
-    d.block = operating.reduce((t,l) => t + l.block, 0);
+    d.block = operating.filter(l => l.logsFT).reduce((t,l) => t + l.block, 0);
     d.deadheadBlock = d.legs.filter(l => l.deadhead).reduce((t,l) => t + l.block, 0);
+    d.noFtBlock = operating.filter(l => !l.logsFT).reduce((t,l) => t + l.block, 0);
     d.sectors = operating.length;
     // FDP ends at release after the last operating sector; positioning after it is duty only.
     d.fdp = operating.length ? operating[operating.length-1].releaseUTC - d.reportUTC : 0;
@@ -798,7 +802,8 @@ function rosterDayHTML(dateStr, legs, duties){
   if(deps.length) return deps.map(l => {
     const d = duties.find(x => x.legs[0] === l);
     const rpt = d ? ` · Rpt ${localHM(d.reportUTC, d.report_airport)}` : '';
-    return `<b>${l.flight}</b> ${l.dep_airport} → ${l.arr_airport} · ${l.dep_time}–${l.arr_time}${l.arr_date!==l.dep_date?' (+1)':''}${rpt}`;
+    const role = isDeadhead(l) ? ' · <span class="rv-muted">PS</span>' : (l.work_type && l.work_type !== 'OP' ? ` · <span class="rv-muted">${l.work_type}</span>` : '');
+    return `<b>${l.flight}</b> ${l.dep_airport} → ${l.arr_airport} · ${l.dep_time}–${l.arr_time}${l.arr_date!==l.dep_date?' (+1)':''}${role}${rpt}`;
   }).join('<br>');
   const arr = legs.find(l => l.arr_date === dateStr && l.dep_date < dateStr);
   if(arr) return `Arrive ${arr.arr_airport} ${arr.arr_time} · ${arr.flight}`;
@@ -894,7 +899,8 @@ function renderAll(){
   document.getElementById('dutyTable').querySelector('tbody').innerHTML = rotationDuties.length
     ? rotationDuties.map(d => {
         const style = d.dep_date === todayStr ? ' style="background:#eefcf3"' : (d.dep_date === tomorrowStr ? ' style="background:#f0f4ff"' : '');
-        const dh = d.deadheadBlock ? `<br><span style="font-size:11px;color:#6b7280;">+${fmtHM(d.deadheadBlock)} DH</span>` : '';
+        const dh = (d.deadheadBlock ? `<br><span style="font-size:11px;color:#6b7280;">+${fmtHM(d.deadheadBlock)} DH</span>` : '')
+          + (d.noFtBlock ? `<br><span style="font-size:11px;color:#6b7280;">+${fmtHM(d.noFtBlock)} SFP, no FT</span>` : '');
         return `<tr${style}><td>${d.dep_date.slice(5)}</td><td><b>${d.flight}</b></td><td class="dest-cell">${d.route}</td><td>${fmtLocal(d.reportUTC,d.report_airport)}</td><td>${fmtLocal(d.releaseUTC,d.release_airport)}</td><td>${fmtHM(d.block)}${dh}</td><td>${fmtHM(d.duty)}</td><td>${d.restAfter!=null?fmtHM(d.restAfter):'-'}</td></tr>`;
       }).join('')
     : `<tr><td colspan="8">No upcoming legs found in the loaded roster.</td></tr>`;

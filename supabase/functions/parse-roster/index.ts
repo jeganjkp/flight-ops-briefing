@@ -101,7 +101,8 @@ Tabular "Roster Report" layout (columns Date, Pairing/Activity, Duty Report, Ite
   Example: Date 12-Nov-2026, Dep "KUL 19:00", Arr "JED 23:40", Duty Debrief "00:25(+1)" -> dep_date and arr_date are both 2026-11-12.
   Example: Date 29-Nov-2026, Duty Report 23:10, Dep "ICN 00:10(+1)", Arr "KUL 05:55(+1)" -> dep_date and arr_date are both 2026-11-30.
 - The flight number is the Item column, copied digit for digit (e.g. MH6178, MH366, MH6075, MH251 — 3 or 4 digits; do not drop or add digits). Do not take it from the Pairing/Activity column.
-- work_type is the Work Type column (OP, PS, SFP, ...). OP is an operating sector. Any other work type, or a row whose Flying Hrs is 0:00, is not operating: add "deadhead": true to that leg.
+- work_type is the Work Type column, copied as printed (OP, PS, SFP, ...). OP is operating at the controls. PS is positioning (deadheading): add "deadhead": true. SFP is safety pilot: a working flight duty, but not at the controls — do NOT mark it deadhead.
+- If a row's Flying Hrs is 0:00 (PS, SFP, or any other work type), add "logs_flight_time": false to that leg.
 - Rows whose Item is a day-off code (D, DO2, ...) are days off, not legs.`
 
     const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
