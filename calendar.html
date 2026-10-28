@@ -18,10 +18,11 @@ body { margin: 0; background: #f5f6fa; color: #1a1a2e; font-family: -apple-syste
 .sheet { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
 .msg { font-size: 14px; color: #4b5563; }
 .msg.err { color: #991b1b; }
+.btn:disabled { opacity: .6; cursor: default; }
 @media print {
   body { background: #fff; }
   .wrap { max-width: none; padding: 0; }
-  .bar { display: none; }
+  .bar, #pngViewer { display: none !important; }
   .sheet { box-shadow: none; padding: 0; border-radius: 0; }
   .rc-scroll { overflow: visible; }
 }
@@ -33,13 +34,24 @@ body { margin: 0; background: #f5f6fa; color: #1a1a2e; font-family: -apple-syste
     <div class="tabs" id="tabs"></div>
     <div style="display:flex;gap:8px;">
       <a class="btn" href="index.html">← Briefing</a>
+      <button class="btn" type="button" id="pngBtn" onclick="downloadPng()">Download PNG</button>
       <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
     </div>
   </div>
   <div class="sheet"><div class="rc-scroll" id="calendar"><div class="msg">Loading roster…</div></div></div>
 </div>
 
+<div id="pngViewer" style="display:none;position:fixed;inset:0;z-index:10;background:rgba(17,24,39,.85);flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;">
+  <img alt="Roster calendar" style="max-width:100%;max-height:75vh;border-radius:6px;background:#fff;">
+  <div style="color:#e5e7eb;font-size:13px;text-align:center;">Tap Save / Share, or long-press the image to save it.</div>
+  <div style="display:flex;gap:8px;">
+    <button class="btn" type="button" id="pngShare">Save / Share</button>
+    <button class="btn" type="button" id="pngClose">Close</button>
+  </div>
+</div>
+
 <script src="calendar.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 const SUPABASE_FN = 'https://juohlwflvehlctiutrcu.supabase.co/functions/v1';
 let roster = null, current = null;
@@ -58,6 +70,50 @@ function show(key) {
   }).join('');
   document.getElementById('calendar').innerHTML = RosterCalendar.render(roster, key);
   document.title = `Roster Calendar — ${key}`;
+}
+
+// Render the selected month off-screen at a fixed desktop width, so the image has
+// the same layout on a phone as on a computer, then share or download it.
+const PNG_WIDTH = 1280;
+async function downloadPng() {
+  if (!roster || !current || !window.html2canvas) return;
+  const btn = document.getElementById('pngBtn');
+  btn.disabled = true;
+  btn.textContent = 'Rendering…';
+  const stage = document.createElement('div');
+  stage.style.cssText = `position:fixed;left:-${PNG_WIDTH * 2}px;top:0;width:${PNG_WIDTH}px;padding:24px;background:#fff;`;
+  stage.innerHTML = RosterCalendar.render(roster, current);
+  document.body.appendChild(stage);
+  try {
+    const canvas = await html2canvas(stage, { scale: 2, backgroundColor: '#ffffff', windowWidth: PNG_WIDTH + 48 });
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    const name = `roster-${current}-slt.png`;
+    const file = new File([blob], name, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      showImage(blob, file);   // phone: share needs a fresh tap, so offer it from a viewer
+    } else {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+    }
+  } catch (err) {
+    if (err.name !== 'AbortError') alert(`Could not create the image: ${err.message}`);
+  } finally {
+    stage.remove();
+    btn.disabled = false;
+    btn.textContent = 'Download PNG';
+  }
+}
+
+function showImage(blob, file) {
+  const viewer = document.getElementById('pngViewer');
+  const url = URL.createObjectURL(blob);
+  viewer.querySelector('img').src = url;
+  viewer.querySelector('#pngShare').onclick = () => navigator.share({ files: [file], title: file.name }).catch(() => {});
+  viewer.querySelector('#pngClose').onclick = () => { viewer.style.display = 'none'; URL.revokeObjectURL(url); };
+  viewer.style.display = 'flex';
 }
 
 async function init() {
