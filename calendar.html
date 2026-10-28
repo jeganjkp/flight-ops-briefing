@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roster Calendar</title>
+<link rel="stylesheet" href="calendar.css">
+<style>
+body { margin: 0; background: #f5f6fa; color: #1a1a2e; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 16px; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tabs button, .btn {
+  padding: 5px 13px; border: 1px solid #d1d5db; border-radius: 999px;
+  background: #f9fafb; color: #374151; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
+}
+.tabs button.active { background: #2a3f5f; border-color: #2a3f5f; color: #fff; }
+.sheet { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.msg { font-size: 14px; color: #4b5563; }
+.msg.err { color: #991b1b; }
+@media print {
+  body { background: #fff; }
+  .wrap { max-width: none; padding: 0; }
+  .bar { display: none; }
+  .sheet { box-shadow: none; padding: 0; border-radius: 0; }
+  .rc-scroll { overflow: visible; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <div class="tabs" id="tabs"></div>
+    <div style="display:flex;gap:8px;">
+      <a class="btn" href="index.html">← Briefing</a>
+      <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+    </div>
+  </div>
+  <div class="sheet"><div class="rc-scroll" id="calendar"><div class="msg">Loading roster…</div></div></div>
+</div>
+
+<script src="calendar.js"></script>
+<script>
+const SUPABASE_FN = 'https://juohlwflvehlctiutrcu.supabase.co/functions/v1';
+let roster = null, current = null;
+
+// Same passcode the briefing page saves (view passcode, or the upload secret).
+function getPasscode() {
+  try { return localStorage.getItem('ftl_view_secret') || localStorage.getItem('ftl_upload_secret') || ''; }
+  catch (_) { return ''; }
+}
+
+function show(key) {
+  current = key;
+  document.getElementById('tabs').innerHTML = RosterCalendar.monthKeys(roster).map(k => {
+    const label = new Date(`${k}-01T00:00:00Z`).toLocaleString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+    return `<button type="button" class="${k === key ? 'active' : ''}" onclick="show('${k}')">${label}</button>`;
+  }).join('');
+  document.getElementById('calendar').innerHTML = RosterCalendar.render(roster, key);
+  document.title = `Roster Calendar — ${key}`;
+}
+
+async function init() {
+  const el = document.getElementById('calendar');
+  const passcode = getPasscode();
+  try {
+    const res = await fetch(`${SUPABASE_FN}/active-roster`, { headers: passcode ? { Authorization: `Bearer ${passcode}` } : {} });
+    if (res.status === 401) {
+      el.innerHTML = '<div class="msg err">Passcode required — open the <a href="index.html">briefing page</a> and unlock it on this device first.</div>';
+      return;
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    roster = await res.json();
+  } catch (err) {
+    el.innerHTML = `<div class="msg err">Could not load the roster (${err.message}).</div>`;
+    return;
+  }
+  const keys = RosterCalendar.monthKeys(roster);
+  if (!keys.length) { el.innerHTML = '<div class="msg">No roster loaded — <a href="upload.html">upload a roster</a>.</div>'; return; }
+  const now = new Date(), thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const requested = new URLSearchParams(location.search).get('month');
+  show(keys.includes(requested) ? requested : keys.includes(thisMonth) ? thisMonth : (keys.find(k => k > thisMonth) || keys[keys.length - 1]));
+}
+init();
+</script>
+</body>
+</html>

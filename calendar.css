@@ -1,0 +1,39 @@
+/* Roster month calendar (calendar.js). Print layout first; on narrow screens the
+   wrapper scrolls sideways so the 7-day grid keeps its proportions. */
+.rc-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.rc {
+  --rc-ink: #111827; --rc-navy: #1e3a8a; --rc-muted: #6b7280; --rc-line: #e5e7eb;
+  --rc-head: #e8ecf7; --rc-dim: #f3f4f8;
+  --rc-work: #e0266d; --rc-off: #5cb83c; --rc-sby: #f2c12e;
+  min-width: 960px; color: var(--rc-ink); background: #fff;
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+}
+.rc-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.rc-title { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -.01em; color: var(--rc-ink); text-transform: none; }
+.rc-who { color: var(--rc-navy); font-weight: 700; font-size: 12px; letter-spacing: .02em; text-align: right; }
+.rc-legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 8px 0 10px; font-size: 12px; color: var(--rc-muted); }
+.rc-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.rc-sw { width: 22px; height: 7px; border-radius: 4px; display: inline-block; }
+.rc-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1px solid var(--rc-line); }
+.rc-dow { background: var(--rc-head); color: #334155; font-weight: 600; font-size: 13px; padding: 7px 9px; border-right: 1px solid #fff; }
+.rc-cell { position: relative; min-height: 128px; padding: 8px 9px 22px; border-right: 1px solid var(--rc-line); border-top: 1px solid var(--rc-line); }
+.rc-before, .rc-after { background: var(--rc-dim); }
+.rc-before .rc-date { color: var(--rc-muted); }
+.rc-carry { background: #fff; }
+.rc-carry .rc-date { color: #1e293b; }
+.rc-date { font-weight: 700; font-size: 14px; color: #1e293b; margin-bottom: 5px; }
+.rc-lines { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 9.5px; line-height: 1.55; color: #374151; letter-spacing: .02em; overflow-wrap: anywhere; }
+.rc-bar { position: absolute; left: 9px; right: 9px; bottom: 8px; height: 8px; border-radius: 4px; }
+.rc-work { background: var(--rc-work); }
+.rc-off { background: var(--rc-off); }
+.rc-sby { background: var(--rc-sby); }
+.rc-none { border: 1px dashed #cbd5e1; height: 7px; background: transparent; }
+.rc-foot { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; font-size: 11px; color: var(--rc-navy); letter-spacing: .03em; }
+.rc-foot div:last-child { text-align: right; }
+
+@media print {
+  @page { size: A4 landscape; margin: 8mm; }
+  .rc { min-width: 0; }
+  .rc-cell { min-height: 108px; }
+  .rc, .rc * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

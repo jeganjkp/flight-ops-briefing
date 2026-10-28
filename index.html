@@ -349,7 +349,7 @@ table.roster-view tr.rv-today td { background: #eefcf3; }
 </div>
 
 <div class="section">
-  <h2>Roster Viewer</h2>
+  <h2>Roster Viewer <a id="calendarLink" href="calendar.html" style="font-size:12px;font-weight:600;padding:2px 10px;border:1px solid #d1d5db;border-radius:8px;background:#f9fafb;color:#374151;text-decoration:none;vertical-align:middle;margin-left:6px;text-transform:none;letter-spacing:0;">📅 Calendar (SLT)</a></h2>
   <div class="roster-tabs" id="rosterTabs"></div>
   <table class="roster-view">
     <thead><tr><th>Date</th><th>Duty (local times)</th></tr></thead>
@@ -828,6 +828,7 @@ function renderRosterViewer(){
   if(!keys.includes(viewerMonth)){
     viewerMonth = keys.includes(thisMonth) ? thisMonth : (keys.find(k => k > thisMonth) || keys[keys.length-1]);
   }
+  document.getElementById('calendarLink').href = `calendar.html?month=${viewerMonth}`;
   document.getElementById('rosterTabs').innerHTML = keys.map(k =>
     `<button type="button" class="${k===viewerMonth?'active':''}" onclick="selectViewerMonth('${k}')">${monthKeyLabel(k)}</button>`).join('');
   const [y, m] = viewerMonth.split('-').map(Number);
