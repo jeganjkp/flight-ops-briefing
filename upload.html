@@ -119,6 +119,7 @@ input:focus { outline: 2px solid #2a3f5f; outline-offset: 1px; }
 
 a.back { display: inline-block; margin-top: 16px; font-size: 13px; color: #2563eb; text-decoration: none; }
 </style>
+<link rel="stylesheet" href="calendar.css">
 </head>
 <body>
 
@@ -157,6 +158,10 @@ a.back { display: inline-block; margin-top: 16px; font-size: 13px; color: #2563e
 <div class="card" id="resultCard">
   <div style="font-size:15px;font-weight:700;color:#2a3f5f;margin-bottom:12px;">Parsed successfully</div>
   <div id="resultRows"></div>
+  <div id="calendarPreviewWrap" style="display:none;margin-top:14px;">
+    <div style="font-size:13px;font-weight:600;color:#2a3f5f;margin-bottom:6px;">Calendar preview (SLT) — check it against your roster before going live</div>
+    <div id="calendarPreview" class="rc-scroll" style="border:1px solid #e5e7eb;border-radius:8px;padding:10px;"></div>
+  </div>
   <div style="margin-top:16px;display:flex;gap:10px;">
     <button class="btn btn-success" style="flex:1" onclick="applyRoster()">Go Live</button>
     <button class="btn btn-danger"  style="flex:1;font-size:14px;" onclick="reupload()">Re-upload</button>
@@ -165,6 +170,7 @@ a.back { display: inline-block; margin-top: 16px; font-size: 13px; color: #2563e
 
 <a class="back" href="index.html">← Back to briefing</a>
 
+<script src="calendar.js"></script>
 <script>
 const SUPABASE_URL = 'https://juohlwflvehlctiutrcu.supabase.co';
 const PARSE_URL  = `${SUPABASE_URL}/functions/v1/parse-roster`;
@@ -172,6 +178,7 @@ const APPLY_URL  = `${SUPABASE_URL}/functions/v1/apply-roster`;
 
 let pendingId = null;
 let pendingMonth = '';
+let pendingMonthKey = null;
 let selectedFile = null;
 
 // --- Secret management ---
@@ -292,6 +299,7 @@ async function parseRoster() {
 
     pendingId = data.id;
     pendingMonth = data.month;
+    pendingMonthKey = RosterCalendar.monthKeyOf(data.month);
     document.getElementById('resultRows').innerHTML = `
       <div class="result-row"><span class="lbl">Month</span><span class="val">${data.month}</span></div>
       <div class="result-row"><span class="lbl">Flights</span><span class="val">${data.leg_count}</span></div>
@@ -303,6 +311,14 @@ async function parseRoster() {
       const items = warnings.map(w => `<li>${w.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))}</li>`).join('');
       document.getElementById('resultRows').innerHTML +=
         `<div class="notice err" style="margin-top:12px;"><b>Check before going live:</b><ul style="margin:6px 0 0 18px;padding:0;">${items}</ul>Compare these legs with the roster. If they are wrong, re-upload (a PDF reads best) instead of going live.</div>`;
+    }
+    const previewWrap = document.getElementById('calendarPreviewWrap');
+    const previewKey = data.roster && (pendingMonthKey || RosterCalendar.monthKeys(data.roster)[0]);
+    if (previewKey) {
+      document.getElementById('calendarPreview').innerHTML = RosterCalendar.render(data.roster, previewKey);
+      previewWrap.style.display = 'block';
+    } else {
+      previewWrap.style.display = 'none';
     }
     document.getElementById('resultCard').style.display = 'block';
     btn.innerHTML = 'Parse Roster';
@@ -330,7 +346,8 @@ async function applyRoster() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
-    setNotice(`${pendingMonth} roster is now live — it replaces any earlier ${pendingMonth} upload; other months are unchanged.`, 'ok');
+    const calLink = pendingMonthKey ? ` <a href="calendar.html?month=${pendingMonthKey}">View the ${pendingMonth} calendar</a>.` : '';
+    setNotice(`${pendingMonth} roster is now live — it replaces any earlier ${pendingMonth} upload; other months are unchanged.${calLink}`, 'ok');
     document.getElementById('resultCard').style.display = 'none';
     pendingId = null;
     applyBtn.innerHTML = 'Go Live';

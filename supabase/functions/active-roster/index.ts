@@ -49,6 +49,9 @@ function mergeRosters(byMonth: Map<string, any>) {
   // deno-lint-ignore no-explicit-any
   const legs: any[] = [], standby: any[] = []
   const seen = new Set<string>(), daysOff = new Set<string>()
+  const dayOffCodes: Record<string, string> = {}
+  // deno-lint-ignore no-explicit-any
+  const totals: Record<string, any> = {}
   for (const key of keys) {
     const r = byMonth.get(key)
     for (const leg of r.legs ?? []) {
@@ -62,6 +65,8 @@ function mergeRosters(byMonth: Map<string, any>) {
       if (dates.length) standby.push({ ...sb, dates })
     }
     for (const d of r.days_off ?? []) if (owned(key, d)) daysOff.add(d)
+    for (const [d, code] of Object.entries(r.days_off_codes ?? {})) if (owned(key, d)) dayOffCodes[d] = String(code)
+    if (r.totals) totals[key] = r.totals
   }
   legs.sort((a, b) => `${a.dep_date} ${a.dep_time}`.localeCompare(`${b.dep_date} ${b.dep_time}`))
   const months = keys.map(monthLabel)
@@ -72,6 +77,8 @@ function mergeRosters(byMonth: Map<string, any>) {
     legs,
     standby,
     days_off: [...daysOff].sort(),
+    days_off_codes: dayOffCodes,
+    totals,
   }
 }
 

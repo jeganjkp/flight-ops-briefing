@@ -83,7 +83,9 @@ Return ONLY valid JSON — no markdown fences, no explanation:
   "standby": [
     {"code":"S4-330","dates":["YYYY-MM-DD"],"location":"KUL","report":"HH:MM","release":"HH:MM"}
   ],
-  "days_off": ["YYYY-MM-DD"]
+  "days_off": ["YYYY-MM-DD"],
+  "days_off_codes": {"YYYY-MM-DD": "DO2"},
+  "totals": {"flight_hours": "HH:MM", "duty_hours": "HH:MM"}
 }
 
 Rules:
@@ -95,6 +97,9 @@ Rules:
 - Standby: codes starting with "S" (any case, e.g. "S2-330", "s4-330") are standby duties. Put them in standby with the code in uppercase, the station, and the report/release times shown (e.g. "S4-330 KUL 17:00 - KUL 23:59" -> location KUL, report 17:00, release 23:59). Group consecutive or repeated dates with the same code, station and times into one entry.
 - "LO <station>" is a layover, and REPORT/DEBRIEF lines are duty times for the flights on that day — neither is a leg, a standby, or a day off.
 - Leave days with no code out of every list; do not put them in days_off.
+- days_off_codes: for every date in days_off, the code exactly as printed (D, DO, DO1, DO2, ...).
+- totals: the roster's own flight and duty hour totals if printed (e.g. header "FH : 70:56 | DH : 117:20" -> {"flight_hours":"70:56","duty_hours":"117:20"}); omit if not shown.
+- Report/debrief: when the roster prints a duty's REPORT and DEBRIEF times, add "duty_report": "YYYY-MM-DD HH:MM" to the first leg of that duty and "duty_debrief": "YYYY-MM-DD HH:MM" to its last leg (local times, with the actual calendar date, so a "(+1)" debrief falls on the next date). Omit them when the roster does not print them.
 
 Tabular "Roster Report" layout (columns Date, Pairing/Activity, Duty Report, Item, Work Type, Dep Stn / Dep Time, Arr. Stn / Arr. Time, Duty Debrief, Flying Hrs, Duty Hrs, A/C Type, ...):
 - The Date column is the date of that row's duty report. Every time in the row is on that date unless the time itself carries "(+1)", which means the following day. A "(+1)" applies only to the cell it is printed in: a "(+1)" on Duty Debrief does NOT move the arrival date, and a "(+1)" on Dep Time DOES move dep_date.
@@ -159,6 +164,7 @@ Dates must be read, never inferred: do not work out a row's date from neighbouri
         standby_count: roster.standby?.length ?? 0,
         days_off_count: roster.days_off?.length ?? 0,
         warnings: legWarnings(roster.legs),
+        roster,
       }),
       { headers: { ...CORS, "Content-Type": "application/json" } },
     )
