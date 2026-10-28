@@ -31,9 +31,11 @@
 .rc-foot { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; font-size: 11px; color: var(--rc-navy); letter-spacing: .03em; }
 .rc-foot div:last-child { text-align: right; }
 
+/* A full month is taller than an A4 landscape page at 100%, so scale it
+   down and keep it on one sheet. */
 @media print {
-  @page { size: A4 landscape; margin: 8mm; }
-  .rc { min-width: 0; }
-  .rc-cell { min-height: 108px; }
+  @page { size: A4 landscape; margin: 6mm; }
+  .rc { min-width: 0; zoom: 0.72; break-inside: avoid; page-break-inside: avoid; }
+  .rc-cell { min-height: 112px; }
   .rc, .rc * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
