@@ -111,7 +111,8 @@
     return { days, estimated };
   }
 
-  function render(roster, monthKey) {
+  // opts.exportMode: larger type for the PNG export (see .rc-export in calendar.css).
+  function render(roster, monthKey, opts = {}) {
     const { days, estimated } = buildDays(roster);
     const [y, m] = monthKey.split('-').map(Number);
     const first = `${monthKey}-01`;
@@ -139,7 +140,7 @@
     const left = totals ? `FLIGHT HRS ${esc(totals.flight_hours || '—')} &nbsp;|&nbsp; DUTY HRS ${esc(totals.duty_hours || '—')}` : '';
     const right = 'ALL TIMINGS ARE IN SLT (STATION LOCAL TIME). (+1) = NEXT DAY.' +
       (estimated ? ' REPORT/DEBRIEF NOT PRINTED ON THE ROSTER ARE ESTIMATED (−75 MIN KUL, −60 MIN AWAY, +45 MIN).' : '');
-    return `<div class="rc">` +
+    return `<div class="rc${opts.exportMode ? ' rc-export' : ''}">` +
       `<div class="rc-top"><h2 class="rc-title">${MONTH_NAMES[m - 1]} ${y}</h2><div class="rc-who">${who}</div></div>` +
       `<div class="rc-legend"><span><i class="rc-sw rc-work"></i>Working</span><span><i class="rc-sw rc-off"></i>Day off</span><span><i class="rc-sw rc-sby"></i>Standby</span><span><i class="rc-sw rc-none"></i>No entry on roster</span></div>` +
       `<div class="rc-grid">${WEEKDAYS.map(d => `<div class="rc-dow">${d}</div>`).join('')}${cells.join('')}</div>` +

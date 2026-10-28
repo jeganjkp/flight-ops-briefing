@@ -43,7 +43,7 @@ body { margin: 0; background: #f5f6fa; color: #1a1a2e; font-family: -apple-syste
 
 <div id="pngViewer" style="display:none;position:fixed;inset:0;z-index:10;background:rgba(17,24,39,.85);flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;">
   <img alt="Roster calendar" style="max-width:100%;max-height:75vh;border-radius:6px;background:#fff;">
-  <div style="color:#e5e7eb;font-size:13px;text-align:center;">Tap Save / Share, or long-press the image to save it.</div>
+  <div style="color:#e5e7eb;font-size:13px;text-align:center;max-width:520px;line-height:1.5;">Tap Save / Share, or long-press the image to save it.<br>Sending on Telegram? Send it as a <b>File</b> (or switch on <b>HD</b>) to keep full quality — normal photos are compressed.</div>
   <div style="display:flex;gap:8px;">
     <button class="btn" type="button" id="pngShare">Save / Share</button>
     <button class="btn" type="button" id="pngClose">Close</button>
@@ -74,6 +74,7 @@ function show(key) {
 
 // Render the selected month off-screen at a fixed desktop width, so the image has
 // the same layout on a phone as on a computer, then share or download it.
+// 1280 CSS px at 2x = 2560px: Telegram's HD limit, so HD sends are not resized.
 const PNG_WIDTH = 1280;
 async function downloadPng() {
   if (!roster || !current || !window.html2canvas) return;
@@ -81,11 +82,11 @@ async function downloadPng() {
   btn.disabled = true;
   btn.textContent = 'Rendering…';
   const stage = document.createElement('div');
-  stage.style.cssText = `position:fixed;left:-${PNG_WIDTH * 2}px;top:0;width:${PNG_WIDTH}px;padding:24px;background:#fff;`;
-  stage.innerHTML = RosterCalendar.render(roster, current);
+  stage.style.cssText = `position:fixed;left:-${PNG_WIDTH * 2}px;top:0;width:${PNG_WIDTH}px;box-sizing:border-box;padding:20px;background:#fff;`;
+  stage.innerHTML = RosterCalendar.render(roster, current, { exportMode: true });
   document.body.appendChild(stage);
   try {
-    const canvas = await html2canvas(stage, { scale: 2, backgroundColor: '#ffffff', windowWidth: PNG_WIDTH + 48 });
+    const canvas = await html2canvas(stage, { scale: 2, backgroundColor: '#ffffff', windowWidth: PNG_WIDTH });
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
     const name = `roster-${current}-slt.png`;
     const file = new File([blob], name, { type: 'image/png' });
