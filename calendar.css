@@ -31,6 +31,19 @@
 .rc-foot { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; font-size: 11px; color: var(--rc-navy); letter-spacing: .03em; }
 .rc-foot div:last-child { text-align: right; }
 
+/* PNG export: messaging apps (Telegram) recompress photos to ~1280px on the
+   long side, or ~2560px in HD, so the export uses larger type that stays
+   legible after that downscale. */
+.rc-export { min-width: 0; }
+.rc-export .rc-title { font-size: 34px; }
+.rc-export .rc-who { font-size: 15px; }
+.rc-export .rc-legend { font-size: 14px; gap: 18px; margin: 10px 0 12px; }
+.rc-export .rc-dow { font-size: 15px; padding: 8px 10px; }
+.rc-export .rc-cell { min-height: 128px; padding: 9px 10px 24px; }
+.rc-export .rc-date { font-size: 18px; margin-bottom: 6px; }
+.rc-export .rc-lines { font-size: 12.5px; line-height: 1.45; letter-spacing: 0; }
+.rc-export .rc-foot { font-size: 13px; margin-top: 10px; }
+
 /* A full month is taller than an A4 landscape page at 100%, so scale it
    down and keep it on one sheet. */
 @media print {
