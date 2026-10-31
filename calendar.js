@@ -123,16 +123,15 @@
     const cells = [];
     for (let i = 0; i < weeks * 7; i++) {
       const date = addDays(start, i);
-      if (date > lastDay) { cells.push('<div class="rc-cell rc-after"></div>'); continue; }
-      const inMonth = date >= first;
+      const before = date < first, after = date > lastDay, inMonth = !before && !after;
       const e = days[date];
-      // Lead-in days from the previous month show that month's roster (muted), so the
-      // switch-over is visible; a duty that runs into this month stays full colour.
+      // Lead-in and trailing days show the neighbouring months' rosters (muted), so the
+      // switch-over is visible; a duty that crosses into or out of this month stays full colour.
       const lines = e ? e.lines : [];
-      const carries = !inMonth && e && e.spans.some(s => s[1] >= first);
+      const carries = e && ((before && e.spans.some(s => s[1] >= first)) || (after && e.spans.some(s => s[0] <= lastDay)));
       const label = `${MONTHS[Number(date.slice(5, 7)) - 1]} ${date.slice(8)}`;
       const kind = lines.length ? e.kind : (inMonth ? 'none' : '');
-      cells.push(`<div class="rc-cell${inMonth ? '' : ' rc-before'}${carries ? ' rc-carry' : ''}">` +
+      cells.push(`<div class="rc-cell${before ? ' rc-before' : ''}${after ? ' rc-after' : ''}${carries ? ' rc-carry' : ''}">` +
         `<div class="rc-date">${label}</div>` +
         `<div class="rc-lines">${lines.map(l => `<div>${esc(l)}</div>`).join('')}</div>` +
         (kind ? `<div class="rc-bar rc-${kind}"></div>` : '') + '</div>');
