@@ -91,7 +91,7 @@
       add(R, 'work', `DEBRIEF : ${d.debrief.time}${plus(d.debrief.date, R)}`, span);
       // Arrival and debrief again on the day(s) they actually happen.
       for (let day = addDays(R, 1); day <= d.debrief.date; day = addDays(day, 1)) {
-        if (last.arr_date === day) add(day, 'work', `↳ ARR ${last.arr_airport} ${last.arr_time}`, span);
+        if (last.arr_date === day) add(day, 'work', `↳ ${flightLabel(last.flight)} ARR ${last.arr_airport} ${last.arr_time}`, span);
         if (d.debrief.date === day) add(day, 'work', `DEBRIEF : ${d.debrief.time}`, span);
       }
       // Layover at an outstation until the next duty departs from it.
@@ -126,10 +126,13 @@
       if (date > lastDay) { cells.push('<div class="rc-cell rc-after"></div>'); continue; }
       const inMonth = date >= first;
       const e = days[date];
-      const lines = e ? e.lines.filter((_, k) => inMonth || (e.spans[k][1] >= first)) : [];
+      // Lead-in days from the previous month show that month's roster (muted), so the
+      // switch-over is visible; a duty that runs into this month stays full colour.
+      const lines = e ? e.lines : [];
+      const carries = !inMonth && e && e.spans.some(s => s[1] >= first);
       const label = `${MONTHS[Number(date.slice(5, 7)) - 1]} ${date.slice(8)}`;
       const kind = lines.length ? e.kind : (inMonth ? 'none' : '');
-      cells.push(`<div class="rc-cell${inMonth ? '' : ' rc-before'}${lines.length && !inMonth ? ' rc-carry' : ''}">` +
+      cells.push(`<div class="rc-cell${inMonth ? '' : ' rc-before'}${carries ? ' rc-carry' : ''}">` +
         `<div class="rc-date">${label}</div>` +
         `<div class="rc-lines">${lines.map(l => `<div>${esc(l)}</div>`).join('')}</div>` +
         (kind ? `<div class="rc-bar rc-${kind}"></div>` : '') + '</div>');
