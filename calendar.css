@@ -18,9 +18,9 @@
 .rc-dow { background: var(--rc-head); color: #334155; font-weight: 600; font-size: 13px; padding: 7px 9px; border-right: 1px solid #fff; }
 .rc-cell { position: relative; min-height: 128px; padding: 8px 9px 22px; border-right: 1px solid var(--rc-line); border-top: 1px solid var(--rc-line); }
 .rc-before, .rc-after { background: var(--rc-dim); }
-.rc-before .rc-date { color: var(--rc-muted); }
-.rc-before:not(.rc-carry) .rc-lines { color: #9ca3af; }
-.rc-before:not(.rc-carry) .rc-bar { opacity: .4; }
+.rc-before .rc-date, .rc-after .rc-date { color: var(--rc-muted); }
+.rc-before:not(.rc-carry) .rc-lines, .rc-after:not(.rc-carry) .rc-lines { color: #9ca3af; }
+.rc-before:not(.rc-carry) .rc-bar, .rc-after:not(.rc-carry) .rc-bar { opacity: .4; }
 .rc-carry { background: #fff; }
 .rc-carry .rc-date { color: #1e293b; }
 .rc-date { font-weight: 700; font-size: 14px; color: #1e293b; margin-bottom: 5px; }
@@ -31,6 +31,7 @@
 .rc-sby { background: var(--rc-sby); }
 .rc-none { border: 1px dashed #cbd5e1; height: 7px; background: transparent; }
 .rc-foot { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; font-size: 11px; color: var(--rc-navy); letter-spacing: .03em; }
+.rc-foot div:first-child { white-space: nowrap; flex-shrink: 0; }
 .rc-foot div:last-child { text-align: right; }
 
 /* PNG export: messaging apps (Telegram) recompress photos to ~1280px on the
