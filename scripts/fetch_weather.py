@@ -30,6 +30,8 @@ AIRPORT_DB = {
     "PER": ("YPPH", -31.9385, 115.9672, ["YMMM"]),
     "ADL": ("YPAD", -34.9450, 138.5310, ["YMMM"]),
     "BNE": ("YBBN", -27.3842, 153.1175, ["YBBB"]),
+    # New Zealand
+    "AKL": ("NZAA", -37.0082, 174.7850, ["NZZC", "NZZO"]),
     # Japan
     "KIX": ("RJBB",  34.4347, 135.2441, ["RJJJ"]),
     "NRT": ("RJAA",  35.7653, 140.3857, ["RJJJ"]),
@@ -55,6 +57,7 @@ AIRPORT_DB = {
     "DPS": ("WADD",  -8.7482, 115.1670, ["WSJC"]),
     # India
     "DEL": ("VIDP",  28.5665,  77.1031, ["VECF"]),
+    "NMI": ("VANM",  18.9900,  73.0700, ["VABF"]),
     "BOM": ("VABB",  19.0896,  72.8656, ["VECF"]),
     # Middle East
     "DXB": ("OMDB",  25.2528,  55.3644, ["OMAE"]),

@@ -15,6 +15,8 @@ const CORS = {
 // misread date or time: MAB block times plus time-zone shifts stay well inside it.
 const MIN_LOCAL_HOURS = -10
 const MAX_LOCAL_HOURS = 20
+const MAX_REPORT_LEAD_MS = 4 * 3600000
+const MAX_DEBRIEF_LAG_MS = 3 * 3600000
 
 // deno-lint-ignore no-explicit-any
 function legWarnings(legs: any[]): string[] {
@@ -29,6 +31,17 @@ function legWarnings(legs: any[]): string[] {
       warnings.push(`${l.flight} ${l.dep_airport}→${l.arr_airport}: arrival ${l.arr_date} ${l.arr_time} does not fit departure ${l.dep_date} ${l.dep_time}`)
     }
     if (!/^(MH|DH)\d{2,4}$/.test(String(l.flight ?? ""))) warnings.push(`${l.flight}: unusual flight number`)
+    // Report and departure are at the same station, as are arrival and debrief, so
+    // their local times compare directly: a report after departure or a debrief
+    // before arrival means a date was read wrong.
+    const report = l.duty_report ? Date.parse(`${String(l.duty_report).replace(" ", "T")}:00Z`) : NaN
+    const debrief = l.duty_debrief ? Date.parse(`${String(l.duty_debrief).replace(" ", "T")}:00Z`) : NaN
+    if (Number.isFinite(report) && Number.isFinite(dep) && (report > dep || dep - report > MAX_REPORT_LEAD_MS)) {
+      warnings.push(`${l.flight}: report ${l.duty_report} does not fit departure ${l.dep_date} ${l.dep_time}`)
+    }
+    if (Number.isFinite(debrief) && Number.isFinite(arr) && (debrief < arr || debrief - arr > MAX_DEBRIEF_LAG_MS)) {
+      warnings.push(`${l.flight}: debrief ${l.duty_debrief} does not fit arrival ${l.arr_date} ${l.arr_time}`)
+    }
   }
   return warnings
 }
