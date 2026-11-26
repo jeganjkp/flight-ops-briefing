@@ -366,7 +366,8 @@ table.roster-view tr.rv-today td { background: #eefcf3; }
 let ROSTER = {pilot: null, month: "", legs: [], standby: [], days_off: []};
 
 // Standard (non-DST) offsets. tzOffset() adds +1 for daylight saving:
-// SYD/MEL/ADL first Sun Oct - first Sun Apr; LHR/CDG/FRA/AMS/ZRH/MUC last Sun Mar - last Sun Oct.
+// SYD/MEL/ADL first Sun Oct - first Sun Apr; AKL last Sun Sep - first Sun Apr;
+// LHR/CDG/FRA/AMS/ZRH/MUC last Sun Mar - last Sun Oct.
 const TZ_OFFSETS = {
   KUL:8, KCH:8, CAN:8, PVG:8, PEK:8, PKX:8, CTU:8, XIY:8, HKG:8, TPE:8, PER:8,
   SYD:10, MEL:10, BNE:10,
@@ -374,11 +375,13 @@ const TZ_OFFSETS = {
   KIX:9, NRT:9, HND:9, NGO:9, ICN:9,
   BKK:7, CGK:7,
   DPS:8,
-  DEL:5.5, BOM:5.5,
+  DEL:5.5, BOM:5.5, NMI:5.5,
+  AKL:12,
   DXB:4, DOH:3, JED:3,
   LHR:0, CDG:1, FRA:1, AMS:1, ZRH:1, MUC:1,
 };
 const AU_DST = new Set(['SYD','MEL','ADL']);
+const NZ_DST = new Set(['AKL']);
 const EU_DST = new Set(['LHR','CDG','FRA','AMS','ZRH','MUC']);
 // Day of month of the first (n=1) or last (n=-1) Sunday of a 0-based month.
 function sundayOf(y, m, n){
@@ -393,6 +396,9 @@ function tzOffset(station, ms){
   if(AU_DST.has(station)){
     return base + ((ms >= Date.UTC(y,9,sundayOf(y,9,1)) || ms < Date.UTC(y,3,sundayOf(y,3,1))) ? 1 : 0);
   }
+  if(NZ_DST.has(station)){
+    return base + ((ms >= Date.UTC(y,8,sundayOf(y,8,-1)) || ms < Date.UTC(y,3,sundayOf(y,3,1))) ? 1 : 0);
+  }
   if(EU_DST.has(station)){
     return base + ((ms >= Date.UTC(y,2,sundayOf(y,2,-1),1) && ms < Date.UTC(y,9,sundayOf(y,9,-1),1)) ? 1 : 0);
   }
@@ -405,7 +411,8 @@ const IATA_TO_ICAO = {
   CAN:"ZGGG", PVG:"ZSPD", PEK:"ZBAA", PKX:"ZBAD", CTU:"ZUUU", XIY:"ZLXY",
   HKG:"VHHH", TPE:"RCTP",
   BKK:"VTBS", CGK:"WIII", DPS:"WADD",
-  DEL:"VIDP", BOM:"VABB",
+  DEL:"VIDP", BOM:"VABB", NMI:"VANM",
+  AKL:"NZAA",
   DXB:"OMDB", DOH:"OTHH", JED:"OEJN",
   LHR:"EGLL", CDG:"LFPG", FRA:"EDDF", AMS:"EHAM", ZRH:"LSZH", MUC:"EDDM",
 };
@@ -434,6 +441,8 @@ const ICAO_INFO = {
   WIII: {name:"Jakarta Soekarno-Hatta", firs:["WSJC"]},
   WADD: {name:"Bali Ngurah Rai", firs:["WSJC"]},
   VIDP: {name:"Delhi Indira Gandhi", firs:["VECF"]},
+  VANM: {name:"Navi Mumbai", firs:["VABF"]},
+  NZAA: {name:"Auckland", firs:["NZZC","NZZO"]},
   VABB: {name:"Mumbai Chhatrapati Shivaji", firs:["VECF"]},
   OMDB: {name:"Dubai", firs:["OMAE"]},
   OTHH: {name:"Doha Hamad", firs:["OBBB"]},
@@ -457,7 +466,7 @@ const AIRPORT_COORDS = {
   RJAA:{lat:35.7653,lon:140.3857}, RJTT:{lat:35.5494,lon:139.7798},
   RJGG:{lat:34.8583,lon:136.8047}, RKSI:{lat:37.4602,lon:126.4407},
   VTBS:{lat:13.6811,lon:100.7470}, WIII:{lat:-6.1256,lon:106.6559},
-  WADD:{lat:-8.7482,lon:115.1670}, VIDP:{lat:28.5665,lon:77.1031},
+  WADD:{lat:-8.7482,lon:115.1670}, VIDP:{lat:28.5665,lon:77.1031}, VANM:{lat:18.9900,lon:73.0700}, NZAA:{lat:-37.0082,lon:174.7850},
   VABB:{lat:19.0896,lon:72.8656},  OMDB:{lat:25.2528,lon:55.3644},
   OTHH:{lat:25.2731,lon:51.6080},  OEJN:{lat:21.6796,lon:39.1565},  EGLL:{lat:51.4775,lon:-0.4614},
   LFPG:{lat:49.0097,lon:2.5478},   EDDF:{lat:50.0379,lon:8.5622},
@@ -487,6 +496,9 @@ const FIR_BOXES = {
   RPHI: [  4,  22, 114, 136],  // Manila
   RKRR: [ 32,  45, 122, 136],  // Incheon
   VECF: [ 18,  30,  74,  96],  // Kolkata
+  VABF: [ 10,  25,  60,  78],  // Mumbai
+  NZZC: [-48, -33, 165, 180],  // New Zealand
+  NZZO: [-48, -20, 160, 180],  // Auckland Oceanic
   VOMF: [  5,  18,  72,  86],  // Chennai
   VCCC: [ -2,  14,  72,  88],  // Colombo
   OMAE: [ 20,  28,  48,  60],  // Emirates
@@ -801,7 +813,9 @@ function rosterDayHTML(dateStr, legs, duties){
   const deps = legs.filter(l => l.dep_date === dateStr);
   if(deps.length) return deps.map(l => {
     const d = duties.find(x => x.legs[0] === l);
-    const rpt = d ? ` · Rpt ${localHM(d.reportUTC, d.report_airport)}` : '';
+    // A report before midnight for an after-midnight departure belongs to the previous day.
+    const rptDate = d && new Date(d.reportUTC.getTime() + tzOffset(d.report_airport, d.reportUTC.getTime())*3600000).toISOString().slice(0,10);
+    const rpt = d ? ` · Rpt ${localHM(d.reportUTC, d.report_airport)}${rptDate < dateStr ? ' (prev day)' : ''}` : '';
     const role = isDeadhead(l) ? ' · <span class="rv-muted">PS</span>' : (l.work_type && l.work_type !== 'OP' ? ` · <span class="rv-muted">${l.work_type}</span>` : '');
     return `<b>${l.flight}</b> ${l.dep_airport} → ${l.arr_airport} · ${l.dep_time}–${l.arr_time}${l.arr_date!==l.dep_date?' (+1)':''}${role}${rpt}`;
   }).join('<br>');
